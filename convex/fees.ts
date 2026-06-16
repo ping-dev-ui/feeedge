@@ -1,4 +1,4 @@
-import { query, mutation } from "./_generated/server";
+import { query, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 
 export const getFeeRates = query({
@@ -8,7 +8,7 @@ export const getFeeRates = query({
   },
 });
 
-export const upsertFeeRate = mutation({
+export const upsertFeeRate = internalMutation({
   args: {
     exchange: v.string(),
     market: v.string(),
