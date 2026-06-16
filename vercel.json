@@ -1,8 +1,9 @@
 {
-  "version": 2,
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/client",
   "rewrites": [
-    { "source": "/assets/(.*)", "destination": "/dist/client/assets/$1" },
-    { "source": "/favicon.ico", "destination": "/dist/client/favicon.ico" },
-    { "source": "/(.*)", "destination": "/api/server.js" }
+    { "source": "/(.*)", "destination": "/api/server" }
   ]
 }
