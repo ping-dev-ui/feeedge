@@ -8,9 +8,13 @@
  * @module
  */
 
+import type * as auth from "../auth.js";
 import type * as crons from "../crons.js";
 import type * as fees from "../fees.js";
 import type * as fetcher from "../fetcher.js";
+import type * as http from "../http.js";
+import type * as stripe from "../stripe.js";
+import type * as users from "../users.js";
 
 import type {
   ApiFromModules,
@@ -19,9 +23,13 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  auth: typeof auth;
   crons: typeof crons;
   fees: typeof fees;
   fetcher: typeof fetcher;
+  http: typeof http;
+  stripe: typeof stripe;
+  users: typeof users;
 }>;
 
 /**

@@ -1,14 +1,21 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
-import { 
-  BarChart3, 
-  Info, 
-  Lock, 
-  TrendingDown, 
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { convexQuery } from '@convex-dev/react-query'
+import { useConvexAuth, useAction } from 'convex/react'
+import { useAuthActions } from '@convex-dev/auth/react'
+import { api } from '../../convex/_generated/api'
+import { SignInModal } from '~/components/SignInModal'
+import {
+  BarChart3,
+  Info,
+  Lock,
+  TrendingDown,
   TrendingUp,
   ArrowRightLeft,
   Download,
-  Zap
+  Zap,
+  LogOut
 } from 'lucide-react'
 
 export const Route = createFileRoute('/')({
@@ -77,30 +84,78 @@ const EXCHANGES: ExchangeData[] = [
   }
 ]
 
+// Relative effective-cost multiplier by asset liquidity. Less-liquid assets
+// carry wider spreads/slippage, so their effective trading cost runs higher.
+// These are estimates; swap in real per-asset rates if you have them.
+const ASSET_LIQUIDITY_MULTIPLIER: Record<string, number> = {
+  BTC: 1.0,
+  ETH: 1.02,
+  SOL: 1.1,
+  OTHER: 1.3,
+}
+
 function FeeEdge() {
   const [monthlyVolume, setMonthlyVolume] = useState<number>(1000000)
   const [makerRatio, setMakerRatio] = useState<number>(0.5) // 0 to 1
   const [holdTime, setHoldTime] = useState<number>(4)
-  const [isPro, setIsPro] = useState(false)
+
+  // Auth + subscription state (server-backed).
+  const { isAuthenticated } = useConvexAuth()
+  const { signOut } = useAuthActions()
+  const { data: viewer } = useSuspenseQuery(convexQuery(api.users.viewer, {}))
+  const createCheckoutSession = useAction(api.stripe.createCheckoutSession)
+  const isPro = viewer?.isPro ?? false
+
+  const [showSignIn, setShowSignIn] = useState(false)
+  const [upgrading, setUpgrading] = useState(false)
+  const [selectedAssets, setSelectedAssets] = useState<string[]>(['BTC', 'ETH', 'SOL', 'OTHER'])
+
+  const toggleAsset = (asset: string) =>
+    setSelectedAssets((prev) =>
+      prev.includes(asset) ? prev.filter((a) => a !== asset) : [...prev, asset],
+    )
+
+  const handleUpgrade = async () => {
+    if (!isAuthenticated) {
+      setShowSignIn(true)
+      return
+    }
+    if (isPro) return
+    try {
+      setUpgrading(true)
+      const url = await createCheckoutSession({})
+      window.location.href = url
+    } catch (err) {
+      console.error(err)
+      setUpgrading(false)
+      alert('Could not start checkout. Please try again.')
+    }
+  }
+
+  // Average effective-cost multiplier across the selected assets.
+  const assetMultiplier = useMemo(() => {
+    if (selectedAssets.length === 0) return 1
+    const sum = selectedAssets.reduce(
+      (s, a) => s + (ASSET_LIQUIDITY_MULTIPLIER[a] ?? 1),
+      0,
+    )
+    return sum / selectedAssets.length
+  }, [selectedAssets])
 
   const results = useMemo(() => {
     return EXCHANGES.map(ex => {
       // Find current tier
       const currentTier = [...ex.tiers].reverse().find(t => monthlyVolume >= t.volume) || ex.tiers[0]
       const nextTier = ex.tiers.find(t => t.volume > monthlyVolume)
-      
+
       const makerVolume = monthlyVolume * makerRatio
       const takerVolume = monthlyVolume * (1 - makerRatio)
-      
-      const monthlyFee = (makerVolume * currentTier.maker) + (takerVolume * currentTier.taker)
-      
+
+      const monthlyFee = ((makerVolume * currentTier.maker) + (takerVolume * currentTier.taker)) * assetMultiplier
+
       // Funding rate estimate (simplified: 0.01% per 8h)
-      // cost = (position_size * rate) * (hold_time / 8)
-      // Since monthly volume is total turnover (sum of all trades), 
-      // we need to estimate average open interest.
-      // Monthly Volume / 2 (open + close) / days / 24 * holdTime = avg OI
       const avgOI = (monthlyVolume / 2) / 30 / 24 * holdTime
-      const fundingRatePer8h = 0.0001 
+      const fundingRatePer8h = 0.0001
       const monthlyFunding = (avgOI * fundingRatePer8h) * (30 * 24 / 8)
 
       return {
@@ -112,12 +167,64 @@ function FeeEdge() {
         totalMonthly: monthlyFee + (isPro ? monthlyFunding : 0)
       }
     }).sort((a, b) => a.totalMonthly - b.totalMonthly)
-  }, [monthlyVolume, makerRatio, holdTime, isPro])
+  }, [monthlyVolume, makerRatio, holdTime, isPro, assetMultiplier])
 
   const visibleResults = isPro ? results : results.slice(0, 3)
   const cheapest = results[0]
   const mostExpensive = results[results.length - 1]
   const monthlySavings = mostExpensive.totalMonthly - cheapest.totalMonthly
+
+  const handleExportPdf = () => {
+    const generatedAt = new Date().toLocaleString()
+    const assets = selectedAssets.length ? selectedAssets.join(', ') : 'None'
+    const rows = visibleResults
+      .map(
+        (ex, i) => `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${ex.name}</td>
+            <td>${(ex.currentTier.maker * 100).toFixed(3)}%</td>
+            <td>${(ex.currentTier.taker * 100).toFixed(3)}%</td>
+            <td>$${ex.monthlyFee.toLocaleString(undefined, { maximumFractionDigits: 2 })}</td>
+            <td>$${ex.totalMonthly.toLocaleString(undefined, { maximumFractionDigits: 2 })}</td>
+          </tr>`,
+      )
+      .join('')
+    const html = `<!doctype html><html><head><meta charset="utf-8"/><title>FeeEdge Report</title>
+      <style>
+        body{font-family:Arial,Helvetica,sans-serif;color:#111;padding:32px;}
+        h1{margin:0 0 4px;font-size:20px;} .sub{color:#666;font-size:12px;margin-bottom:24px;}
+        .meta{font-size:13px;margin-bottom:20px;line-height:1.7;}
+        table{width:100%;border-collapse:collapse;font-size:13px;}
+        th,td{border:1px solid #ddd;padding:8px 10px;text-align:left;}
+        th{background:#f4f4f4;} td:nth-child(n+3){text-align:right;}
+        .foot{margin-top:24px;color:#999;font-size:11px;}
+      </style></head><body>
+      <h1>FeeEdge &mdash; Exchange Fee Comparison</h1>
+      <div class="sub">Generated ${generatedAt}</div>
+      <div class="meta">
+        <strong>Monthly volume:</strong> $${monthlyVolume.toLocaleString()}<br/>
+        <strong>Execution:</strong> ${Math.round(makerRatio * 100)}% maker / ${Math.round((1 - makerRatio) * 100)}% taker<br/>
+        <strong>Avg hold time:</strong> ${holdTime}h<br/>
+        <strong>Assets:</strong> ${assets}<br/>
+        <strong>Plan:</strong> ${isPro ? 'Pro (all exchanges)' : 'Free (top 3 shown)'}
+      </div>
+      <table>
+        <thead><tr><th>#</th><th>Exchange</th><th>Maker</th><th>Taker</th><th>Trading Fees</th><th>Total Monthly</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="foot">FeeEdge Analytics &mdash; estimates only, not financial advice.</div>
+      </body></html>`
+    const w = window.open('', '_blank')
+    if (!w) {
+      alert('Please allow pop-ups to export the PDF.')
+      return
+    }
+    w.document.write(html)
+    w.document.close()
+    w.focus()
+    w.print()
+  }
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-zinc-300 font-mono selection:bg-emerald-500/30">
@@ -132,15 +239,39 @@ function FeeEdge() {
             <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
             LIVE DATA
           </div>
-          <button 
-            onClick={() => setIsPro(true)}
-            className="bg-zinc-100 text-black px-3 py-1.5 rounded font-bold hover:bg-white transition-colors flex items-center gap-2"
+          <button
+            onClick={handleUpgrade}
+            disabled={upgrading || isPro}
+            className="bg-zinc-100 text-black px-3 py-1.5 rounded font-bold hover:bg-white transition-colors flex items-center gap-2 disabled:opacity-60"
           >
             <Zap size={14} fill="currentColor" />
-            {isPro ? 'PRO ACTIVE' : 'UPGRADE TO PRO'}
+            {isPro ? 'PRO ACTIVE' : upgrading ? 'REDIRECTING…' : 'UPGRADE TO PRO'}
           </button>
+          {isAuthenticated ? (
+            <button
+              onClick={() => signOut()}
+              className="text-zinc-500 hover:text-white transition-colors flex items-center gap-1"
+              title={viewer?.email ? `Signed in as ${viewer.email}` : 'Sign out'}
+            >
+              <LogOut size={14} />
+            </button>
+          ) : (
+            <button
+              onClick={() => setShowSignIn(true)}
+              className="text-zinc-400 hover:text-white transition-colors"
+            >
+              Sign in
+            </button>
+          )}
         </div>
       </header>
+
+      {showSignIn && (
+        <SignInModal
+          onClose={() => setShowSignIn(false)}
+          onSignedIn={() => setShowSignIn(false)}
+        />
+      )}
 
       <main className="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Input Panel */}
@@ -154,8 +285,8 @@ function FeeEdge() {
             <div className="space-y-4">
               <div>
                 <label className="block text-xs text-zinc-500 mb-2 uppercase">Monthly Volume (USD)</label>
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   value={monthlyVolume}
                   onChange={(e) => setMonthlyVolume(Number(e.target.value))}
                   className="w-full bg-black border border-zinc-800 rounded p-3 text-white focus:outline-none focus:border-emerald-500 transition-colors"
@@ -170,11 +301,11 @@ function FeeEdge() {
                 <label className="block text-xs text-zinc-500 mb-2 uppercase">Execution Style (Maker vs Taker)</label>
                 <div className="flex items-center gap-4">
                   <span className="text-[10px] text-zinc-600">TAKER</span>
-                  <input 
-                    type="range" 
-                    min="0" 
-                    max="1" 
-                    step="0.1" 
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.1"
                     value={makerRatio}
                     onChange={(e) => setMakerRatio(Number(e.target.value))}
                     className="flex-1 accent-emerald-500 h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer"
@@ -188,7 +319,7 @@ function FeeEdge() {
 
               <div>
                 <label className="block text-xs text-zinc-500 mb-2 uppercase">Avg Hold Time (Hours)</label>
-                <select 
+                <select
                   className="w-full bg-black border border-zinc-800 rounded p-3 text-white focus:outline-none focus:border-emerald-500 appearance-none"
                   value={holdTime}
                   onChange={(e) => setHoldTime(Number(e.target.value))}
@@ -234,7 +365,10 @@ function FeeEdge() {
               Exchange Comparison
               <span className="text-[10px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded uppercase font-mono">Ranked by Cost</span>
             </h2>
-            <button className="text-xs text-zinc-500 hover:text-white flex items-center gap-1 transition-colors">
+            <button
+              onClick={handleExportPdf}
+              className="text-xs text-zinc-500 hover:text-white flex items-center gap-1 transition-colors"
+            >
               <Download size={14} />
               Export PDF
             </button>
@@ -242,8 +376,8 @@ function FeeEdge() {
 
           <div className="space-y-3">
             {visibleResults.map((ex, idx) => (
-              <div 
-                key={ex.name} 
+              <div
+                key={ex.name}
                 className={`bg-zinc-900/50 border ${idx === 0 ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-zinc-800'} rounded-xl p-5 hover:border-zinc-700 transition-all`}
               >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -295,8 +429,8 @@ function FeeEdge() {
                       <span className="text-emerald-500">Save ${((ex.monthlyFee / monthlyVolume * (monthlyVolume)) - (monthlyVolume * (makerRatio * ex.nextTier.maker + (1-makerRatio) * ex.nextTier.taker))).toLocaleString(undefined, { maximumFractionDigits: 0 })} more</span>
                     </div>
                     <div className="w-full bg-black h-1.5 rounded-full overflow-hidden border border-zinc-800">
-                      <div 
-                        className="bg-zinc-700 h-full transition-all duration-500" 
+                      <div
+                        className="bg-zinc-700 h-full transition-all duration-500"
                         style={{ width: `${Math.min(100, (monthlyVolume / ex.nextTier.volume) * 100)}%` }}
                       ></div>
                     </div>
@@ -306,7 +440,7 @@ function FeeEdge() {
             ))}
 
             {!isPro && (
-              <div className="relative group cursor-pointer" onClick={() => setIsPro(true)}>
+              <div className="relative group cursor-pointer" onClick={handleUpgrade}>
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0a0a0a] z-10"></div>
                 <div className="bg-zinc-900/30 border border-dashed border-zinc-800 rounded-xl p-8 flex flex-col items-center justify-center space-y-4">
                   <div className="w-12 h-12 bg-zinc-800 rounded-full flex items-center justify-center text-zinc-500 group-hover:bg-zinc-700 transition-colors">
@@ -316,8 +450,15 @@ function FeeEdge() {
                     <h3 className="text-white font-bold">Unlock All 5 Exchanges & Pro Tools</h3>
                     <p className="text-zinc-500 text-xs mt-1">OKX and Gate.io results are currently restricted.</p>
                   </div>
-                  <button className="bg-emerald-500 text-black px-6 py-2 rounded-full font-bold text-sm hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/20">
-                    Unlock All for $29
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleUpgrade()
+                    }}
+                    disabled={upgrading}
+                    className="bg-emerald-500 text-black px-6 py-2 rounded-full font-bold text-sm hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/20 disabled:opacity-60"
+                  >
+                    {upgrading ? 'Redirecting…' : 'Unlock All for $29'}
                   </button>
                 </div>
               </div>
@@ -329,15 +470,26 @@ function FeeEdge() {
             <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6">
               <h4 className="text-xs font-bold text-zinc-400 uppercase mb-4 tracking-widest">Calculated Assets</h4>
               <div className="flex flex-wrap gap-2">
-                {['BTC', 'ETH', 'SOL', 'OTHER'].map(asset => (
-                  <button key={asset} className="px-3 py-1 bg-black border border-zinc-800 rounded text-[10px] font-bold text-zinc-500 hover:border-emerald-500 transition-colors">
-                    {asset}
-                  </button>
-                ))}
+                {['BTC', 'ETH', 'SOL', 'OTHER'].map(asset => {
+                  const active = selectedAssets.includes(asset)
+                  return (
+                    <button
+                      key={asset}
+                      onClick={() => toggleAsset(asset)}
+                      className={`px-3 py-1 rounded text-[10px] font-bold border transition-colors ${
+                        active
+                          ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400'
+                          : 'bg-black border-zinc-800 text-zinc-500 hover:border-emerald-500'
+                      }`}
+                    >
+                      {asset}
+                    </button>
+                  )
+                })}
               </div>
               <div className="mt-4 flex items-start gap-2 text-[10px] text-zinc-500 bg-black/50 p-2 rounded">
                 <Info size={12} className="shrink-0 mt-0.5" />
-                <span>Calculations assume standard perpetual contracts. Spot and delivery fees may vary.</span>
+                <span>Calculations apply a liquidity-based cost multiplier for the selected assets. Spot and delivery fees may vary.</span>
               </div>
             </div>
 
@@ -367,7 +519,7 @@ function FeeEdge() {
 
       <footer className="max-w-7xl mx-auto p-6 border-t border-zinc-800/50 mt-12 text-center">
         <p className="text-[10px] text-zinc-600">
-          Fee data last updated Oct 2023. Real-time rates fetched via exchange APIs for Pro users. 
+          Fee data last updated Oct 2023. Real-time rates fetched via exchange APIs for Pro users.
           <br />© 2024 FeeEdge Analytics. Not financial advice.
         </p>
       </footer>
