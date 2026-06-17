@@ -550,7 +550,7 @@ function FeeEdge() {
                 className="text-xs text-zinc-500 hover:text-white flex items-center gap-1 transition-colors"
               >
                 <HelpCircle size={14} />
-                How to read this
+                How to use
               </button>
               <button
                 onClick={handleExportPdf}
@@ -564,15 +564,26 @@ function FeeEdge() {
 
           {/* How to read this */}
           {showGuide && (
-            <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 text-xs text-zinc-400 space-y-2.5">
-              <p className="text-zinc-300 font-bold uppercase tracking-widest text-[10px]">How to read this</p>
-              <p><span className="text-emerald-400 font-bold">Perps / Spot toggle:</span> switch the whole table between perpetual-futures fees and spot fees (left panel). Funding only applies to perps.</p>
-              <p><span className="text-emerald-400 font-bold">Ranking (#1, #2…):</span> exchanges sorted cheapest → most expensive for your exact profile. #1 (highlighted) is your best venue.</p>
-              <p><span className="text-emerald-400 font-bold">M / T:</span> the Maker and Taker fee rates at your current volume tier. <span className="text-zinc-300">Maker</span> = limit orders that add liquidity (cheaper). <span className="text-zinc-300">Taker</span> = market orders that remove it (pricier).</p>
-              <p><span className="text-emerald-400 font-bold">Trading Fees:</span> estimated monthly trading cost = your volume × blended maker/taker rate × the selected-asset multiplier.</p>
-              <p><span className="text-emerald-400 font-bold">Funding Est. (Pro, perps only):</span> estimated perpetual-funding cost over the month, based on your average hold time.</p>
-              <p><span className="text-emerald-400 font-bold">Total Monthly:</span> what you'd actually pay — trading fees, plus funding when you're on Pro and viewing perps.</p>
-              <p className="text-zinc-500 italic pt-1">All figures are estimates — not financial advice.</p>
+            <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 text-xs text-zinc-400 space-y-4">
+              <div className="space-y-2">
+                <p className="text-zinc-300 font-bold uppercase tracking-widest text-[10px]">How to use FeeEdge</p>
+                <ol className="space-y-1.5 list-decimal list-inside marker:text-emerald-400 marker:font-bold">
+                  <li>Set your <span className="text-zinc-200">Trader Profile</span> (left) — monthly volume, maker/taker mix, average hold time, and the assets you trade.</li>
+                  <li>Choose <span className="text-zinc-200">Perps</span> or <span className="text-zinc-200">Spot</span> to match the market you trade.</li>
+                  <li>FeeEdge ranks every exchange by your real estimated monthly cost — <span className="text-emerald-400 font-bold">#1 is the cheapest for you</span>.</li>
+                  <li>Save a setup, share it with a link, or get an email alert when a cheaper venue appears (Pro), and export the table to PDF.</li>
+                </ol>
+              </div>
+              <div className="space-y-2 border-t border-zinc-800 pt-3">
+                <p className="text-zinc-300 font-bold uppercase tracking-widest text-[10px]">Reading the table</p>
+                <p><span className="text-emerald-400 font-bold">Ranking (#1, #2…):</span> exchanges sorted cheapest → most expensive for your exact profile. #1 (highlighted) is your best venue.</p>
+                <p><span className="text-emerald-400 font-bold">M / T:</span> Maker and Taker fee rates at your current volume tier. <span className="text-zinc-300">Maker</span> = limit orders that add liquidity (cheaper); <span className="text-zinc-300">Taker</span> = market orders that remove it (pricier). The slider sets your mix.</p>
+                <p><span className="text-emerald-400 font-bold">Trading Fees:</span> estimated monthly cost = volume × your blended maker/taker rate × the selected-asset multiplier.</p>
+                <p><span className="text-emerald-400 font-bold">Funding Est. (Pro, perps only):</span> estimated monthly perpetual-funding cost, from your average hold time and live funding rates.</p>
+                <p><span className="text-emerald-400 font-bold">Total Monthly:</span> what you'd pay — trading fees, plus funding on Pro perps.</p>
+                <p><span className="text-emerald-400 font-bold">Next Tier bar:</span> how close you are to an exchange's next volume discount, and the extra you'd save.</p>
+              </div>
+              <p className="text-zinc-500 italic">Free shows the 3 cheapest venues; Pro unlocks all {EXCHANGES.length} plus funding, unlimited saved scenarios, and price alerts. All figures are estimates — not financial advice.</p>
             </div>
           )}
 
@@ -713,7 +724,7 @@ function FeeEdge() {
       <footer className="max-w-7xl mx-auto p-6 border-t border-zinc-800/50 mt-12 text-center">
         <p className="text-[10px] text-zinc-600">
           Maker/taker rates are refreshed periodically and shown as estimates.
-          <br />© 2024 FeeEdge Analytics. Not financial advice.
+          <br />© {new Date().getFullYear()} FeeEdge Analytics. Not financial advice.
         </p>
       </footer>
     </div>
