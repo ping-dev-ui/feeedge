@@ -1,11 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, useMemo } from 'react'
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { useState, useMemo, useEffect, useRef } from 'react'
+import { useSuspenseQuery, useQuery } from '@tanstack/react-query'
 import { convexQuery } from '@convex-dev/react-query'
 import { useConvexAuth, useAction } from 'convex/react'
 import { useAuthActions } from '@convex-dev/auth/react'
 import { api } from '../../convex/_generated/api'
 import { SignInModal } from '~/components/SignInModal'
+import { CostChart } from '~/components/CostChart'
+import { ScenariosPanel } from '~/components/ScenariosPanel'
+import { AlertsPanel } from '~/components/AlertsPanel'
 import {
   BarChart3,
   Info,
@@ -15,78 +18,97 @@ import {
   ArrowRightLeft,
   Download,
   Zap,
-  LogOut
+  LogOut,
+  HelpCircle
 } from 'lucide-react'
 
 export const Route = createFileRoute('/')({
   component: FeeEdge,
 })
 
+type Market = 'futures' | 'spot'
+type Tier = { volume: number; maker: number; taker: number }
 type ExchangeData = {
   name: string
-  maker: number
-  taker: number
-  tiers: { volume: number; maker: number; taker: number }[]
+  key: string
   color: string
+  futures: Tier[]
+  spot: Tier[]
 }
 
 const EXCHANGES: ExchangeData[] = [
   {
-    name: 'Binance',
-    maker: 0.0002,
-    taker: 0.0005,
-    color: 'text-yellow-400',
-    tiers: [
+    name: 'Binance', key: 'binance', color: 'text-yellow-400',
+    futures: [
       { volume: 0, maker: 0.0002, taker: 0.0005 },
       { volume: 15000000, maker: 0.00016, taker: 0.00045 },
       { volume: 50000000, maker: 0.00014, taker: 0.0004 },
-    ]
+    ],
+    spot: [{ volume: 0, maker: 0.001, taker: 0.001 }],
   },
   {
-    name: 'Bybit',
-    maker: 0.0002,
-    taker: 0.00055,
-    color: 'text-orange-400',
-    tiers: [
+    name: 'Bybit', key: 'bybit', color: 'text-orange-400',
+    futures: [
       { volume: 0, maker: 0.0002, taker: 0.00055 },
       { volume: 10000000, maker: 0.00018, taker: 0.00045 },
       { volume: 50000000, maker: 0.00015, taker: 0.0004 },
-    ]
+    ],
+    spot: [{ volume: 0, maker: 0.001, taker: 0.001 }],
   },
   {
-    name: 'Hyperliquid',
-    maker: 0.0001,
-    taker: 0.00035,
-    color: 'text-emerald-400',
-    tiers: [
-      { volume: 0, maker: 0.0001, taker: 0.00035 },
-    ]
+    name: 'Hyperliquid', key: 'hyperliquid', color: 'text-emerald-400',
+    futures: [{ volume: 0, maker: 0.0001, taker: 0.00035 }],
+    spot: [{ volume: 0, maker: 0.0004, taker: 0.0007 }],
   },
   {
-    name: 'OKX',
-    maker: 0.0002,
-    taker: 0.0005,
-    color: 'text-white',
-    tiers: [
+    name: 'OKX', key: 'okx', color: 'text-white',
+    futures: [
       { volume: 0, maker: 0.0002, taker: 0.0005 },
       { volume: 10000000, maker: 0.00015, taker: 0.0004 },
-    ]
+    ],
+    spot: [{ volume: 0, maker: 0.0008, taker: 0.001 }],
   },
   {
-    name: 'Gate.io',
-    maker: 0.00015,
-    taker: 0.0005,
-    color: 'text-red-400',
-    tiers: [
+    name: 'Gate.io', key: 'gateio', color: 'text-red-400',
+    futures: [
       { volume: 0, maker: 0.00015, taker: 0.0005 },
       { volume: 10000000, maker: 0.00012, taker: 0.00045 },
-    ]
-  }
+    ],
+    spot: [{ volume: 0, maker: 0.002, taker: 0.002 }],
+  },
+  {
+    name: 'Bitget', key: 'bitget', color: 'text-cyan-400',
+    futures: [
+      { volume: 0, maker: 0.0002, taker: 0.0006 },
+      { volume: 8000000, maker: 0.00016, taker: 0.0005 },
+    ],
+    spot: [{ volume: 0, maker: 0.001, taker: 0.001 }],
+  },
+  {
+    name: 'KuCoin', key: 'kucoin', color: 'text-green-400',
+    futures: [
+      { volume: 0, maker: 0.0002, taker: 0.0006 },
+      { volume: 5000000, maker: 0.00018, taker: 0.00055 },
+    ],
+    spot: [{ volume: 0, maker: 0.001, taker: 0.001 }],
+  },
+  {
+    name: 'MEXC', key: 'mexc', color: 'text-blue-400',
+    futures: [{ volume: 0, maker: 0.0001, taker: 0.0004 }],
+    spot: [{ volume: 0, maker: 0.0, taker: 0.0005 }],
+  },
+  {
+    name: 'Kraken', key: 'kraken', color: 'text-purple-400',
+    futures: [
+      { volume: 0, maker: 0.0002, taker: 0.0005 },
+      { volume: 10000000, maker: 0.00015, taker: 0.0004 },
+    ],
+    spot: [{ volume: 0, maker: 0.0016, taker: 0.0026 }],
+  },
 ]
 
 // Relative effective-cost multiplier by asset liquidity. Less-liquid assets
 // carry wider spreads/slippage, so their effective trading cost runs higher.
-// These are estimates; swap in real per-asset rates if you have them.
 const ASSET_LIQUIDITY_MULTIPLIER: Record<string, number> = {
   BTC: 1.0,
   ETH: 1.02,
@@ -94,21 +116,57 @@ const ASSET_LIQUIDITY_MULTIPLIER: Record<string, number> = {
   OTHER: 1.3,
 }
 
+const FREE_VISIBLE_COUNT = 3
+
+function timeAgo(ts: number): string {
+  const mins = Math.floor((Date.now() - ts) / 60000)
+  if (mins < 1) return 'just now'
+  if (mins < 60) return `${mins}m ago`
+  const hrs = Math.floor(mins / 60)
+  if (hrs < 24) return `${hrs}h ago`
+  return `${Math.floor(hrs / 24)}d ago`
+}
+
 function FeeEdge() {
   const [monthlyVolume, setMonthlyVolume] = useState<number>(1000000)
   const [makerRatio, setMakerRatio] = useState<number>(0.5) // 0 to 1
   const [holdTime, setHoldTime] = useState<number>(4)
+  const [market, setMarket] = useState<Market>('futures')
 
   // Auth + subscription state (server-backed).
   const { isAuthenticated } = useConvexAuth()
   const { signOut } = useAuthActions()
   const { data: viewer } = useSuspenseQuery(convexQuery(api.users.viewer, {}))
+  const { data: feeRates } = useSuspenseQuery(convexQuery(api.fees.getFeeRates, {}))
+  const { data: fundingRates } = useSuspenseQuery(convexQuery(api.funding.getFundingRates, {}))
   const createCheckoutSession = useAction(api.stripe.createCheckoutSession)
   const isPro = viewer?.isPro ?? false
 
   const [showSignIn, setShowSignIn] = useState(false)
   const [upgrading, setUpgrading] = useState(false)
   const [selectedAssets, setSelectedAssets] = useState<string[]>(['BTC', 'ETH', 'SOL', 'OTHER'])
+  const [showGuide, setShowGuide] = useState(false)
+
+  // Load a shared scenario from ?s=<id> (public read-only link), applied once.
+  const sharedId =
+    typeof window !== 'undefined'
+      ? new URLSearchParams(window.location.search).get('s')
+      : null
+  const { data: sharedScenario } = useQuery({
+    ...convexQuery(api.scenarios.getByShareId, { shareId: sharedId ?? '' }),
+    enabled: !!sharedId,
+  })
+  const sharedApplied = useRef(false)
+  useEffect(() => {
+    if (sharedScenario && !sharedApplied.current) {
+      sharedApplied.current = true
+      setMarket(sharedScenario.market as Market)
+      setMonthlyVolume(sharedScenario.monthlyVolume)
+      setMakerRatio(sharedScenario.makerRatio)
+      setHoldTime(sharedScenario.holdTime)
+      setSelectedAssets(sharedScenario.selectedAssets)
+    }
+  }, [sharedScenario])
 
   const toggleAsset = (asset: string) =>
     setSelectedAssets((prev) =>
@@ -132,6 +190,34 @@ function FeeEdge() {
     }
   }
 
+  // Live fee rates from Convex, keyed by "exchange:market".
+  const liveMap = useMemo(() => {
+    const m: Record<string, { maker: number; taker: number; source: string }> = {}
+    for (const r of feeRates ?? []) {
+      m[`${r.exchange}:${r.market}`] = {
+        maker: r.makerFee,
+        taker: r.takerFee,
+        source: r.source ?? 'published',
+      }
+    }
+    return m
+  }, [feeRates])
+
+  // Live BTC-perp funding rate per exchange (8h decimal).
+  const fundingMap = useMemo(() => {
+    const m: Record<string, number> = {}
+    for (const r of fundingRates ?? []) m[r.exchange] = r.rate8h
+    return m
+  }, [fundingRates])
+
+  const feeMeta = useMemo(() => {
+    const rows = (feeRates ?? []).filter((r) => r.market === market)
+    if (rows.length === 0) return null
+    const liveCount = rows.filter((r) => r.source === 'live').length
+    const lastUpdated = Math.max(...rows.map((r) => r.lastUpdated))
+    return { liveCount, lastUpdated, total: rows.length }
+  }, [feeRates, market])
+
   // Average effective-cost multiplier across the selected assets.
   const assetMultiplier = useMemo(() => {
     if (selectedAssets.length === 0) return 1
@@ -144,35 +230,82 @@ function FeeEdge() {
 
   const results = useMemo(() => {
     return EXCHANGES.map(ex => {
-      // Find current tier
-      const currentTier = [...ex.tiers].reverse().find(t => monthlyVolume >= t.volume) || ex.tiers[0]
-      const nextTier = ex.tiers.find(t => t.volume > monthlyVolume)
+      const tiers = ex[market]
+      const currentTier = [...tiers].reverse().find(t => monthlyVolume >= t.volume) || tiers[0]
+      const nextTier = tiers.find(t => t.volume > monthlyVolume)
+
+      // Override the base-tier rate with the live fetched rate when available.
+      const live = liveMap[`${ex.key}:${market}`]
+      const onBaseTier = currentTier.volume === 0
+      const effMaker = live && onBaseTier ? live.maker : currentTier.maker
+      const effTaker = live && onBaseTier ? live.taker : currentTier.taker
+      const rateSource = live && onBaseTier ? live.source : 'published'
 
       const makerVolume = monthlyVolume * makerRatio
       const takerVolume = monthlyVolume * (1 - makerRatio)
 
-      const monthlyFee = ((makerVolume * currentTier.maker) + (takerVolume * currentTier.taker)) * assetMultiplier
+      const monthlyFee = ((makerVolume * effMaker) + (takerVolume * effTaker)) * assetMultiplier
 
-      // Funding rate estimate (simplified: 0.01% per 8h)
-      const avgOI = (monthlyVolume / 2) / 30 / 24 * holdTime
-      const fundingRatePer8h = 0.0001
-      const monthlyFunding = (avgOI * fundingRatePer8h) * (30 * 24 / 8)
+      // Funding only applies to perpetual futures, not spot.
+      let monthlyFunding = 0
+      if (market === 'futures') {
+        const avgOI = (monthlyVolume / 2) / 30 / 24 * holdTime
+        // Live per-exchange funding magnitude (8h), else a 0.01% estimate.
+        const fundingRatePer8h = Math.abs(fundingMap[ex.key] ?? 0.0001)
+        monthlyFunding = (avgOI * fundingRatePer8h) * (30 * 24 / 8)
+      }
 
+      const includeFunding = isPro && market === 'futures'
       return {
         ...ex,
         currentTier,
         nextTier,
+        effMaker,
+        effTaker,
+        rateSource,
         monthlyFee,
         monthlyFunding,
-        totalMonthly: monthlyFee + (isPro ? monthlyFunding : 0)
+        totalMonthly: monthlyFee + (includeFunding ? monthlyFunding : 0)
       }
     }).sort((a, b) => a.totalMonthly - b.totalMonthly)
-  }, [monthlyVolume, makerRatio, holdTime, isPro, assetMultiplier])
+  }, [monthlyVolume, makerRatio, holdTime, isPro, assetMultiplier, liveMap, market, fundingMap])
 
-  const visibleResults = isPro ? results : results.slice(0, 3)
+  const visibleResults = isPro ? results : results.slice(0, FREE_VISIBLE_COUNT)
+  const hiddenResults = isPro ? [] : results.slice(FREE_VISIBLE_COUNT)
   const cheapest = results[0]
   const mostExpensive = results[results.length - 1]
   const monthlySavings = mostExpensive.totalMonthly - cheapest.totalMonthly
+
+  // Series for the cost-vs-volume chart (same exchanges currently visible).
+  const chartSeries = useMemo(() => {
+    const xMin = 100000
+    const xMax = 100000000
+    const N = 24
+    const vols = Array.from({ length: N }, (_, i) =>
+      Math.pow(10, Math.log10(xMin) + (i / (N - 1)) * (Math.log10(xMax) - Math.log10(xMin))),
+    )
+    return visibleResults.map((ex) => ({
+      name: ex.name,
+      colorClass: ex.color,
+      points: vols.map((vol) => {
+        const tiers = ex[market]
+        const tier = [...tiers].reverse().find((t) => vol >= t.volume) || tiers[0]
+        const live = liveMap[`${ex.key}:${market}`]
+        const onBase = tier.volume === 0
+        const effMaker = live && onBase ? live.maker : tier.maker
+        const effTaker = live && onBase ? live.taker : tier.taker
+        const fee =
+          (vol * makerRatio * effMaker + vol * (1 - makerRatio) * effTaker) * assetMultiplier
+        let funding = 0
+        if (market === 'futures') {
+          const avgOI = (vol / 2) / 30 / 24 * holdTime
+          funding = avgOI * Math.abs(fundingMap[ex.key] ?? 0.0001) * (30 * 24 / 8)
+        }
+        const total = fee + (isPro && market === 'futures' ? funding : 0)
+        return { x: vol, y: total }
+      }),
+    }))
+  }, [visibleResults, market, makerRatio, assetMultiplier, holdTime, isPro, liveMap, fundingMap])
 
   const handleExportPdf = () => {
     const generatedAt = new Date().toLocaleString()
@@ -183,8 +316,8 @@ function FeeEdge() {
           <tr>
             <td>${i + 1}</td>
             <td>${ex.name}</td>
-            <td>${(ex.currentTier.maker * 100).toFixed(3)}%</td>
-            <td>${(ex.currentTier.taker * 100).toFixed(3)}%</td>
+            <td>${(ex.effMaker * 100).toFixed(3)}%</td>
+            <td>${(ex.effTaker * 100).toFixed(3)}%</td>
             <td>$${ex.monthlyFee.toLocaleString(undefined, { maximumFractionDigits: 2 })}</td>
             <td>$${ex.totalMonthly.toLocaleString(undefined, { maximumFractionDigits: 2 })}</td>
           </tr>`,
@@ -203,6 +336,7 @@ function FeeEdge() {
       <h1>FeeEdge &mdash; Exchange Fee Comparison</h1>
       <div class="sub">Generated ${generatedAt}</div>
       <div class="meta">
+        <strong>Market:</strong> ${market === 'futures' ? 'Perpetual futures' : 'Spot'}<br/>
         <strong>Monthly volume:</strong> $${monthlyVolume.toLocaleString()}<br/>
         <strong>Execution:</strong> ${Math.round(makerRatio * 100)}% maker / ${Math.round((1 - makerRatio) * 100)}% taker<br/>
         <strong>Avg hold time:</strong> ${holdTime}h<br/>
@@ -235,9 +369,12 @@ function FeeEdge() {
           <h1 className="text-xl font-bold tracking-tighter text-white">FEE EDGE</h1>
         </div>
         <div className="flex items-center gap-4 text-xs">
-          <div className="flex items-center gap-1 text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">
+          <div
+            className="flex items-center gap-1 text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20"
+            title={feeMeta ? `${feeMeta.liveCount} live · ${feeMeta.total} tracked · updated ${timeAgo(feeMeta.lastUpdated)}` : 'Using built-in rates'}
+          >
             <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-            LIVE DATA
+            {feeMeta ? `UPDATED ${timeAgo(feeMeta.lastUpdated)}` : 'FEE DATA'}
           </div>
           <button
             onClick={handleUpgrade}
@@ -284,6 +421,25 @@ function FeeEdge() {
 
             <div className="space-y-4">
               <div>
+                <label className="block text-xs text-zinc-500 mb-2 uppercase">Market</label>
+                <div className="flex items-center gap-1 bg-black border border-zinc-800 rounded p-1">
+                  {(['futures', 'spot'] as const).map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => setMarket(m)}
+                      className={`flex-1 px-3 py-2 rounded text-[11px] font-bold uppercase tracking-wider transition-colors ${
+                        market === m
+                          ? 'bg-emerald-500 text-black'
+                          : 'text-zinc-500 hover:text-white'
+                      }`}
+                    >
+                      {m === 'futures' ? 'Perps' : 'Spot'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
                 <label className="block text-xs text-zinc-500 mb-2 uppercase">Monthly Volume (USD)</label>
                 <input
                   type="number"
@@ -317,8 +473,10 @@ function FeeEdge() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs text-zinc-500 mb-2 uppercase">Avg Hold Time (Hours)</label>
+              <div className={market === 'spot' ? 'opacity-40 pointer-events-none' : ''}>
+                <label className="block text-xs text-zinc-500 mb-2 uppercase">
+                  Avg Hold Time (Hours){market === 'spot' ? ' — perps only' : ''}
+                </label>
                 <select
                   className="w-full bg-black border border-zinc-800 rounded p-3 text-white focus:outline-none focus:border-emerald-500 appearance-none"
                   value={holdTime}
@@ -356,6 +514,27 @@ function FeeEdge() {
               </div>
             </div>
           </section>
+
+          <ScenariosPanel
+            current={{ market, monthlyVolume, makerRatio, holdTime, selectedAssets }}
+            isAuthenticated={isAuthenticated}
+            onRequireSignIn={() => setShowSignIn(true)}
+            onLoad={(s) => {
+              setMarket(s.market as Market)
+              setMonthlyVolume(s.monthlyVolume)
+              setMakerRatio(s.makerRatio)
+              setHoldTime(s.holdTime)
+              setSelectedAssets(s.selectedAssets)
+            }}
+          />
+
+          <AlertsPanel
+            current={{ market, monthlyVolume, makerRatio, holdTime, selectedAssets }}
+            isPro={isPro}
+            isAuthenticated={isAuthenticated}
+            onRequireSignIn={() => setShowSignIn(true)}
+            onUpgrade={handleUpgrade}
+          />
         </aside>
 
         {/* Results Panel */}
@@ -363,16 +542,39 @@ function FeeEdge() {
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
               Exchange Comparison
-              <span className="text-[10px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded uppercase font-mono">Ranked by Cost</span>
+              <span className="text-[10px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded uppercase font-mono">{EXCHANGES.length} · {market === 'futures' ? 'Perps' : 'Spot'} · by Cost</span>
             </h2>
-            <button
-              onClick={handleExportPdf}
-              className="text-xs text-zinc-500 hover:text-white flex items-center gap-1 transition-colors"
-            >
-              <Download size={14} />
-              Export PDF
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShowGuide((v) => !v)}
+                className="text-xs text-zinc-500 hover:text-white flex items-center gap-1 transition-colors"
+              >
+                <HelpCircle size={14} />
+                How to read this
+              </button>
+              <button
+                onClick={handleExportPdf}
+                className="text-xs text-zinc-500 hover:text-white flex items-center gap-1 transition-colors"
+              >
+                <Download size={14} />
+                Export PDF
+              </button>
+            </div>
           </div>
+
+          {/* How to read this */}
+          {showGuide && (
+            <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 text-xs text-zinc-400 space-y-2.5">
+              <p className="text-zinc-300 font-bold uppercase tracking-widest text-[10px]">How to read this</p>
+              <p><span className="text-emerald-400 font-bold">Perps / Spot toggle:</span> switch the whole table between perpetual-futures fees and spot fees (left panel). Funding only applies to perps.</p>
+              <p><span className="text-emerald-400 font-bold">Ranking (#1, #2…):</span> exchanges sorted cheapest → most expensive for your exact profile. #1 (highlighted) is your best venue.</p>
+              <p><span className="text-emerald-400 font-bold">M / T:</span> the Maker and Taker fee rates at your current volume tier. <span className="text-zinc-300">Maker</span> = limit orders that add liquidity (cheaper). <span className="text-zinc-300">Taker</span> = market orders that remove it (pricier).</p>
+              <p><span className="text-emerald-400 font-bold">Trading Fees:</span> estimated monthly trading cost = your volume × blended maker/taker rate × the selected-asset multiplier.</p>
+              <p><span className="text-emerald-400 font-bold">Funding Est. (Pro, perps only):</span> estimated perpetual-funding cost over the month, based on your average hold time.</p>
+              <p><span className="text-emerald-400 font-bold">Total Monthly:</span> what you'd actually pay — trading fees, plus funding when you're on Pro and viewing perps.</p>
+              <p className="text-zinc-500 italic pt-1">All figures are estimates — not financial advice.</p>
+            </div>
+          )}
 
           <div className="space-y-3">
             {visibleResults.map((ex, idx) => (
@@ -387,10 +589,10 @@ function FeeEdge() {
                       <h3 className={`text-lg font-bold ${ex.color}`}>{ex.name}</h3>
                       <div className="flex gap-3 mt-1">
                         <span className="text-[10px] text-zinc-500">
-                          M: <span className="text-zinc-300">{(ex.currentTier.maker * 100).toFixed(3)}%</span>
+                          M: <span className="text-zinc-300">{(ex.effMaker * 100).toFixed(3)}%</span>
                         </span>
                         <span className="text-[10px] text-zinc-500">
-                          T: <span className="text-zinc-300">{(ex.currentTier.taker * 100).toFixed(3)}%</span>
+                          T: <span className="text-zinc-300">{(ex.effTaker * 100).toFixed(3)}%</span>
                         </span>
                       </div>
                     </div>
@@ -401,7 +603,12 @@ function FeeEdge() {
                       <div className="text-[10px] text-zinc-500 uppercase">Trading Fees</div>
                       <div className="text-sm font-bold text-white">${ex.monthlyFee.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
                     </div>
-                    {isPro ? (
+                    {market === 'spot' ? (
+                      <div className="text-right border-l border-zinc-800 pl-8 opacity-50">
+                        <div className="text-[10px] text-zinc-500 uppercase">Funding</div>
+                        <div className="text-xs text-zinc-600 italic">N/A (spot)</div>
+                      </div>
+                    ) : isPro ? (
                       <div className="text-right border-l border-zinc-800 pl-8">
                         <div className="text-[10px] text-zinc-500 uppercase">Funding Est.</div>
                         <div className="text-sm font-bold text-zinc-400">${ex.monthlyFunding.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
@@ -447,8 +654,10 @@ function FeeEdge() {
                     <Lock size={20} />
                   </div>
                   <div className="text-center">
-                    <h3 className="text-white font-bold">Unlock All 5 Exchanges & Pro Tools</h3>
-                    <p className="text-zinc-500 text-xs mt-1">OKX and Gate.io results are currently restricted.</p>
+                    <h3 className="text-white font-bold">Unlock All {EXCHANGES.length} Exchanges & Pro Tools</h3>
+                    <p className="text-zinc-500 text-xs mt-1">
+                      {hiddenResults.length} more {hiddenResults.length === 1 ? 'exchange is' : 'exchanges are'} restricted{hiddenResults.length ? `: ${hiddenResults.map((e) => e.name).join(', ')}` : ''}.
+                    </p>
                   </div>
                   <button
                     onClick={(e) => {
@@ -464,6 +673,9 @@ function FeeEdge() {
               </div>
             )}
           </div>
+
+          {/* Cost vs Volume chart */}
+          <CostChart series={chartSeries} xMin={100000} xMax={100000000} />
 
           {/* Asset Selection & Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -489,7 +701,7 @@ function FeeEdge() {
               </div>
               <div className="mt-4 flex items-start gap-2 text-[10px] text-zinc-500 bg-black/50 p-2 rounded">
                 <Info size={12} className="shrink-0 mt-0.5" />
-                <span>Calculations apply a liquidity-based cost multiplier for the selected assets. Spot and delivery fees may vary.</span>
+                <span>Selected assets apply a liquidity-based cost multiplier (BTC lowest, alts higher).</span>
               </div>
             </div>
 
@@ -519,7 +731,7 @@ function FeeEdge() {
 
       <footer className="max-w-7xl mx-auto p-6 border-t border-zinc-800/50 mt-12 text-center">
         <p className="text-[10px] text-zinc-600">
-          Fee data last updated Oct 2023. Real-time rates fetched via exchange APIs for Pro users.
+          Maker/taker rates are refreshed periodically and shown as estimates.
           <br />© 2024 FeeEdge Analytics. Not financial advice.
         </p>
       </footer>

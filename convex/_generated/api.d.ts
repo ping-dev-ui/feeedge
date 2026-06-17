@@ -8,11 +8,14 @@
  * @module
  */
 
+import type * as alerts from "../alerts.js";
 import type * as auth from "../auth.js";
 import type * as crons from "../crons.js";
 import type * as fees from "../fees.js";
 import type * as fetcher from "../fetcher.js";
+import type * as funding from "../funding.js";
 import type * as http from "../http.js";
+import type * as scenarios from "../scenarios.js";
 import type * as stripe from "../stripe.js";
 import type * as users from "../users.js";
 
@@ -23,11 +26,14 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  alerts: typeof alerts;
   auth: typeof auth;
   crons: typeof crons;
   fees: typeof fees;
   fetcher: typeof fetcher;
+  funding: typeof funding;
   http: typeof http;
+  scenarios: typeof scenarios;
   stripe: typeof stripe;
   users: typeof users;
 }>;
