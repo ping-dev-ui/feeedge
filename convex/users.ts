@@ -31,6 +31,7 @@ export const getById = internalQuery({
       _id: v.id("users"),
       email: v.optional(v.string()),
       stripeCustomerId: v.optional(v.string()),
+      isPro: v.optional(v.boolean()),
     }),
   ),
   handler: async (ctx, args) => {
@@ -40,6 +41,7 @@ export const getById = internalQuery({
       _id: user._id,
       email: user.email,
       stripeCustomerId: user.stripeCustomerId,
+      isPro: user.isPro,
     };
   },
 });

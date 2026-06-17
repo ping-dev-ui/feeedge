@@ -7,6 +7,7 @@ import { useAuthActions } from '@convex-dev/auth/react'
 import { api } from '../../convex/_generated/api'
 import { SignInModal } from '~/components/SignInModal'
 import { CostChart } from '~/components/CostChart'
+import { MarketTrend } from '~/components/MarketTrend'
 import { ScenariosPanel } from '~/components/ScenariosPanel'
 import { AlertsPanel } from '~/components/AlertsPanel'
 import {
@@ -14,7 +15,6 @@ import {
   Info,
   Lock,
   TrendingDown,
-  TrendingUp,
   ArrowRightLeft,
   Download,
   Zap,
@@ -705,26 +705,7 @@ function FeeEdge() {
               </div>
             </div>
 
-            <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 flex flex-col justify-between">
-              <div>
-                <h4 className="text-xs font-bold text-zinc-400 uppercase mb-2 tracking-widest">Market Trend Impact</h4>
-                <p className="text-[10px] text-zinc-500">In high volatility, taker orders increase. Limit orders may see higher rebate opportunities.</p>
-              </div>
-              <div className="flex items-center gap-4 mt-4">
-                <div className="flex-1">
-                  <div className="text-[10px] text-zinc-500 mb-1">Vol 24h</div>
-                  <div className="flex items-center gap-1 text-emerald-500 font-bold">
-                    <TrendingUp size={12} /> +12.4%
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <div className="text-[10px] text-zinc-500 mb-1">Open Interest</div>
-                  <div className="flex items-center gap-1 text-red-500 font-bold">
-                    <TrendingDown size={12} /> -2.1%
-                  </div>
-                </div>
-              </div>
-            </div>
+            <MarketTrend />
           </div>
         </div>
       </main>

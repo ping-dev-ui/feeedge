@@ -79,12 +79,25 @@ export const handleWebhook = internalAction({
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
-      // Only grant access once the payment is actually collected.
-      if (session.payment_status === "paid" && session.client_reference_id) {
-        await ctx.runMutation(internal.users.setProByUserId, {
-          userId: session.client_reference_id as Id<"users">,
-          isPro: true,
-        });
+      // Grant access once the checkout is settled. "paid" = money collected;
+      // "no_payment_required" = total was $0 (e.g. a 100%-off comp code).
+      const settled =
+        session.payment_status === "paid" ||
+        session.payment_status === "no_payment_required";
+      if (settled && session.client_reference_id) {
+        const userId = session.client_reference_id as Id<"users">;
+        const user = await ctx.runQuery(internal.users.getById, { userId });
+        // Only act on the first upgrade so Stripe retries don't re-send email.
+        if (user && !user.isPro) {
+          await ctx.runMutation(internal.users.setProByUserId, {
+            userId,
+            isPro: true,
+          });
+          const email = user.email ?? session.customer_details?.email ?? undefined;
+          if (email) {
+            await sendWelcomeEmail(email);
+          }
+        }
       }
     }
 
@@ -98,4 +111,41 @@ function requireEnv(name: string): string {
     throw new Error(`Missing required environment variable: ${name}`);
   }
   return value;
+}
+
+// Best-effort "Welcome to Pro" email via Resend. Never throws — a failed email
+// must not fail the webhook (or Stripe will keep retrying it).
+async function sendWelcomeEmail(to: string): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return;
+  const from = process.env.ALERTS_FROM_EMAIL ?? "FeeEdge <onboarding@resend.dev>";
+  const siteUrl = process.env.SITE_URL ?? "http://localhost:3000";
+  try {
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from,
+        to,
+        subject: "Welcome to FeeEdge Pro 🎉",
+        html:
+          `<div style="font-family:Arial,Helvetica,sans-serif;color:#111;line-height:1.6">` +
+          `<h2 style="margin:0 0 8px">You're now FeeEdge Pro</h2>` +
+          `<p>Thanks for upgrading! Your account is unlocked. You now have:</p>` +
+          `<ul>` +
+          `<li>All 9 exchanges in the comparison (no more locked rows)</li>` +
+          `<li>Funding-cost estimates on perps</li>` +
+          `<li>Unlimited saved scenarios &amp; email price alerts</li>` +
+          `</ul>` +
+          `<p><a href="${siteUrl}" style="display:inline-block;background:#10b981;color:#000;font-weight:bold;padding:10px 18px;border-radius:6px;text-decoration:none">Open FeeEdge</a></p>` +
+          `<p style="color:#888;font-size:12px;margin-top:24px">FeeEdge Analytics — estimates only, not financial advice.</p>` +
+          `</div>`,
+      }),
+    });
+  } catch (e) {
+    console.error("Welcome email failed:", e);
+  }
 }
