@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { useSuspenseQuery, useQuery } from '@tanstack/react-query'
 import { convexQuery } from '@convex-dev/react-query'
@@ -1121,6 +1121,12 @@ function FeeEdge() {
             <Mail size={14} />
             support@feeedge.com
           </a>
+        </div>
+        <div className="mt-3 flex items-center justify-center gap-4 flex-wrap text-[11px] text-zinc-400">
+          <Link to="/about" className="hover:text-white transition-colors">About</Link>
+          <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
+          <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+          <Link to="/refunds" className="hover:text-white transition-colors">Refunds</Link>
         </div>
       </footer>
     </div>
