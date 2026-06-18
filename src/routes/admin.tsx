@@ -11,8 +11,7 @@ export const Route = createFileRoute('/admin')({
 })
 
 function AdminPage() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data } = useSuspenseQuery(convexQuery((api as any).admin.referralStats, {}))
+  const { data } = useSuspenseQuery(convexQuery(api.admin.referralStats, {}))
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-zinc-300 font-mono p-6">
