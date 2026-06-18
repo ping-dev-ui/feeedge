@@ -16,6 +16,7 @@ export default defineSchema({
     isPro: v.optional(v.boolean()),
     stripeCustomerId: v.optional(v.string()),
     stripeSubscriptionId: v.optional(v.string()),
+    referredBy: v.optional(v.string()),
   })
     .index("email", ["email"])
     .index("phone", ["phone"])

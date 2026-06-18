@@ -12,9 +12,9 @@ import type { Id } from "./_generated/dataModel";
 // Checkout Session for the configured price, and returns the hosted Checkout
 // URL to redirect to.
 export const createCheckoutSession = action({
-  args: {},
+  args: { ref: v.optional(v.string()) },
   returns: v.string(),
-  handler: async (ctx): Promise<string> => {
+  handler: async (ctx, args): Promise<string> => {
     const userId = await getAuthUserId(ctx);
     if (userId === null) {
       throw new Error("You must be signed in to upgrade.");
@@ -48,6 +48,9 @@ export const createCheckoutSession = action({
       success_url: `${siteUrl}/?checkout=success`,
       cancel_url: `${siteUrl}/?checkout=cancelled`,
       allow_promotion_codes: true,
+      // Influencer/referral attribution: shows on the Payment in Stripe and is
+      // read by the webhook to persist who drove the purchase.
+      metadata: { userId, ref: args.ref ? args.ref.slice(0, 64) : "" },
     });
 
     if (!session.url) {
@@ -93,6 +96,10 @@ export const handleWebhook = internalAction({
             userId,
             isPro: true,
           });
+          const ref = session.metadata?.ref;
+          if (ref) {
+            await ctx.runMutation(internal.users.setReferredBy, { userId, ref });
+          }
           const email = user.email ?? session.customer_details?.email ?? undefined;
           if (email) {
             await sendWelcomeEmail(email);

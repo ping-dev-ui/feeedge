@@ -73,6 +73,16 @@ export const setProByUserId = internalMutation({
   },
 });
 
+// Internal: record which referral/influencer code drove this user's purchase.
+export const setReferredBy = internalMutation({
+  args: { userId: v.id("users"), ref: v.string() },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.userId, { referredBy: args.ref });
+    return null;
+  },
+});
+
 export const setProByCustomerId = internalMutation({
   args: { stripeCustomerId: v.string(), isPro: v.boolean() },
   returns: v.null(),

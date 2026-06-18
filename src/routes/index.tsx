@@ -219,6 +219,20 @@ function FeeEdge() {
     }
   }, [])
 
+  // Capture ?ref= (influencer/referral code) once and persist it so it survives
+  // sign-in and is attached to the Stripe checkout for attribution.
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const ref = new URLSearchParams(window.location.search).get('ref')
+    if (ref) {
+      try {
+        localStorage.setItem('feeedge_ref', ref.slice(0, 64))
+      } catch {
+        /* storage blocked — ignore */
+      }
+    }
+  }, [])
+
   const toggleAsset = (asset: string) =>
     setSelectedAssets((prev) =>
       prev.includes(asset) ? prev.filter((a) => a !== asset) : [...prev, asset],
@@ -265,7 +279,11 @@ function FeeEdge() {
     if (isPro) return
     try {
       setUpgrading(true)
-      const url = await createCheckoutSession({})
+      const ref =
+        typeof window !== 'undefined'
+          ? localStorage.getItem('feeedge_ref') ?? undefined
+          : undefined
+      const url = await createCheckoutSession(ref ? { ref } : {})
       window.location.href = url
     } catch (err) {
       console.error(err)
