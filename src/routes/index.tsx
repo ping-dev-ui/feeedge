@@ -21,7 +21,9 @@ import {
   Zap,
   LogOut,
   HelpCircle,
-  ExternalLink
+  ExternalLink,
+  Share2,
+  Check
 } from 'lucide-react'
 
 export const Route = createFileRoute('/')({
@@ -172,6 +174,7 @@ function FeeEdge() {
   const [selectedAssets, setSelectedAssets] = useState<string[]>(['BTC', 'ETH', 'SOL', 'OTHER'])
   const [showGuide, setShowGuide] = useState(false)
   const [applyToken, setApplyToken] = useState(false)
+  const [shareCopied, setShareCopied] = useState(false)
 
   // Load a shared scenario from ?s=<id> (public read-only link), applied once.
   const sharedId =
@@ -194,10 +197,65 @@ function FeeEdge() {
     }
   }, [sharedScenario])
 
+  // Prefill the calculator from a shared profile URL (?v=&m=&mk=&h=&a=), once.
+  const profileApplied = useRef(false)
+  useEffect(() => {
+    if (profileApplied.current || typeof window === 'undefined') return
+    const p = new URLSearchParams(window.location.search)
+    if (![...p.keys()].some((k) => ['v', 'm', 'mk', 'h', 'a'].includes(k))) return
+    profileApplied.current = true
+    const v = Number(p.get('v'))
+    if (v > 0) setMonthlyVolume(v)
+    const m = p.get('m')
+    if (m === 'spot' || m === 'futures') setMarket(m)
+    const mk = Number(p.get('mk'))
+    if (!Number.isNaN(mk) && mk >= 0 && mk <= 1) setMakerRatio(mk)
+    const h = Number(p.get('h'))
+    if (h > 0) setHoldTime(h)
+    const a = p.get('a')
+    if (a) {
+      const assets = a.split(',').filter((x) => ['BTC', 'ETH', 'SOL', 'OTHER'].includes(x))
+      if (assets.length) setSelectedAssets(assets)
+    }
+  }, [])
+
   const toggleAsset = (asset: string) =>
     setSelectedAssets((prev) =>
       prev.includes(asset) ? prev.filter((a) => a !== asset) : [...prev, asset],
     )
+
+  // Build a shareable URL that pre-fills this exact profile for the recipient.
+  const buildShareUrl = () => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://feeedge.com'
+    const q = new URLSearchParams({
+      v: String(monthlyVolume),
+      m: market,
+      mk: makerRatio.toFixed(2),
+      h: String(holdTime),
+      a: selectedAssets.join(','),
+    })
+    return `${origin}/?${q.toString()}`
+  }
+
+  const handleShareSavings = async () => {
+    const annual = Math.round(monthlySavings * 12)
+    const text =
+      annual > 0
+        ? `I could save ~$${annual.toLocaleString()}/yr on crypto trading fees by using ${cheapest.name}. Find your cheapest exchange with FeeEdge:`
+        : `I found my cheapest crypto exchange with FeeEdge. Find yours:`
+    const url = buildShareUrl()
+    try {
+      if (typeof navigator !== 'undefined' && navigator.share) {
+        await navigator.share({ title: 'FeeEdge', text, url })
+        return
+      }
+      await navigator.clipboard.writeText(`${text} ${url}`)
+      setShareCopied(true)
+      setTimeout(() => setShareCopied(false), 1800)
+    } catch {
+      /* user cancelled share or clipboard blocked — no-op */
+    }
+  }
 
   const handleUpgrade = async () => {
     if (!isAuthenticated) {
@@ -614,6 +672,20 @@ function FeeEdge() {
                 </div>
                 <TrendingDown className="text-emerald-500" size={24} />
               </div>
+              <button
+                onClick={handleShareSavings}
+                className="mt-4 w-full flex items-center justify-center gap-2 bg-emerald-500 text-black px-4 py-2 rounded-lg font-bold text-xs hover:bg-emerald-400 transition-colors"
+              >
+                {shareCopied ? (
+                  <>
+                    <Check size={14} /> Link copied!
+                  </>
+                ) : (
+                  <>
+                    <Share2 size={14} /> Share my savings
+                  </>
+                )}
+              </button>
             </div>
           </section>
 

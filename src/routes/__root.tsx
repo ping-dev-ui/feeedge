@@ -23,6 +23,33 @@ export const Route = createRootRouteWithContext<{
       {
         title: 'FeeEdge — Compare Crypto Exchange Fees',
       },
+      {
+        name: 'description',
+        content:
+          'Find the cheapest crypto exchange for how you trade. Compare real trading fees across 9 exchanges — perps & spot — ranked for your volume and style.',
+      },
+      // Open Graph
+      { property: 'og:type', content: 'website' },
+      { property: 'og:site_name', content: 'FeeEdge' },
+      { property: 'og:title', content: 'The cheapest exchange for how you trade' },
+      {
+        property: 'og:description',
+        content:
+          'Compare real trading fees across 9 exchanges — perps & spot — ranked for your volume and style. $29 once, no subscription.',
+      },
+      { property: 'og:url', content: 'https://feeedge.com/' },
+      { property: 'og:image', content: 'https://feeedge.com/og.png' },
+      { property: 'og:image:width', content: '1200' },
+      { property: 'og:image:height', content: '630' },
+      // Twitter
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: 'The cheapest exchange for how you trade' },
+      {
+        name: 'twitter:description',
+        content:
+          'Compare real trading fees across 9 exchanges — perps & spot — ranked for your volume and style.',
+      },
+      { name: 'twitter:image', content: 'https://feeedge.com/og.png' },
     ],
     links: [
       { rel: 'stylesheet', href: appCss },
