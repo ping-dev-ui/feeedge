@@ -49,12 +49,21 @@ export function CostChart({
   const N = series[0]?.points.length ?? 0
   const [hover, setHover] = useState<number | null>(null)
 
-  const onMove = (e: React.MouseEvent<SVGSVGElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const xView = ((e.clientX - rect.left) / rect.width) * W
+  const setFromClientX = (clientX: number, rect: DOMRect) => {
+    const xView = ((clientX - rect.left) / rect.width) * W
     const t = (xView - padL) / (W - padL - padR)
     const idx = Math.round(t * (N - 1))
     setHover(idx >= 0 && idx < N ? idx : null)
+  }
+
+  const onMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    setFromClientX(e.clientX, e.currentTarget.getBoundingClientRect())
+  }
+
+  const onTouch = (e: React.TouchEvent<SVGSVGElement>) => {
+    const touch = e.touches[0]
+    if (!touch) return
+    setFromClientX(touch.clientX, e.currentTarget.getBoundingClientRect())
   }
 
   const baseY = sy(0)
@@ -73,6 +82,9 @@ export function CostChart({
         role="img"
         onMouseMove={onMove}
         onMouseLeave={() => setHover(null)}
+        onTouchStart={onTouch}
+        onTouchMove={onTouch}
+        style={{ touchAction: 'pan-y' }}
       >
         {/* Y gridlines + labels */}
         {yTicks.map((y, i) => (

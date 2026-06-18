@@ -526,9 +526,9 @@ function FeeEdge() {
           </svg>
           <h1 className="text-xl font-black tracking-tight text-white">FeeEdge</h1>
         </div>
-        <div className="flex items-center gap-4 text-xs">
+        <div className="flex items-center gap-2 sm:gap-4 text-xs">
           <div
-            className="flex items-center gap-1 text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20"
+            className="hidden sm:flex items-center gap-1 text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20"
             title={feeMeta ? `${feeMeta.liveCount} live · ${feeMeta.total} tracked · updated ${timeAgo(feeMeta.lastUpdated)}` : 'Using built-in rates'}
           >
             <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
@@ -540,7 +540,12 @@ function FeeEdge() {
             className="bg-zinc-100 text-black px-3 py-1.5 rounded font-bold hover:bg-white transition-colors flex items-center gap-2 disabled:opacity-60"
           >
             <Zap size={14} fill="currentColor" />
-            {isPro ? 'PRO ACTIVE' : upgrading ? 'REDIRECTING…' : 'UPGRADE TO PRO'}
+            {isPro ? 'PRO ACTIVE' : upgrading ? '…' : (
+              <>
+                <span className="sm:hidden">Pro</span>
+                <span className="hidden sm:inline">UPGRADE TO PRO</span>
+              </>
+            )}
           </button>
           {isAuthenticated ? (
             <button
@@ -901,23 +906,23 @@ function FeeEdge() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
                     <div className="text-right">
                       <div className="text-[11px] text-zinc-400 uppercase">Trading Fees</div>
                       <div className="text-sm font-bold text-white font-mono">${ex.monthlyFee.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
                     </div>
                     {market === 'spot' ? (
-                      <div className="text-right border-l border-zinc-800 pl-8 opacity-50">
+                      <div className="text-right border-l border-zinc-800 pl-4 md:pl-8 opacity-50">
                         <div className="text-[11px] text-zinc-400 uppercase">Funding</div>
                         <div className="text-xs text-zinc-400 italic">N/A (spot)</div>
                       </div>
                     ) : isPro ? (
-                      <div className="text-right border-l border-zinc-800 pl-8">
+                      <div className="text-right border-l border-zinc-800 pl-4 md:pl-8">
                         <div className="text-[11px] text-zinc-400 uppercase">Funding Est.</div>
                         <div className="text-sm font-bold text-zinc-400">${ex.monthlyFunding.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
                       </div>
                     ) : (
-                      <div className="text-right border-l border-zinc-800 pl-8 opacity-40">
+                      <div className="text-right border-l border-zinc-800 pl-4 md:pl-8 opacity-40">
                         <div className="text-[11px] text-zinc-400 uppercase flex items-center justify-end gap-1">
                           Funding <Lock size={8} />
                         </div>
