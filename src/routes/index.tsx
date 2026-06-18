@@ -471,6 +471,16 @@ function FeeEdge() {
         />
       )}
 
+      {/* Hero tagline */}
+      <div className="max-w-7xl mx-auto px-6 pt-10 pb-1 text-center">
+        <h2 className="text-2xl md:text-4xl font-black tracking-tight text-white leading-tight">
+          The cheapest exchange for <span className="text-emerald-400">how you trade</span>
+        </h2>
+        <p className="text-sm text-zinc-400 mt-3">
+          Personalized fee rankings across {EXCHANGES.length} venues in 10 seconds — perps &amp; spot, tuned to your volume and style.
+        </p>
+      </div>
+
       {/* Pro value-prop banner (free users), led by the savings number */}
       {!isPro && (
         <div className="max-w-7xl mx-auto px-6 pt-6">
