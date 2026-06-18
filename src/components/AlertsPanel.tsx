@@ -51,19 +51,19 @@ export function AlertsPanel({
         <h2 className="text-sm font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
           <Bell size={16} />
           Price Alerts
-          {!isPro && <Lock size={11} className="text-zinc-600" />}
+          {!isPro && <Lock size={11} className="text-zinc-400" />}
         </h2>
         <button
           onClick={handleCreate}
           disabled={busy}
-          className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-black px-2.5 py-1.5 rounded hover:bg-emerald-400 transition-colors flex items-center gap-1 disabled:opacity-60"
+          className="text-[11px] font-bold uppercase tracking-wider bg-emerald-500 text-black px-2.5 py-1.5 rounded hover:bg-emerald-400 transition-colors flex items-center gap-1 disabled:opacity-60"
         >
           <Bell size={12} />
           Alert me
         </button>
       </div>
 
-      <p className="text-[10px] text-zinc-500">
+      <p className="text-[11px] text-zinc-400">
         Get an email when a cheaper exchange appears for your current profile.
         {!isPro && ' Pro feature.'}
       </p>
@@ -79,13 +79,13 @@ export function AlertsPanel({
                 <div className="text-xs text-zinc-200 truncate">
                   {a.market === 'spot' ? 'Spot' : 'Perps'} · ${a.monthlyVolume.toLocaleString()}
                 </div>
-                <div className="text-[10px] text-zinc-500">
+                <div className="text-[11px] text-zinc-400">
                   Best now: {a.baselineExchange} (~${a.baselineCost.toLocaleString(undefined, { maximumFractionDigits: 0 })}/mo)
                 </div>
               </div>
               <button
                 onClick={() => del({ id: a._id })}
-                className="text-zinc-500 hover:text-red-400 transition-colors shrink-0"
+                className="text-zinc-400 hover:text-red-400 transition-colors shrink-0"
                 title="Delete alert"
               >
                 <Trash2 size={14} />

@@ -51,7 +51,7 @@ export function SignInModal({
           </h2>
           <button
             onClick={onClose}
-            className="text-zinc-500 hover:text-white transition-colors"
+            className="text-zinc-400 hover:text-white transition-colors"
             aria-label="Close"
           >
             <X size={18} />
@@ -60,7 +60,7 @@ export function SignInModal({
 
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
-            <label className="block text-xs text-zinc-500 mb-1 uppercase">
+            <label className="block text-xs text-zinc-400 mb-1 uppercase">
               Email
             </label>
             <input
@@ -72,7 +72,7 @@ export function SignInModal({
             />
           </div>
           <div>
-            <label className="block text-xs text-zinc-500 mb-1 uppercase">
+            <label className="block text-xs text-zinc-400 mb-1 uppercase">
               Password
             </label>
             <input
@@ -99,7 +99,7 @@ export function SignInModal({
           </button>
         </form>
 
-        <p className="text-xs text-zinc-500 text-center">
+        <p className="text-xs text-zinc-400 text-center">
           {flow === 'signUp' ? 'Already have an account?' : 'Need an account?'}{' '}
           <button
             onClick={() => {

@@ -400,7 +400,7 @@ function FeeEdge() {
           {isAuthenticated ? (
             <button
               onClick={() => signOut()}
-              className="text-zinc-500 hover:text-white transition-colors flex items-center gap-1"
+              className="text-zinc-400 hover:text-white transition-colors flex items-center gap-1"
               title={viewer?.email ? `Signed in as ${viewer.email}` : 'Sign out'}
             >
               <LogOut size={14} />
@@ -434,7 +434,7 @@ function FeeEdge() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs text-zinc-500 mb-2 uppercase">Market</label>
+                <label className="block text-xs text-zinc-400 mb-2 uppercase">Market</label>
                 <div className="flex items-center gap-1 bg-black border border-zinc-800 rounded p-1">
                   {(['futures', 'spot'] as const).map((m) => (
                     <button
@@ -443,7 +443,7 @@ function FeeEdge() {
                       className={`flex-1 px-3 py-2 rounded text-[11px] font-bold uppercase tracking-wider transition-colors ${
                         market === m
                           ? 'bg-emerald-500 text-black'
-                          : 'text-zinc-500 hover:text-white'
+                          : 'text-zinc-400 hover:text-white'
                       }`}
                     >
                       {m === 'futures' ? 'Perps' : 'Spot'}
@@ -453,7 +453,7 @@ function FeeEdge() {
               </div>
 
               <div>
-                <label className="block text-xs text-zinc-500 mb-2 uppercase">Monthly Volume (USD)</label>
+                <label className="block text-xs text-zinc-400 mb-2 uppercase">Monthly Volume (USD)</label>
                 <input
                   type="number"
                   value={monthlyVolume}
@@ -461,15 +461,15 @@ function FeeEdge() {
                   className="w-full bg-black border border-zinc-800 rounded p-3 text-white focus:outline-none focus:border-emerald-500 transition-colors"
                 />
                 <div className="flex justify-between mt-1 px-1">
-                  <span className="text-[10px] text-zinc-600">$100k</span>
-                  <span className="text-[10px] text-zinc-600">$100M+</span>
+                  <span className="text-[11px] text-zinc-400">$100k</span>
+                  <span className="text-[11px] text-zinc-400">$100M+</span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs text-zinc-500 mb-2 uppercase">Execution Style (Maker vs Taker)</label>
+                <label className="block text-xs text-zinc-400 mb-2 uppercase">Execution Style (Maker vs Taker)</label>
                 <div className="flex items-center gap-4">
-                  <span className="text-[10px] text-zinc-600">TAKER</span>
+                  <span className="text-[11px] text-zinc-400">TAKER</span>
                   <input
                     type="range"
                     min="0"
@@ -479,7 +479,7 @@ function FeeEdge() {
                     onChange={(e) => setMakerRatio(Number(e.target.value))}
                     className="flex-1 accent-emerald-500 h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer"
                   />
-                  <span className="text-[10px] text-zinc-600">MAKER</span>
+                  <span className="text-[11px] text-zinc-400">MAKER</span>
                 </div>
                 <div className="text-center mt-2 text-xs font-bold text-emerald-500">
                   {Math.round(makerRatio * 100)}% Limit Orders
@@ -487,7 +487,7 @@ function FeeEdge() {
               </div>
 
               <div className={market === 'spot' ? 'opacity-40 pointer-events-none' : ''}>
-                <label className="block text-xs text-zinc-500 mb-2 uppercase">
+                <label className="block text-xs text-zinc-400 mb-2 uppercase">
                   Avg Hold Time (Hours){market === 'spot' ? ' — perps only' : ''}
                 </label>
                 <select
@@ -520,7 +520,7 @@ function FeeEdge() {
               </p>
               <div className="mt-4 pt-4 border-t border-emerald-500/20 flex justify-between items-center">
                 <div>
-                  <div className="text-[10px] text-zinc-500 uppercase">Annual Savings</div>
+                  <div className="text-[11px] text-zinc-400 uppercase">Annual Savings</div>
                   <div className="text-lg font-bold text-emerald-400">${(monthlySavings * 12).toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
                 </div>
                 <TrendingDown className="text-emerald-500" size={24} />
@@ -555,19 +555,19 @@ function FeeEdge() {
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
               Exchange Comparison
-              <span className="text-[10px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded uppercase font-mono">{EXCHANGES.length} · {market === 'futures' ? 'Perps' : 'Spot'} · by Cost</span>
+              <span className="text-[11px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded uppercase font-mono">{EXCHANGES.length} · {market === 'futures' ? 'Perps' : 'Spot'} · by Cost</span>
             </h2>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setShowGuide((v) => !v)}
-                className="text-xs text-zinc-500 hover:text-white flex items-center gap-1 transition-colors"
+                className="text-xs text-zinc-400 hover:text-white flex items-center gap-1 transition-colors"
               >
                 <HelpCircle size={14} />
                 How to use
               </button>
               <button
                 onClick={handleExportPdf}
-                className="text-xs text-zinc-500 hover:text-white flex items-center gap-1 transition-colors"
+                className="text-xs text-zinc-400 hover:text-white flex items-center gap-1 transition-colors"
               >
                 <Download size={14} />
                 Export PDF
@@ -579,7 +579,7 @@ function FeeEdge() {
           {showGuide && (
             <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 text-xs text-zinc-400 space-y-4">
               <div className="space-y-2">
-                <p className="text-zinc-300 font-bold uppercase tracking-widest text-[10px]">How to use FeeEdge</p>
+                <p className="text-zinc-300 font-bold uppercase tracking-widest text-[11px]">How to use FeeEdge</p>
                 <ol className="space-y-1.5 list-decimal list-inside marker:text-emerald-400 marker:font-bold">
                   <li>Set your <span className="text-zinc-200">Trader Profile</span> (left) — monthly volume, maker/taker mix, average hold time, and the assets you trade.</li>
                   <li>Choose <span className="text-zinc-200">Perps</span> or <span className="text-zinc-200">Spot</span> to match the market you trade.</li>
@@ -588,7 +588,7 @@ function FeeEdge() {
                 </ol>
               </div>
               <div className="space-y-2 border-t border-zinc-800 pt-3">
-                <p className="text-zinc-300 font-bold uppercase tracking-widest text-[10px]">Reading the table</p>
+                <p className="text-zinc-300 font-bold uppercase tracking-widest text-[11px]">Reading the table</p>
                 <p><span className="text-emerald-400 font-bold">Ranking (#1, #2…):</span> exchanges sorted cheapest → most expensive for your exact profile. #1 (highlighted) is your best venue.</p>
                 <p><span className="text-emerald-400 font-bold">M / T:</span> Maker and Taker fee rates at your current volume tier. <span className="text-zinc-300">Maker</span> = limit orders that add liquidity (cheaper); <span className="text-zinc-300">Taker</span> = market orders that remove it (pricier). The slider sets your mix.</p>
                 <p><span className="text-emerald-400 font-bold">Trading Fees:</span> estimated monthly cost = volume × your blended maker/taker rate × the selected-asset multiplier.</p>
@@ -596,7 +596,7 @@ function FeeEdge() {
                 <p><span className="text-emerald-400 font-bold">Total Monthly:</span> what you'd pay — trading fees, plus funding on Pro perps.</p>
                 <p><span className="text-emerald-400 font-bold">Next Tier bar:</span> how close you are to an exchange's next volume discount, and the extra you'd save.</p>
               </div>
-              <p className="text-zinc-500 italic">Free shows the 3 cheapest venues; Pro unlocks all {EXCHANGES.length} plus funding, unlimited saved scenarios, and price alerts. All figures are estimates — not financial advice.</p>
+              <p className="text-zinc-400 italic">Free shows the 3 cheapest venues; Pro unlocks all {EXCHANGES.length} plus funding, unlimited saved scenarios, and price alerts. All figures are estimates — not financial advice.</p>
             </div>
           )}
 
@@ -612,10 +612,10 @@ function FeeEdge() {
                     <div>
                       <h3 className={`text-lg font-bold ${ex.color}`}>{ex.name}</h3>
                       <div className="flex gap-3 mt-1">
-                        <span className="text-[10px] text-zinc-500">
+                        <span className="text-[11px] text-zinc-400">
                           M: <span className="text-zinc-300">{(ex.effMaker * 100).toFixed(3)}%</span>
                         </span>
-                        <span className="text-[10px] text-zinc-500">
+                        <span className="text-[11px] text-zinc-400">
                           T: <span className="text-zinc-300">{(ex.effTaker * 100).toFixed(3)}%</span>
                         </span>
                       </div>
@@ -624,13 +624,13 @@ function FeeEdge() {
                           href={REFERRAL_LINKS[ex.key]}
                           target="_blank"
                           rel="sponsored noopener noreferrer"
-                          className={`mt-1.5 inline-flex items-center gap-1 text-[10px] transition-colors ${
+                          className={`mt-2 inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-bold transition-colors ${
                             idx === 0
-                              ? 'font-bold text-emerald-400 hover:text-emerald-300'
-                              : 'text-zinc-500 hover:text-emerald-400'
+                              ? 'bg-emerald-500 text-black hover:bg-emerald-400'
+                              : 'border border-zinc-700 text-zinc-200 hover:border-emerald-500 hover:text-emerald-400'
                           }`}
                         >
-                          Open account <ExternalLink size={10} />
+                          Open account <ExternalLink size={12} />
                         </a>
                       )}
                     </div>
@@ -638,29 +638,29 @@ function FeeEdge() {
 
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
                     <div className="text-right">
-                      <div className="text-[10px] text-zinc-500 uppercase">Trading Fees</div>
+                      <div className="text-[11px] text-zinc-400 uppercase">Trading Fees</div>
                       <div className="text-sm font-bold text-white">${ex.monthlyFee.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
                     </div>
                     {market === 'spot' ? (
                       <div className="text-right border-l border-zinc-800 pl-8 opacity-50">
-                        <div className="text-[10px] text-zinc-500 uppercase">Funding</div>
-                        <div className="text-xs text-zinc-600 italic">N/A (spot)</div>
+                        <div className="text-[11px] text-zinc-400 uppercase">Funding</div>
+                        <div className="text-xs text-zinc-400 italic">N/A (spot)</div>
                       </div>
                     ) : isPro ? (
                       <div className="text-right border-l border-zinc-800 pl-8">
-                        <div className="text-[10px] text-zinc-500 uppercase">Funding Est.</div>
+                        <div className="text-[11px] text-zinc-400 uppercase">Funding Est.</div>
                         <div className="text-sm font-bold text-zinc-400">${ex.monthlyFunding.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
                       </div>
                     ) : (
                       <div className="text-right border-l border-zinc-800 pl-8 opacity-40">
-                        <div className="text-[10px] text-zinc-500 uppercase flex items-center justify-end gap-1">
+                        <div className="text-[11px] text-zinc-400 uppercase flex items-center justify-end gap-1">
                           Funding <Lock size={8} />
                         </div>
-                        <div className="text-xs text-zinc-600 italic">Pro Feature</div>
+                        <div className="text-xs text-zinc-400 italic">Pro Feature</div>
                       </div>
                     )}
                     <div className="text-right md:border-l border-zinc-800 md:pl-8 col-span-2 md:col-span-1 border-t md:border-t-0 pt-2 md:pt-0">
-                      <div className="text-[10px] text-emerald-500 uppercase font-bold">Total Monthly</div>
+                      <div className="text-[11px] text-emerald-500 uppercase font-bold">Total Monthly</div>
                       <div className="text-lg font-black text-white">${ex.totalMonthly.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
                     </div>
                   </div>
@@ -669,8 +669,8 @@ function FeeEdge() {
                 {/* Tier Progress */}
                 {ex.nextTier && (
                   <div className="mt-4 pt-4 border-t border-zinc-800/50">
-                    <div className="flex justify-between text-[10px] mb-1.5">
-                      <span className="text-zinc-500">Next Tier: ${(ex.nextTier.volume / 1000000).toFixed(1)}M Vol</span>
+                    <div className="flex justify-between text-[11px] mb-1.5">
+                      <span className="text-zinc-400">Next Tier: ${(ex.nextTier.volume / 1000000).toFixed(1)}M Vol</span>
                       <span className="text-emerald-500">Save ${((ex.monthlyFee / monthlyVolume * (monthlyVolume)) - (monthlyVolume * (makerRatio * ex.nextTier.maker + (1-makerRatio) * ex.nextTier.taker))).toLocaleString(undefined, { maximumFractionDigits: 0 })} more</span>
                     </div>
                     <div className="w-full bg-black h-1.5 rounded-full overflow-hidden border border-zinc-800">
@@ -688,12 +688,12 @@ function FeeEdge() {
               <div className="relative group cursor-pointer" onClick={handleUpgrade}>
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0a0a0a] z-10"></div>
                 <div className="bg-zinc-900/30 border border-dashed border-zinc-800 rounded-xl p-8 flex flex-col items-center justify-center space-y-4">
-                  <div className="w-12 h-12 bg-zinc-800 rounded-full flex items-center justify-center text-zinc-500 group-hover:bg-zinc-700 transition-colors">
+                  <div className="w-12 h-12 bg-zinc-800 rounded-full flex items-center justify-center text-zinc-400 group-hover:bg-zinc-700 transition-colors">
                     <Lock size={20} />
                   </div>
                   <div className="text-center">
                     <h3 className="text-white font-bold">Unlock All {EXCHANGES.length} Exchanges & Pro Tools</h3>
-                    <p className="text-zinc-500 text-xs mt-1">
+                    <p className="text-zinc-400 text-xs mt-1">
                       {hiddenResults.length} more {hiddenResults.length === 1 ? 'exchange is' : 'exchanges are'} restricted{hiddenResults.length ? `: ${hiddenResults.map((e) => e.name).join(', ')}` : ''}.
                     </p>
                   </div>
@@ -726,10 +726,10 @@ function FeeEdge() {
                     <button
                       key={asset}
                       onClick={() => toggleAsset(asset)}
-                      className={`px-3 py-1 rounded text-[10px] font-bold border transition-colors ${
+                      className={`px-3 py-1 rounded text-[11px] font-bold border transition-colors ${
                         active
                           ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400'
-                          : 'bg-black border-zinc-800 text-zinc-500 hover:border-emerald-500'
+                          : 'bg-black border-zinc-800 text-zinc-400 hover:border-emerald-500'
                       }`}
                     >
                       {asset}
@@ -737,7 +737,7 @@ function FeeEdge() {
                   )
                 })}
               </div>
-              <div className="mt-4 flex items-start gap-2 text-[10px] text-zinc-500 bg-black/50 p-2 rounded">
+              <div className="mt-4 flex items-start gap-2 text-[11px] text-zinc-400 bg-black/50 p-2 rounded">
                 <Info size={12} className="shrink-0 mt-0.5" />
                 <span>Selected assets apply a liquidity-based cost multiplier (BTC lowest, alts higher).</span>
               </div>
@@ -749,7 +749,7 @@ function FeeEdge() {
       </main>
 
       <footer className="max-w-7xl mx-auto p-6 border-t border-zinc-800/50 mt-12 text-center">
-        <p className="text-[10px] text-zinc-600">
+        <p className="text-[11px] text-zinc-400">
           Maker/taker rates are refreshed periodically and shown as estimates. "Open account" links are affiliate links — FeeEdge may earn a commission at no cost to you.
           <br />© {new Date().getFullYear()} FeeEdge Analytics. Not financial advice.
         </p>

@@ -45,7 +45,7 @@ export function CostChart({
       <h4 className="text-xs font-bold text-zinc-400 uppercase mb-1 tracking-widest">
         Monthly Cost vs Volume
       </h4>
-      <p className="text-[10px] text-zinc-500 mb-3">
+      <p className="text-[11px] text-zinc-400 mb-3">
         Where each venue becomes cheaper as your volume grows (log scale).
       </p>
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img">
@@ -65,8 +65,8 @@ export function CostChart({
               x={padL - 8}
               y={sy(y) + 3}
               textAnchor="end"
-              className="fill-zinc-600"
-              fontSize={9}
+              className="fill-zinc-400"
+              fontSize={11}
             >
               {fmtY(y)}
             </text>
@@ -79,8 +79,8 @@ export function CostChart({
             x={sx(x)}
             y={H - padB + 16}
             textAnchor="middle"
-            className="fill-zinc-600"
-            fontSize={9}
+            className="fill-zinc-400"
+            fontSize={11}
           >
             {fmtX(x)}
           </text>
@@ -101,7 +101,7 @@ export function CostChart({
       {/* Legend */}
       <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3">
         {series.map((s) => (
-          <div key={s.name} className="flex items-center gap-1.5 text-[10px]">
+          <div key={s.name} className="flex items-center gap-1.5 text-[11px]">
             <span className={`w-2.5 h-0.5 ${s.colorClass}`} style={{ backgroundColor: 'currentColor' }}></span>
             <span className="text-zinc-400">{s.name}</span>
           </div>

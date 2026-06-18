@@ -68,7 +68,7 @@ function PctStat({ label, value }: { label: string; value: number | undefined })
   const up = valid && value! >= 0
   return (
     <div className="flex-1">
-      <div className="text-[10px] text-zinc-500 mb-1">{label}</div>
+      <div className="text-[11px] text-zinc-400 mb-1">{label}</div>
       {valid ? (
         <div
           className={`flex items-center gap-1 font-bold ${up ? 'text-emerald-500' : 'text-red-500'}`}
@@ -78,7 +78,7 @@ function PctStat({ label, value }: { label: string; value: number | undefined })
           {value!.toFixed(1)}%
         </div>
       ) : (
-        <div className="text-zinc-600 font-bold">—</div>
+        <div className="text-zinc-400 font-bold">—</div>
       )}
     </div>
   )
@@ -103,13 +103,13 @@ export function MarketTrend() {
           <span className="text-2xl font-black text-white">{fmtUsd(data?.price)}</span>
           <ChangeBadge value={data?.priceChange} />
         </div>
-        <p className="text-[10px] text-zinc-500 mt-1">
+        <p className="text-[11px] text-zinc-400 mt-1">
           Live BTC/USDT — 24h price, volume, and perpetual open-interest shift.
         </p>
       </div>
       <div className="flex items-center gap-4 mt-4">
         <div className="flex-1">
-          <div className="text-[10px] text-zinc-500 mb-1">24h Volume</div>
+          <div className="text-[11px] text-zinc-400 mb-1">24h Volume</div>
           <div className="font-bold text-zinc-200">{fmtBillions(data?.quoteVolume)}</div>
         </div>
         <PctStat label="Open Interest 24h" value={data?.oiChange} />

@@ -73,7 +73,7 @@ export function ScenariosPanel({
         <button
           onClick={handleSave}
           disabled={busy}
-          className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-black px-2.5 py-1.5 rounded hover:bg-emerald-400 transition-colors flex items-center gap-1 disabled:opacity-60"
+          className="text-[11px] font-bold uppercase tracking-wider bg-emerald-500 text-black px-2.5 py-1.5 rounded hover:bg-emerald-400 transition-colors flex items-center gap-1 disabled:opacity-60"
         >
           <Save size={12} />
           Save current
@@ -81,7 +81,7 @@ export function ScenariosPanel({
       </div>
 
       {scenarios.length === 0 ? (
-        <p className="text-[10px] text-zinc-500">
+        <p className="text-[11px] text-zinc-400">
           {isAuthenticated
             ? 'No saved scenarios yet. Save your current setup to revisit or share it.'
             : 'Sign in to save and share scenarios.'}
@@ -107,20 +107,20 @@ export function ScenariosPanel({
                 title="Load scenario"
               >
                 <div className="text-xs text-zinc-200 truncate">{s.name}</div>
-                <div className="text-[10px] text-zinc-500">
+                <div className="text-[11px] text-zinc-400">
                   {s.market === 'spot' ? 'Spot' : 'Perps'} · ${s.monthlyVolume.toLocaleString()}
                 </div>
               </button>
               <button
                 onClick={() => copyLink(s.shareId)}
-                className="text-zinc-500 hover:text-emerald-400 transition-colors shrink-0"
+                className="text-zinc-400 hover:text-emerald-400 transition-colors shrink-0"
                 title="Copy share link"
               >
                 {copied === s.shareId ? <Check size={14} /> : <Link2 size={14} />}
               </button>
               <button
                 onClick={() => del({ id: s._id })}
-                className="text-zinc-500 hover:text-red-400 transition-colors shrink-0"
+                className="text-zinc-400 hover:text-red-400 transition-colors shrink-0"
                 title="Delete"
               >
                 <Trash2 size={14} />
