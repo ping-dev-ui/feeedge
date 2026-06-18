@@ -498,7 +498,16 @@ function FeeEdge() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-zinc-300 font-mono selection:bg-emerald-500/30">
+    <div
+      className="min-h-screen text-zinc-300 font-mono selection:bg-emerald-500/30"
+      style={{
+        backgroundColor: '#0a0a0a',
+        backgroundImage:
+          'radial-gradient(55rem 26rem at 50% -7rem, rgba(16,185,129,0.10), transparent 70%)',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
+      }}
+    >
       {/* Header */}
       <header className="border-b border-zinc-800 bg-[#0d0d0d] px-6 py-4 flex items-center justify-between sticky top-0 z-10 backdrop-blur-md bg-opacity-80">
         <div className="flex items-center gap-2">
@@ -838,7 +847,14 @@ function FeeEdge() {
                   <div className="flex items-center gap-4">
                     <div className="text-2xl font-black text-zinc-700 w-6">#{idx + 1}</div>
                     <div>
-                      <h3 className={`text-lg font-bold ${ex.color}`}>{ex.name}</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className={`text-lg font-bold ${ex.color}`}>{ex.name}</h3>
+                        {idx === 0 && (
+                          <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-black px-1.5 py-0.5 rounded">
+                            Cheapest
+                          </span>
+                        )}
+                      </div>
                       <div className="flex gap-3 mt-1">
                         <span className="text-[11px] text-zinc-400">
                           M: <span className="text-zinc-300">{(ex.effMaker * 100).toFixed(3)}%</span>

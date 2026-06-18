@@ -4,36 +4,26 @@ import { TrendingUp, TrendingDown } from 'lucide-react'
 type Trend = {
   price: number
   priceChange: number
-  quoteVolume: number
-  oiChange: number
+  volume: number
+  marketCap: number
 }
 
-// Live BTC market stats from Binance public endpoints (CORS-enabled), fetched
-// client-side so they don't block SSR.
+// Live BTC market stats from CoinGecko's public API (CORS-enabled, global, no
+// key). Fetched client-side so it doesn't block SSR. Replaces the old Binance
+// endpoints, which fail in-browser due to CORS + regional blocking.
 async function fetchMarketTrend(): Promise<Trend> {
-  const [tickerRes, oiRes] = await Promise.all([
-    fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT'),
-    fetch(
-      'https://fapi.binance.com/futures/data/openInterestHist?symbol=BTCUSDT&period=1d&limit=2',
-    ),
-  ])
-  const ticker = await tickerRes.json()
-  const price = Number(ticker?.lastPrice)
-  const priceChange = Number(ticker?.priceChangePercent)
-  const quoteVolume = Number(ticker?.quoteVolume)
-
-  let oiChange = NaN
-  try {
-    const oi = await oiRes.json()
-    if (Array.isArray(oi) && oi.length >= 2) {
-      const prev = Number(oi[0]?.sumOpenInterest)
-      const last = Number(oi[oi.length - 1]?.sumOpenInterest)
-      if (prev > 0) oiChange = ((last - prev) / prev) * 100
-    }
-  } catch {
-    // leave oiChange as NaN -> renders as "—"
+  const res = await fetch(
+    'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin&price_change_percentage=24h',
+  )
+  if (!res.ok) throw new Error(`CoinGecko ${res.status}`)
+  const arr = await res.json()
+  const c = Array.isArray(arr) ? arr[0] : undefined
+  return {
+    price: Number(c?.current_price),
+    priceChange: Number(c?.price_change_percentage_24h),
+    volume: Number(c?.total_volume),
+    marketCap: Number(c?.market_cap),
   }
-  return { price, priceChange, quoteVolume, oiChange }
 }
 
 function fmtUsd(n: number | undefined): string {
@@ -43,6 +33,7 @@ function fmtUsd(n: number | undefined): string {
 
 function fmtBillions(n: number | undefined): string {
   if (typeof n !== 'number' || !isFinite(n)) return '—'
+  if (n >= 1e12) return '$' + (n / 1e12).toFixed(2) + 'T'
   if (n >= 1e9) return '$' + (n / 1e9).toFixed(1) + 'B'
   if (n >= 1e6) return '$' + (n / 1e6).toFixed(0) + 'M'
   return '$' + n.toFixed(0)
@@ -63,34 +54,13 @@ function ChangeBadge({ value }: { value: number | undefined }) {
   )
 }
 
-function PctStat({ label, value }: { label: string; value: number | undefined }) {
-  const valid = typeof value === 'number' && isFinite(value)
-  const up = valid && value! >= 0
-  return (
-    <div className="flex-1">
-      <div className="text-[11px] text-zinc-400 mb-1">{label}</div>
-      {valid ? (
-        <div
-          className={`flex items-center gap-1 font-bold ${up ? 'text-emerald-500' : 'text-red-500'}`}
-        >
-          {up ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-          {up ? '+' : ''}
-          {value!.toFixed(1)}%
-        </div>
-      ) : (
-        <div className="text-zinc-400 font-bold">—</div>
-      )}
-    </div>
-  )
-}
-
 export function MarketTrend() {
   const { data } = useQuery({
     queryKey: ['marketTrend'],
     queryFn: fetchMarketTrend,
     staleTime: 60_000,
-    refetchInterval: 60_000,
-    retry: 1,
+    refetchInterval: 90_000,
+    retry: 2,
   })
 
   return (
@@ -104,15 +74,18 @@ export function MarketTrend() {
           <ChangeBadge value={data?.priceChange} />
         </div>
         <p className="text-[11px] text-zinc-400 mt-1">
-          Live BTC/USDT — 24h price, volume, and perpetual open-interest shift.
+          Live BTC/USD — 24h price change, trading volume, and market cap.
         </p>
       </div>
       <div className="flex items-center gap-4 mt-4">
         <div className="flex-1">
           <div className="text-[11px] text-zinc-400 mb-1">24h Volume</div>
-          <div className="font-bold text-zinc-200">{fmtBillions(data?.quoteVolume)}</div>
+          <div className="font-bold text-zinc-200">{fmtBillions(data?.volume)}</div>
         </div>
-        <PctStat label="Open Interest 24h" value={data?.oiChange} />
+        <div className="flex-1">
+          <div className="text-[11px] text-zinc-400 mb-1">Market Cap</div>
+          <div className="font-bold text-zinc-200">{fmtBillions(data?.marketCap)}</div>
+        </div>
       </div>
     </div>
   )
