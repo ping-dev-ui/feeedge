@@ -13,10 +13,4 @@ crons.interval(
 
 crons.interval("check fee alerts", { hours: 6 }, internal.alerts.checkAlerts);
 
-crons.interval(
-  "fetch btc market stats",
-  { minutes: 5 },
-  internal.market.fetchBtcStats,
-);
-
 export default crons;
