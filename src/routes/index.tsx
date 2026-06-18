@@ -697,6 +697,30 @@ function FeeEdge() {
                       {hiddenResults.length} more {hiddenResults.length === 1 ? 'exchange is' : 'exchanges are'} restricted{hiddenResults.length ? `: ${hiddenResults.map((e) => e.name).join(', ')}` : ''}.
                     </p>
                   </div>
+
+                  {hiddenResults.some((e) => REFERRAL_LINKS[e.key]) && (
+                    <div className="w-full max-w-md text-center">
+                      <p className="text-[11px] uppercase tracking-wider text-zinc-400 mb-2">
+                        Or open an account directly
+                      </p>
+                      <div className="flex flex-wrap items-center justify-center gap-2">
+                        {hiddenResults
+                          .filter((e) => REFERRAL_LINKS[e.key])
+                          .map((e) => (
+                            <a
+                              key={e.key}
+                              href={REFERRAL_LINKS[e.key]}
+                              target="_blank"
+                              rel="sponsored noopener noreferrer"
+                              onClick={(ev) => ev.stopPropagation()}
+                              className="inline-flex items-center gap-1 rounded-md border border-zinc-700 px-2.5 py-1 text-[11px] font-bold text-zinc-200 hover:border-emerald-500 hover:text-emerald-400 transition-colors"
+                            >
+                              {e.name} <ExternalLink size={12} />
+                            </a>
+                          ))}
+                      </div>
+                    </div>
+                  )}
                   <button
                     onClick={(e) => {
                       e.stopPropagation()
