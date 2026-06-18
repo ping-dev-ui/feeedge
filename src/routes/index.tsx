@@ -638,13 +638,13 @@ function FeeEdge() {
                 role="switch"
                 aria-checked={isPro && applyToken}
                 onClick={() => (isPro ? setApplyToken((v) => !v) : handleUpgrade())}
-                className={`relative h-5 w-9 rounded-full transition-colors ${
+                className={`relative shrink-0 h-5 w-9 rounded-full transition-colors ${
                   isPro && applyToken ? 'bg-emerald-500' : 'bg-zinc-700'
                 }`}
               >
                 <span
-                  className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
-                    isPro && applyToken ? 'translate-x-4' : 'translate-x-0.5'
+                  className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${
+                    isPro && applyToken ? 'translate-x-4' : 'translate-x-0'
                   }`}
                 />
               </button>
