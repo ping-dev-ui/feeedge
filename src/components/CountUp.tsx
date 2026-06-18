@@ -49,7 +49,7 @@ export function CountUp({
   }, [value, duration])
 
   return (
-    <span className={className}>
+    <span className={`font-mono ${className ?? ''}`}>
       {prefix}
       {display.toLocaleString(undefined, {
         maximumFractionDigits: decimals,

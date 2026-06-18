@@ -500,7 +500,7 @@ function FeeEdge() {
 
   return (
     <div
-      className="min-h-screen text-zinc-300 font-mono selection:bg-emerald-500/30"
+      className="min-h-screen text-zinc-300 font-sans selection:bg-emerald-500/30"
       style={{
         backgroundColor: '#0a0a0a',
         backgroundImage:
@@ -873,10 +873,10 @@ function FeeEdge() {
                       </div>
                       <div className="flex gap-3 mt-1">
                         <span className="text-[11px] text-zinc-400">
-                          M: <span className="text-zinc-300">{(ex.effMaker * 100).toFixed(3)}%</span>
+                          M: <span className="text-zinc-300 font-mono">{(ex.effMaker * 100).toFixed(3)}%</span>
                         </span>
                         <span className="text-[11px] text-zinc-400">
-                          T: <span className="text-zinc-300">{(ex.effTaker * 100).toFixed(3)}%</span>
+                          T: <span className="text-zinc-300 font-mono">{(ex.effTaker * 100).toFixed(3)}%</span>
                         </span>
                       </div>
                       {ex.discount > 0 && (
@@ -904,7 +904,7 @@ function FeeEdge() {
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
                     <div className="text-right">
                       <div className="text-[11px] text-zinc-400 uppercase">Trading Fees</div>
-                      <div className="text-sm font-bold text-white">${ex.monthlyFee.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
+                      <div className="text-sm font-bold text-white font-mono">${ex.monthlyFee.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
                     </div>
                     {market === 'spot' ? (
                       <div className="text-right border-l border-zinc-800 pl-8 opacity-50">
