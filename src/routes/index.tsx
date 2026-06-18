@@ -784,12 +784,12 @@ function FeeEdge() {
 
         {/* Results Panel */}
         <div className="lg:col-span-8 space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h2 className="text-lg font-bold text-white tracking-tight flex flex-wrap items-center gap-2">
               Exchange Comparison
-              <span className="text-[11px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded uppercase font-mono">{EXCHANGES.length} · {market === 'futures' ? 'Perps' : 'Spot'} · by Cost</span>
+              <span className="text-[11px] whitespace-nowrap bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded uppercase font-mono">{EXCHANGES.length} · {market === 'futures' ? 'Perps' : 'Spot'} · by Cost</span>
             </h2>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4 shrink-0">
               <button
                 onClick={() => setShowGuide((v) => !v)}
                 className="text-xs text-zinc-400 hover:text-white flex items-center gap-1 transition-colors"
