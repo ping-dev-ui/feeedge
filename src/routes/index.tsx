@@ -521,15 +521,15 @@ function FeeEdge() {
     <div
       className="min-h-screen text-zinc-300 font-sans selection:bg-emerald-500/30"
       style={{
-        backgroundColor: '#0a0a0a',
+        backgroundColor: '#06140e',
         backgroundImage:
-          'radial-gradient(55rem 26rem at 50% -7rem, rgba(16,185,129,0.10), transparent 70%)',
+          'radial-gradient(55rem 26rem at 50% -7rem, rgba(16,185,129,0.12), transparent 70%)',
         backgroundRepeat: 'no-repeat',
         backgroundAttachment: 'fixed',
       }}
     >
       {/* Header */}
-      <header className="border-b border-zinc-800 bg-[#0d0d0d] px-6 py-4 flex items-center justify-between sticky top-0 z-10 backdrop-blur-md bg-opacity-80">
+      <header className="border-b border-zinc-800 bg-[#0a1a13] px-6 py-4 flex items-center justify-between sticky top-0 z-10 backdrop-blur-md bg-opacity-80">
         <div className="flex items-center gap-2.5">
           <img src="/logo-mark.png" width="34" height="34" alt="FeeEdge" className="shrink-0 rounded-lg" />
           <h1 className="text-xl font-black tracking-tight text-white">FeeEdge</h1>

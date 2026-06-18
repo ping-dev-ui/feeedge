@@ -12,8 +12,8 @@ export function LegalPage({
   children: ReactNode
 }) {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-zinc-300 font-sans">
-      <header className="border-b border-zinc-800 bg-[#0d0d0d] px-6 py-4">
+    <div className="min-h-screen bg-[#06140e] text-zinc-300 font-sans">
+      <header className="border-b border-zinc-800 bg-[#0a1a13] px-6 py-4">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">
             <img src="/logo-mark.png" width="30" height="30" alt="FeeEdge" className="rounded-lg" />
