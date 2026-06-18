@@ -97,6 +97,15 @@ export function SignInModal({
                 ? 'Sign up'
                 : 'Sign in'}
           </button>
+
+          {flow === 'signUp' && (
+            <p className="text-[11px] text-zinc-400 text-center leading-relaxed">
+              By signing up you agree to our{' '}
+              <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:underline">Terms</a>
+              {' '}and{' '}
+              <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:underline">Privacy Policy</a>.
+            </p>
+          )}
         </form>
 
         <p className="text-xs text-zinc-400 text-center">
