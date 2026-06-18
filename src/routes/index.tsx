@@ -11,6 +11,7 @@ import { MarketTrend } from '~/components/MarketTrend'
 import { ScenariosPanel } from '~/components/ScenariosPanel'
 import { AlertsPanel } from '~/components/AlertsPanel'
 import { ProTools } from '~/components/ProTools'
+import { CountUp } from '~/components/CountUp'
 import {
   BarChart3,
   Info,
@@ -510,9 +511,20 @@ function FeeEdge() {
     >
       {/* Header */}
       <header className="border-b border-zinc-800 bg-[#0d0d0d] px-6 py-4 flex items-center justify-between sticky top-0 z-10 backdrop-blur-md bg-opacity-80">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-emerald-500 rounded flex items-center justify-center text-black font-bold italic">FE</div>
-          <h1 className="text-xl font-bold tracking-tighter text-white">FEE EDGE</h1>
+        <div className="flex items-center gap-2.5">
+          <svg width="34" height="34" viewBox="0 0 34 34" className="shrink-0" aria-hidden="true">
+            <rect width="34" height="34" rx="9" fill="#10b981" />
+            <path
+              d="M7 22 L14 15 L19 18.5 L27 9.5"
+              stroke="#0a0a0a"
+              strokeWidth="2.6"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle cx="27" cy="9.5" r="2.6" fill="#0a0a0a" />
+          </svg>
+          <h1 className="text-xl font-black tracking-tight text-white">FeeEdge</h1>
         </div>
         <div className="flex items-center gap-4 text-xs">
           <div
@@ -557,11 +569,14 @@ function FeeEdge() {
       )}
 
       {/* Hero tagline */}
-      <div className="max-w-7xl mx-auto px-6 pt-10 pb-1 text-center">
-        <h2 className="text-2xl md:text-4xl font-black tracking-tight text-white leading-tight">
-          The cheapest exchange for <span className="text-emerald-400">how you trade</span>
+      <div className="max-w-7xl mx-auto px-6 pt-12 pb-2 text-center">
+        <h2 className="text-3xl md:text-5xl font-black tracking-tight text-white leading-[1.05]">
+          The cheapest exchange for{' '}
+          <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+            how you trade
+          </span>
         </h2>
-        <p className="text-sm text-zinc-400 mt-3">
+        <p className="text-sm md:text-base text-zinc-400 mt-4 max-w-2xl mx-auto">
           Personalized fee rankings across {EXCHANGES.length} venues in 10 seconds — perps &amp; spot, tuned to your volume and style.
         </p>
       </div>
@@ -576,7 +591,7 @@ function FeeEdge() {
               </p>
               <h2 className="text-white font-bold text-xl mt-1">
                 {monthlySavings > 0 ? (
-                  <>Stop overpaying — traders at your volume leave up to <span className="text-emerald-400">${Math.round(monthlySavings * 12).toLocaleString()}/yr</span> on the table</>
+                  <>Stop overpaying — traders at your volume leave up to <span className="text-emerald-400"><CountUp value={Math.round(monthlySavings * 12)} prefix="$" />/yr</span> on the table</>
                 ) : (
                   <>See your true cost across all 9 venues — and stop overpaying on fees</>
                 )}
@@ -687,7 +702,7 @@ function FeeEdge() {
             <div className="relative z-10">
               <h3 className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-1">Switching Savings</h3>
               <p className="text-2xl font-black text-white leading-tight">
-                Save ${monthlySavings.toLocaleString(undefined, { maximumFractionDigits: 0 })}/mo
+                Save <CountUp value={Math.round(monthlySavings)} prefix="$" />/mo
               </p>
               <p className="text-zinc-400 text-xs mt-1">
                 By switching from {mostExpensive.name} to {cheapest.name}
@@ -695,7 +710,7 @@ function FeeEdge() {
               <div className="mt-4 pt-4 border-t border-emerald-500/20 flex justify-between items-center">
                 <div>
                   <div className="text-[11px] text-zinc-400 uppercase">Annual Savings</div>
-                  <div className="text-lg font-bold text-emerald-400">${(monthlySavings * 12).toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
+                  <div className="text-lg font-bold text-emerald-400"><CountUp value={Math.round(monthlySavings * 12)} prefix="$" /></div>
                 </div>
                 <TrendingDown className="text-emerald-500" size={24} />
               </div>
@@ -841,8 +856,9 @@ function FeeEdge() {
             {visibleResults.map((ex, idx) => (
               <div
                 key={ex.name}
-                className={`bg-zinc-900/50 border ${idx === 0 ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-zinc-800'} rounded-xl p-5 hover:border-zinc-700 transition-all`}
+                className={`relative overflow-hidden bg-zinc-900/50 border ${idx === 0 ? 'border-emerald-500/40 bg-emerald-500/5' : 'border-zinc-800'} rounded-xl p-5 pl-6 hover:border-zinc-700 transition-all`}
               >
+                <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${ex.color}`} style={{ backgroundColor: 'currentColor' }} />
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="flex items-center gap-4">
                     <div className="text-2xl font-black text-zinc-700 w-6">#{idx + 1}</div>
@@ -910,7 +926,7 @@ function FeeEdge() {
                     )}
                     <div className="text-right md:border-l border-zinc-800 md:pl-8 col-span-2 md:col-span-1 border-t md:border-t-0 pt-2 md:pt-0">
                       <div className="text-[11px] text-emerald-500 uppercase font-bold">Total Monthly</div>
-                      <div className="text-lg font-black text-white">${ex.totalMonthly.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
+                      <div className="text-2xl font-black text-white"><CountUp value={ex.totalMonthly} prefix="$" decimals={2} /></div>
                     </div>
                   </div>
                 </div>
