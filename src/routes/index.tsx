@@ -1112,6 +1112,7 @@ function FeeEdge() {
           </a>
         </div>
         <div className="mt-3 flex items-center justify-center gap-4 flex-wrap text-[11px] text-zinc-400">
+          <Link to="/compare" className="hover:text-white transition-colors">Compare fees</Link>
           <Link to="/about" className="hover:text-white transition-colors">About</Link>
           <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
           <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
