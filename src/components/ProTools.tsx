@@ -41,12 +41,23 @@ function LockedTease({ onUpgrade }: { onUpgrade: () => void }) {
       <div>
         <h4 className="text-white font-bold">Pro Trading Tools</h4>
         <p className="text-zinc-400 text-xs mt-1 max-w-sm">
-          Funding-rate optimizer, withdrawal-fee comparison, and a volume-tier
-          savings ladder — unlock with Pro.
+          Three more ways to cut your real cost — included with Pro.
         </p>
       </div>
+      <ul className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-2xl text-left">
+        {[
+          ['Funding-rate optimizer', 'Cheapest venue to hold a long or short, from live funding.'],
+          ['Withdrawal-fee comparison', 'Real on-chain costs per asset the fee table ignores.'],
+          ['Tier savings ladder', 'Where a bit more volume unlocks a cheaper fee tier.'],
+        ].map(([title, desc]) => (
+          <li key={title} className="bg-black/40 border border-zinc-800 rounded-lg p-3">
+            <div className="text-xs font-bold text-emerald-400">{title}</div>
+            <div className="text-[11px] text-zinc-400 mt-1">{desc}</div>
+          </li>
+        ))}
+      </ul>
       <span className="bg-emerald-500 text-black px-5 py-1.5 rounded-full font-bold text-xs">
-        Unlock for $29
+        Unlock Pro for $29 · one-time
       </span>
     </div>
   )

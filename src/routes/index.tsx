@@ -471,6 +471,37 @@ function FeeEdge() {
         />
       )}
 
+      {/* Pro value-prop banner (free users), led by the savings number */}
+      {!isPro && (
+        <div className="max-w-7xl mx-auto px-6 pt-6">
+          <div className="relative overflow-hidden bg-gradient-to-r from-emerald-500/10 via-zinc-900/40 to-zinc-900/40 border border-emerald-500/30 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="min-w-0">
+              <p className="text-[11px] uppercase tracking-widest text-emerald-400 font-bold">
+                FeeEdge Pro · $29 once · no subscription
+              </p>
+              <h2 className="text-white font-bold text-xl mt-1">
+                {monthlySavings > 0 ? (
+                  <>Stop overpaying — traders at your volume leave up to <span className="text-emerald-400">${Math.round(monthlySavings * 12).toLocaleString()}/yr</span> on the table</>
+                ) : (
+                  <>See your true cost across all 9 venues — and stop overpaying on fees</>
+                )}
+              </h2>
+              <p className="text-xs text-zinc-400 mt-1.5">
+                Unlock all {EXCHANGES.length} exchanges, the funding-rate optimizer, native-token discounts, withdrawal-fee comparison, the tier savings ladder, unlimited saved scenarios, price alerts, and PDF/CSV export.
+              </p>
+            </div>
+            <button
+              onClick={handleUpgrade}
+              disabled={upgrading}
+              className="shrink-0 bg-emerald-500 text-black px-6 py-2.5 rounded-full font-bold text-sm hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/20 disabled:opacity-60 flex items-center gap-2"
+            >
+              <Zap size={15} fill="currentColor" />
+              {upgrading ? 'Redirecting…' : 'Unlock Pro for $29'}
+            </button>
+          </div>
+        </div>
+      )}
+
       <main className="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Input Panel */}
         <aside className="lg:col-span-4 space-y-6">
@@ -800,6 +831,23 @@ function FeeEdge() {
                     </p>
                   </div>
 
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-[11px] text-zinc-300 w-full max-w-md">
+                    {[
+                      `All ${EXCHANGES.length} exchanges ranked for you`,
+                      'Funding-rate optimizer (perps)',
+                      'Native-token fee discounts',
+                      'Withdrawal-fee comparison',
+                      'Tier savings ladder',
+                      'Unlimited saved scenarios',
+                      'Email price alerts',
+                      'PDF & CSV export',
+                    ].map((b) => (
+                      <li key={b} className="flex items-center gap-1.5">
+                        <span className="text-emerald-400 font-bold">✓</span> {b}
+                      </li>
+                    ))}
+                  </ul>
+
                   {hiddenResults.some((e) => REFERRAL_LINKS[e.key]) && (
                     <div className="w-full max-w-md text-center">
                       <p className="text-[11px] uppercase tracking-wider text-zinc-400 mb-2">
@@ -831,7 +879,7 @@ function FeeEdge() {
                     disabled={upgrading}
                     className="bg-emerald-500 text-black px-6 py-2 rounded-full font-bold text-sm hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/20 disabled:opacity-60"
                   >
-                    {upgrading ? 'Redirecting…' : 'Unlock All for $29'}
+                    {upgrading ? 'Redirecting…' : 'Unlock All for $29 · one-time'}
                   </button>
                 </div>
               </div>
