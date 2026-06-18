@@ -10,6 +10,7 @@ import { CostChart } from '~/components/CostChart'
 import { MarketTrend } from '~/components/MarketTrend'
 import { ScenariosPanel } from '~/components/ScenariosPanel'
 import { AlertsPanel } from '~/components/AlertsPanel'
+import { ProTools } from '~/components/ProTools'
 import {
   BarChart3,
   Info,
@@ -120,6 +121,17 @@ const REFERRAL_LINKS: Record<string, string> = {
   mexc: 'https://promote.mexc.com/r/KpQwPUMlv7',
 }
 
+// Native-token / loyalty fee discounts. Many venues cut trading fees when you
+// pay fees with (or hold) their token. Rates are typical estimates — actual
+// discounts vary by tier and program terms.
+const TOKEN_DISCOUNT: Record<string, { token: string; rate: number }> = {
+  binance: { token: 'BNB', rate: 0.1 },
+  okx: { token: 'OKB', rate: 0.2 },
+  kucoin: { token: 'KCS', rate: 0.2 },
+  gateio: { token: 'GT', rate: 0.15 },
+  bitget: { token: 'BGB', rate: 0.2 },
+}
+
 // Relative effective-cost multiplier by asset liquidity. Less-liquid assets
 // carry wider spreads/slippage, so their effective trading cost runs higher.
 const ASSET_LIQUIDITY_MULTIPLIER: Record<string, number> = {
@@ -159,6 +171,7 @@ function FeeEdge() {
   const [upgrading, setUpgrading] = useState(false)
   const [selectedAssets, setSelectedAssets] = useState<string[]>(['BTC', 'ETH', 'SOL', 'OTHER'])
   const [showGuide, setShowGuide] = useState(false)
+  const [applyToken, setApplyToken] = useState(false)
 
   // Load a shared scenario from ?s=<id> (public read-only link), applied once.
   const sharedId =
@@ -250,9 +263,15 @@ function FeeEdge() {
       // Override the base-tier rate with the live fetched rate when available.
       const live = liveMap[`${ex.key}:${market}`]
       const onBaseTier = currentTier.volume === 0
-      const effMaker = live && onBaseTier ? live.maker : currentTier.maker
-      const effTaker = live && onBaseTier ? live.taker : currentTier.taker
+      const baseMaker = live && onBaseTier ? live.maker : currentTier.maker
+      const baseTaker = live && onBaseTier ? live.taker : currentTier.taker
       const rateSource = live && onBaseTier ? live.source : 'published'
+
+      // Native-token discount (Pro): applies a loyalty discount to the rate.
+      const tokenInfo = TOKEN_DISCOUNT[ex.key]
+      const discount = isPro && applyToken && tokenInfo ? tokenInfo.rate : 0
+      const effMaker = baseMaker * (1 - discount)
+      const effTaker = baseTaker * (1 - discount)
 
       const makerVolume = monthlyVolume * makerRatio
       const takerVolume = monthlyVolume * (1 - makerRatio)
@@ -276,12 +295,14 @@ function FeeEdge() {
         effMaker,
         effTaker,
         rateSource,
+        token: tokenInfo?.token ?? null,
+        discount,
         monthlyFee,
         monthlyFunding,
         totalMonthly: monthlyFee + (includeFunding ? monthlyFunding : 0)
       }
     }).sort((a, b) => a.totalMonthly - b.totalMonthly)
-  }, [monthlyVolume, makerRatio, holdTime, isPro, assetMultiplier, liveMap, market, fundingMap])
+  }, [monthlyVolume, makerRatio, holdTime, isPro, assetMultiplier, liveMap, market, fundingMap, applyToken])
 
   const visibleResults = isPro ? results : results.slice(0, FREE_VISIBLE_COUNT)
   const hiddenResults = isPro ? [] : results.slice(FREE_VISIBLE_COUNT)
@@ -305,8 +326,9 @@ function FeeEdge() {
         const tier = [...tiers].reverse().find((t) => vol >= t.volume) || tiers[0]
         const live = liveMap[`${ex.key}:${market}`]
         const onBase = tier.volume === 0
-        const effMaker = live && onBase ? live.maker : tier.maker
-        const effTaker = live && onBase ? live.taker : tier.taker
+        const disc = isPro && applyToken && TOKEN_DISCOUNT[ex.key] ? TOKEN_DISCOUNT[ex.key].rate : 0
+        const effMaker = (live && onBase ? live.maker : tier.maker) * (1 - disc)
+        const effTaker = (live && onBase ? live.taker : tier.taker) * (1 - disc)
         const fee =
           (vol * makerRatio * effMaker + vol * (1 - makerRatio) * effTaker) * assetMultiplier
         let funding = 0
@@ -318,7 +340,32 @@ function FeeEdge() {
         return { x: vol, y: total }
       }),
     }))
-  }, [visibleResults, market, makerRatio, assetMultiplier, holdTime, isPro, liveMap, fundingMap])
+  }, [visibleResults, market, makerRatio, assetMultiplier, holdTime, isPro, liveMap, fundingMap, applyToken])
+
+  // CSV export (Pro): the full visible results table as a downloadable file.
+  const handleExportCsv = () => {
+    const header = ['Rank', 'Exchange', 'Maker %', 'Taker %', 'Token Discount', 'Trading Fees (mo)', 'Funding Est (mo)', 'Total Monthly']
+    const lines = visibleResults.map((ex, i) => [
+      i + 1,
+      ex.name,
+      (ex.effMaker * 100).toFixed(4),
+      (ex.effTaker * 100).toFixed(4),
+      ex.discount ? `${Math.round(ex.discount * 100)}% ${ex.token}` : '',
+      ex.monthlyFee.toFixed(2),
+      market === 'futures' ? ex.monthlyFunding.toFixed(2) : '',
+      ex.totalMonthly.toFixed(2),
+    ])
+    const csv = [header, ...lines]
+      .map((row) => row.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(','))
+      .join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `feeedge-${market}-${new Date().toISOString().slice(0, 10)}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
 
   const handleExportPdf = () => {
     const generatedAt = new Date().toLocaleString()
@@ -354,7 +401,8 @@ function FeeEdge() {
         <strong>Execution:</strong> ${Math.round(makerRatio * 100)}% maker / ${Math.round((1 - makerRatio) * 100)}% taker<br/>
         <strong>Avg hold time:</strong> ${holdTime}h<br/>
         <strong>Assets:</strong> ${assets}<br/>
-        <strong>Plan:</strong> ${isPro ? 'Pro (all exchanges)' : 'Free (top 3 shown)'}
+        <strong>Plan:</strong> ${isPro ? 'Pro (all exchanges)' : 'Free (top 3 shown)'}<br/>
+        <strong>Native-token discount:</strong> ${isPro && applyToken ? 'Applied' : 'Off'}
       </div>
       <table>
         <thead><tr><th>#</th><th>Exchange</th><th>Maker</th><th>Taker</th><th>Trading Fees</th><th>Total Monthly</th></tr></thead>
@@ -570,9 +618,50 @@ function FeeEdge() {
                 className="text-xs text-zinc-400 hover:text-white flex items-center gap-1 transition-colors"
               >
                 <Download size={14} />
-                Export PDF
+                PDF
+              </button>
+              <button
+                onClick={isPro ? handleExportCsv : handleUpgrade}
+                className="text-xs text-zinc-400 hover:text-white flex items-center gap-1 transition-colors"
+                title={isPro ? 'Download CSV' : 'CSV export is a Pro feature'}
+              >
+                <Download size={14} />
+                CSV {!isPro && <Lock size={10} />}
               </button>
             </div>
+          </div>
+
+          {/* Native-token fee discount toggle (Pro) */}
+          <div className="flex flex-wrap items-center justify-between gap-3 bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3">
+            <div className="flex items-center gap-3">
+              <button
+                role="switch"
+                aria-checked={isPro && applyToken}
+                onClick={() => (isPro ? setApplyToken((v) => !v) : handleUpgrade())}
+                className={`relative h-5 w-9 rounded-full transition-colors ${
+                  isPro && applyToken ? 'bg-emerald-500' : 'bg-zinc-700'
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
+                    isPro && applyToken ? 'translate-x-4' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
+              <div className="text-xs">
+                <span className="text-zinc-200 font-bold flex items-center gap-1">
+                  Apply native-token fee discount {!isPro && <Lock size={11} className="text-zinc-400" />}
+                </span>
+                <span className="text-[11px] text-zinc-400">
+                  Recompute rates as if you pay fees with each venue's token (BNB, OKB, KCS, GT, BGB).
+                </span>
+              </div>
+            </div>
+            {isPro && applyToken && (
+              <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">
+                Discount applied
+              </span>
+            )}
           </div>
 
           {/* How to read this */}
@@ -596,7 +685,15 @@ function FeeEdge() {
                 <p><span className="text-emerald-400 font-bold">Total Monthly:</span> what you'd pay — trading fees, plus funding on Pro perps.</p>
                 <p><span className="text-emerald-400 font-bold">Next Tier bar:</span> how close you are to an exchange's next volume discount, and the extra you'd save.</p>
               </div>
-              <p className="text-zinc-400 italic">Free shows the 3 cheapest venues; Pro unlocks all {EXCHANGES.length} plus funding, unlimited saved scenarios, and price alerts. All figures are estimates — not financial advice.</p>
+              <div className="space-y-2 border-t border-zinc-800 pt-3">
+                <p className="text-zinc-300 font-bold uppercase tracking-widest text-[11px]">Pro tools</p>
+                <p><span className="text-emerald-400 font-bold">Native-token discount:</span> toggle it on to recompute every rate as if you pay fees with each venue's token (BNB, OKB, KCS, GT, BGB). Rows show the discount applied — this is your true cost if you hold the token.</p>
+                <p><span className="text-emerald-400 font-bold">Funding-rate optimizer (perps):</span> live 8h funding by venue, with the cheapest place to hold a long vs a short. Positive funding = longs pay shorts.</p>
+                <p><span className="text-emerald-400 font-bold">Withdrawal fees:</span> typical on-chain withdrawal cost per asset and network (USDT TRC20/ERC20, BTC, ETH) — a real cost the fee table alone misses.</p>
+                <p><span className="text-emerald-400 font-bold">Tier savings ladder:</span> where a little more volume unlocks a cheaper tier, ranked by the biggest monthly saving.</p>
+                <p><span className="text-emerald-400 font-bold">CSV export:</span> download the full comparison (rates, discount, fees, funding, totals) for your own spreadsheets.</p>
+              </div>
+              <p className="text-zinc-400 italic">Free shows the 3 cheapest venues; Pro unlocks all {EXCHANGES.length} exchanges plus funding estimates, the native-token discount, the funding optimizer, withdrawal-fee comparison, the tier savings ladder, unlimited saved scenarios, price alerts, and PDF/CSV export. All figures are estimates — not financial advice.</p>
             </div>
           )}
 
@@ -619,6 +716,11 @@ function FeeEdge() {
                           T: <span className="text-zinc-300">{(ex.effTaker * 100).toFixed(3)}%</span>
                         </span>
                       </div>
+                      {ex.discount > 0 && (
+                        <span className="mt-1 inline-flex items-center gap-1 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-400">
+                          −{Math.round(ex.discount * 100)}% with {ex.token}
+                        </span>
+                      )}
                       {REFERRAL_LINKS[ex.key] && (
                         <a
                           href={REFERRAL_LINKS[ex.key]}
@@ -738,6 +840,18 @@ function FeeEdge() {
 
           {/* Cost vs Volume chart */}
           <CostChart series={chartSeries} xMin={100000} xMax={100000000} />
+
+          {/* Pro trading tools: funding optimizer, withdrawal fees, tier ladder (Pro) */}
+          <ProTools
+            isPro={isPro}
+            market={market}
+            results={results}
+            fundingMap={fundingMap}
+            monthlyVolume={monthlyVolume}
+            makerRatio={makerRatio}
+            assetMultiplier={assetMultiplier}
+            onUpgrade={handleUpgrade}
+          />
 
           {/* Asset Selection & Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
