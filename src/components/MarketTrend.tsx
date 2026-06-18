@@ -58,9 +58,11 @@ export function MarketTrend() {
   const { data } = useQuery({
     queryKey: ['marketTrend'],
     queryFn: fetchMarketTrend,
-    staleTime: 60_000,
-    refetchInterval: 90_000,
-    retry: 2,
+    staleTime: 30_000,
+    refetchInterval: 45_000,
+    refetchOnWindowFocus: true,
+    retry: 5,
+    retryDelay: (attempt) => Math.min(1500 * 2 ** attempt, 20_000),
   })
 
   return (
