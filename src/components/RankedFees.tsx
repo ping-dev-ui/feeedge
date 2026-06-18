@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import { EXCHANGES, pct, type Exchange } from '~/data/exchanges'
 
 // Ranked fee table for a given market, cheapest taker first. Used by the
@@ -38,9 +39,9 @@ export function RankedFees({ market }: { market: 'futures' | 'spot' }) {
   )
 }
 
-function th(align: 'left' | 'right'): React.CSSProperties {
+function th(align: 'left' | 'right'): CSSProperties {
   return { textAlign: align, padding: '8px 12px', borderBottom: '1px solid rgba(255,255,255,0.15)', color: '#a1a1aa', fontWeight: 600 }
 }
-function td(align: 'left' | 'right', top: boolean): React.CSSProperties {
+function td(align: 'left' | 'right', top: boolean): CSSProperties {
   return { textAlign: align, padding: '8px 12px', borderBottom: '1px solid rgba(255,255,255,0.08)', color: top ? '#34d399' : '#e4e4e7', fontWeight: top ? 700 : 400 }
 }

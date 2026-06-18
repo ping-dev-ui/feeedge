@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { LegalPage } from '~/components/LegalPage'
 import { RankedFees } from '~/components/RankedFees'
@@ -63,7 +64,7 @@ function Page() {
   )
 }
 
-const cta: React.CSSProperties = {
+const cta: CSSProperties = {
   display: 'inline-block',
   background: '#10b981',
   color: '#03150f',
