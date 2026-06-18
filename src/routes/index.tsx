@@ -531,18 +531,7 @@ function FeeEdge() {
       {/* Header */}
       <header className="border-b border-zinc-800 bg-[#0d0d0d] px-6 py-4 flex items-center justify-between sticky top-0 z-10 backdrop-blur-md bg-opacity-80">
         <div className="flex items-center gap-2.5">
-          <svg width="34" height="34" viewBox="0 0 34 34" className="shrink-0" aria-hidden="true">
-            <rect width="34" height="34" rx="9" fill="#10b981" />
-            <path
-              d="M7 22 L14 15 L19 18.5 L27 9.5"
-              stroke="#0a0a0a"
-              strokeWidth="2.6"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <circle cx="27" cy="9.5" r="2.6" fill="#0a0a0a" />
-          </svg>
+          <img src="/logo-mark.png" width="34" height="34" alt="FeeEdge" className="shrink-0 rounded-lg" />
           <h1 className="text-xl font-black tracking-tight text-white">FeeEdge</h1>
         </div>
         <div className="flex items-center gap-2 sm:gap-4 text-xs">
