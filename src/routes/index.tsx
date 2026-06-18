@@ -193,7 +193,11 @@ function FeeEdge() {
   const [upgrading, setUpgrading] = useState(false)
   const [selectedAssets, setSelectedAssets] = useState<string[]>(['BTC', 'ETH', 'SOL', 'OTHER'])
   const [showGuide, setShowGuide] = useState(false)
-  const [applyToken, setApplyToken] = useState(false)
+  const [tokenKeys, setTokenKeys] = useState<string[]>([])
+  const toggleToken = (key: string) =>
+    setTokenKeys((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
+    )
   const [shareCopied, setShareCopied] = useState(false)
 
   // Load a shared scenario from ?s=<id> (public read-only link), applied once.
@@ -365,7 +369,7 @@ function FeeEdge() {
 
       // Native-token discount (Pro): applies a loyalty discount to the rate.
       const tokenInfo = TOKEN_DISCOUNT[ex.key]
-      const discount = isPro && applyToken && tokenInfo ? tokenInfo.rate : 0
+      const discount = isPro && tokenKeys.includes(ex.key) && tokenInfo ? tokenInfo.rate : 0
       const effMaker = baseMaker * (1 - discount)
       const effTaker = baseTaker * (1 - discount)
 
@@ -398,7 +402,7 @@ function FeeEdge() {
         totalMonthly: monthlyFee + (includeFunding ? monthlyFunding : 0)
       }
     }).sort((a, b) => a.totalMonthly - b.totalMonthly)
-  }, [monthlyVolume, makerRatio, holdTime, isPro, assetMultiplier, liveMap, market, fundingMap, applyToken])
+  }, [monthlyVolume, makerRatio, holdTime, isPro, assetMultiplier, liveMap, market, fundingMap, tokenKeys])
 
   const visibleResults = isPro ? results : results.slice(0, FREE_VISIBLE_COUNT)
   const hiddenResults = isPro ? [] : results.slice(FREE_VISIBLE_COUNT)
@@ -422,7 +426,7 @@ function FeeEdge() {
         const tier = [...tiers].reverse().find((t) => vol >= t.volume) || tiers[0]
         const live = liveMap[`${ex.key}:${market}`]
         const onBase = tier.volume === 0
-        const disc = isPro && applyToken && TOKEN_DISCOUNT[ex.key] ? TOKEN_DISCOUNT[ex.key].rate : 0
+        const disc = isPro && tokenKeys.includes(ex.key) && TOKEN_DISCOUNT[ex.key] ? TOKEN_DISCOUNT[ex.key].rate : 0
         const effMaker = (live && onBase ? live.maker : tier.maker) * (1 - disc)
         const effTaker = (live && onBase ? live.taker : tier.taker) * (1 - disc)
         const fee =
@@ -436,7 +440,7 @@ function FeeEdge() {
         return { x: vol, y: total }
       }),
     }))
-  }, [visibleResults, market, makerRatio, assetMultiplier, holdTime, isPro, liveMap, fundingMap, applyToken])
+  }, [visibleResults, market, makerRatio, assetMultiplier, holdTime, isPro, liveMap, fundingMap, tokenKeys])
 
   // CSV export (Pro): the full visible results table as a downloadable file.
   const handleExportCsv = () => {
@@ -498,7 +502,7 @@ function FeeEdge() {
         <strong>Avg hold time:</strong> ${holdTime}h<br/>
         <strong>Assets:</strong> ${assets}<br/>
         <strong>Plan:</strong> ${isPro ? 'Pro (all exchanges)' : 'Free (top 3 shown)'}<br/>
-        <strong>Native-token discount:</strong> ${isPro && applyToken ? 'Applied' : 'Off'}
+        <strong>Native-token discounts:</strong> ${isPro && tokenKeys.length ? `${tokenKeys.length} applied` : 'Off'}
       </div>
       <table>
         <thead><tr><th>#</th><th>Exchange</th><th>Maker</th><th>Taker</th><th>Trading Fees</th><th>Total Monthly</th></tr></thead>
@@ -805,37 +809,36 @@ function FeeEdge() {
             </div>
           </div>
 
-          {/* Native-token fee discount toggle (Pro) */}
-          <div className="flex flex-wrap items-center justify-between gap-3 bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3">
-            <div className="flex items-center gap-3">
-              <button
-                role="switch"
-                aria-checked={isPro && applyToken}
-                onClick={() => (isPro ? setApplyToken((v) => !v) : handleUpgrade())}
-                className={`relative shrink-0 h-5 w-9 rounded-full transition-colors ${
-                  isPro && applyToken ? 'bg-emerald-500' : 'bg-zinc-700'
-                }`}
-              >
-                <span
-                  className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${
-                    isPro && applyToken ? 'translate-x-4' : 'translate-x-0'
-                  }`}
-                />
-              </button>
-              <div className="text-xs">
-                <span className="text-zinc-200 font-bold flex items-center gap-1">
-                  Apply native-token fee discount {!isPro && <Lock size={11} className="text-zinc-400" />}
-                </span>
-                <span className="text-[11px] text-zinc-400">
-                  Recompute rates as if you pay fees with each venue's token (BNB, OKB, KCS, GT, BGB).
-                </span>
-              </div>
-            </div>
-            {isPro && applyToken && (
-              <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">
-                Discount applied
+          {/* Native-token fee discounts (Pro) — select the tokens you actually hold */}
+          <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3">
+            <div className="text-xs mb-2.5">
+              <span className="text-zinc-200 font-bold flex items-center gap-1">
+                Native-token fee discounts {!isPro && <Lock size={11} className="text-zinc-400" />}
               </span>
-            )}
+              <span className="text-[11px] text-zinc-400">
+                Tap the exchange tokens you hold — the discount applies to that venue only.
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {EXCHANGES.filter((ex) => TOKEN_DISCOUNT[ex.key]).map((ex) => {
+                const info = TOKEN_DISCOUNT[ex.key]
+                const active = isPro && tokenKeys.includes(ex.key)
+                return (
+                  <button
+                    key={ex.key}
+                    onClick={() => (isPro ? toggleToken(ex.key) : handleUpgrade())}
+                    title={`${ex.name}: −${Math.round(info.rate * 100)}% when you pay fees with ${info.token}`}
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-bold border transition-colors ${
+                      active
+                        ? 'bg-emerald-500/15 border-emerald-500 text-emerald-400'
+                        : 'bg-black border-zinc-800 text-zinc-400 hover:border-emerald-500'
+                    }`}
+                  >
+                    {ex.name} · {info.token} −{Math.round(info.rate * 100)}%
+                  </button>
+                )
+              })}
+            </div>
           </div>
 
           {/* How to read this */}

@@ -38,6 +38,17 @@ export default defineSchema({
     lastUpdated: v.number(),
   }).index("by_exchange", ["exchange"]),
 
+  // Live market stats (e.g. BTC), fetched server-side on a cron so visitors
+  // read one cached value instead of each browser hitting the source API.
+  marketStats: defineTable({
+    asset: v.string(),
+    price: v.number(),
+    priceChange: v.number(),
+    volume: v.number(),
+    marketCap: v.number(),
+    lastUpdated: v.number(),
+  }).index("by_asset", ["asset"]),
+
   scenarios: defineTable({
     userId: v.id("users"),
     name: v.string(),

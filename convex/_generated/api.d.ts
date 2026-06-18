@@ -16,6 +16,7 @@ import type * as fees from "../fees.js";
 import type * as fetcher from "../fetcher.js";
 import type * as funding from "../funding.js";
 import type * as http from "../http.js";
+import type * as market from "../market.js";
 import type * as scenarios from "../scenarios.js";
 import type * as stripe from "../stripe.js";
 import type * as users from "../users.js";
@@ -35,6 +36,7 @@ declare const fullApi: ApiFromModules<{
   fetcher: typeof fetcher;
   funding: typeof funding;
   http: typeof http;
+  market: typeof market;
   scenarios: typeof scenarios;
   stripe: typeof stripe;
   users: typeof users;

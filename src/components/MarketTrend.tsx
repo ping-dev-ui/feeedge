@@ -1,30 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
+import { convexQuery } from '@convex-dev/react-query'
 import { TrendingUp, TrendingDown } from 'lucide-react'
+import { api } from '../../convex/_generated/api'
 
-type Trend = {
-  price: number
-  priceChange: number
-  volume: number
-  marketCap: number
-}
-
-// Live BTC market stats from CoinGecko's public API (CORS-enabled, global, no
-// key). Fetched client-side so it doesn't block SSR. Replaces the old Binance
-// endpoints, which fail in-browser due to CORS + regional blocking.
-async function fetchMarketTrend(): Promise<Trend> {
-  const res = await fetch(
-    'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin&price_change_percentage=24h',
-  )
-  if (!res.ok) throw new Error(`CoinGecko ${res.status}`)
-  const arr = await res.json()
-  const c = Array.isArray(arr) ? arr[0] : undefined
-  return {
-    price: Number(c?.current_price),
-    priceChange: Number(c?.price_change_percentage_24h),
-    volume: Number(c?.total_volume),
-    marketCap: Number(c?.market_cap),
-  }
-}
+// Live BTC market stats, read from Convex. A cron fetches CoinGecko server-side
+// every few minutes and stores one row, so every visitor reads the same cached
+// value (no per-browser rate limits) and it updates live via Convex reactivity.
 
 function fmtUsd(n: number | undefined): string {
   if (typeof n !== 'number' || !isFinite(n)) return '—'
@@ -55,15 +36,7 @@ function ChangeBadge({ value }: { value: number | undefined }) {
 }
 
 export function MarketTrend() {
-  const { data } = useQuery({
-    queryKey: ['marketTrend'],
-    queryFn: fetchMarketTrend,
-    staleTime: 30_000,
-    refetchInterval: 45_000,
-    refetchOnWindowFocus: true,
-    retry: 5,
-    retryDelay: (attempt) => Math.min(1500 * 2 ** attempt, 20_000),
-  })
+  const { data } = useQuery(convexQuery(api.market.getBtcStats, {}))
 
   return (
     <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 flex flex-col justify-between">
