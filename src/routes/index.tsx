@@ -146,6 +146,24 @@ const ASSET_LIQUIDITY_MULTIPLIER: Record<string, number> = {
 
 const FREE_VISIBLE_COUNT = 3
 
+// Monthly-volume slider: log-scaled across $100k–$100M so the whole range is
+// usable. Slider runs 0–1000; values snap to 2 significant figures.
+const VOL_MIN = 100_000
+const VOL_MAX = 100_000_000
+const volToSlider = (v: number) => {
+  const lmin = Math.log10(VOL_MIN)
+  const lmax = Math.log10(VOL_MAX)
+  const clamped = Math.min(VOL_MAX, Math.max(VOL_MIN, v))
+  return Math.round(((Math.log10(clamped) - lmin) / (lmax - lmin)) * 1000)
+}
+const sliderToVol = (s: number) => {
+  const lmin = Math.log10(VOL_MIN)
+  const lmax = Math.log10(VOL_MAX)
+  const v = Math.pow(10, lmin + (s / 1000) * (lmax - lmin))
+  const step = Math.pow(10, Math.max(0, Math.floor(Math.log10(v)) - 1))
+  return Math.round(v / step) * step
+}
+
 function timeAgo(ts: number): string {
   const mins = Math.floor((Date.now() - ts) / 60000)
   if (mins < 1) return 'just now'
@@ -647,12 +665,18 @@ function FeeEdge() {
               </div>
 
               <div>
-                <label className="block text-xs text-zinc-400 mb-2 uppercase">Monthly Volume (USD)</label>
+                <div className="flex items-baseline justify-between mb-2">
+                  <label className="block text-xs text-zinc-400 uppercase">Monthly Volume (USD)</label>
+                  <span className="text-base font-bold text-white font-mono">${monthlyVolume.toLocaleString()}</span>
+                </div>
                 <input
-                  type="number"
-                  value={monthlyVolume}
-                  onChange={(e) => setMonthlyVolume(Number(e.target.value))}
-                  className="w-full bg-black border border-zinc-800 rounded p-3 text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                  type="range"
+                  min={0}
+                  max={1000}
+                  step={1}
+                  value={volToSlider(monthlyVolume)}
+                  onChange={(e) => setMonthlyVolume(sliderToVol(Number(e.target.value)))}
+                  className="w-full accent-emerald-500 h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer"
                 />
                 <div className="flex justify-between mt-1 px-1">
                   <span className="text-[11px] text-zinc-400">$100k</span>
