@@ -19,7 +19,8 @@ import {
   Download,
   Zap,
   LogOut,
-  HelpCircle
+  HelpCircle,
+  ExternalLink
 } from 'lucide-react'
 
 export const Route = createFileRoute('/')({
@@ -106,6 +107,18 @@ const EXCHANGES: ExchangeData[] = [
     spot: [{ volume: 0, maker: 0.0016, taker: 0.0026 }],
   },
 ]
+
+// Affiliate / referral signup links per exchange. Only rendered for exchanges
+// that have an entry here. Update freely as you add programs.
+const REFERRAL_LINKS: Record<string, string> = {
+  binance: 'https://accounts.binance.com/register?ref=R1LOTHE0',
+  bybit: 'https://www.bybit.com/invite?ref=XV0M2P&medium=referral&utm_campaign=evergreen',
+  hyperliquid: 'https://app.hyperliquid.xyz/join/FEEEDGE',
+  okx: 'https://okx.com/join/9729325',
+  gateio:
+    'https://www.gate.com/referral/earn-together/invite/UFlHUlkO?ref=UFlHUlkO&ref_type=103&utm_cmp=rXJBDjtJ&activity_id=1781161013843',
+  mexc: 'https://promote.mexc.com/r/KpQwPUMlv7',
+}
 
 // Relative effective-cost multiplier by asset liquidity. Less-liquid assets
 // carry wider spreads/slippage, so their effective trading cost runs higher.
@@ -606,6 +619,20 @@ function FeeEdge() {
                           T: <span className="text-zinc-300">{(ex.effTaker * 100).toFixed(3)}%</span>
                         </span>
                       </div>
+                      {REFERRAL_LINKS[ex.key] && (
+                        <a
+                          href={REFERRAL_LINKS[ex.key]}
+                          target="_blank"
+                          rel="sponsored noopener noreferrer"
+                          className={`mt-1.5 inline-flex items-center gap-1 text-[10px] transition-colors ${
+                            idx === 0
+                              ? 'font-bold text-emerald-400 hover:text-emerald-300'
+                              : 'text-zinc-500 hover:text-emerald-400'
+                          }`}
+                        >
+                          Open account <ExternalLink size={10} />
+                        </a>
+                      )}
                     </div>
                   </div>
 
@@ -723,7 +750,7 @@ function FeeEdge() {
 
       <footer className="max-w-7xl mx-auto p-6 border-t border-zinc-800/50 mt-12 text-center">
         <p className="text-[10px] text-zinc-600">
-          Maker/taker rates are refreshed periodically and shown as estimates.
+          Maker/taker rates are refreshed periodically and shown as estimates. "Open account" links are affiliate links — FeeEdge may earn a commission at no cost to you.
           <br />© {new Date().getFullYear()} FeeEdge Analytics. Not financial advice.
         </p>
       </footer>
