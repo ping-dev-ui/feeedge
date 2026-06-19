@@ -63,7 +63,7 @@ const EXCHANGES: ExchangeData[] = [
   },
   {
     name: 'Hyperliquid', key: 'hyperliquid', color: 'text-emerald-400',
-    futures: [{ volume: 0, maker: 0.0001, taker: 0.00035 }],
+    futures: [{ volume: 0, maker: 0.00015, taker: 0.00045 }],
     spot: [{ volume: 0, maker: 0.0004, taker: 0.0007 }],
   },
   {
@@ -96,11 +96,11 @@ const EXCHANGES: ExchangeData[] = [
       { volume: 0, maker: 0.0002, taker: 0.0006 },
       { volume: 5000000, maker: 0.00018, taker: 0.00055 },
     ],
-    spot: [{ volume: 0, maker: 0.001, taker: 0.001 }],
+    spot: [{ volume: 0, maker: 0.001, taker: 0.0012 }],
   },
   {
     name: 'MEXC', key: 'mexc', color: 'text-blue-400',
-    futures: [{ volume: 0, maker: 0.0001, taker: 0.0004 }],
+    futures: [{ volume: 0, maker: 0.0, taker: 0.0002 }],
     spot: [{ volume: 0, maker: 0.0, taker: 0.0005 }],
   },
   {
@@ -109,7 +109,7 @@ const EXCHANGES: ExchangeData[] = [
       { volume: 0, maker: 0.0002, taker: 0.0005 },
       { volume: 10000000, maker: 0.00015, taker: 0.0004 },
     ],
-    spot: [{ volume: 0, maker: 0.0016, taker: 0.0026 }],
+    spot: [{ volume: 0, maker: 0.0025, taker: 0.004 }],
   },
 ]
 
@@ -276,6 +276,7 @@ function FeeEdge() {
   }
 
   const handleShareSavings = async () => {
+    if (typeof window !== 'undefined') (window as any).posthog?.capture('share_savings')
     const annual = Math.round(monthlySavings * 12)
     const text =
       annual > 0
@@ -296,6 +297,8 @@ function FeeEdge() {
   }
 
   const handleUpgrade = async () => {
+    if (typeof window !== 'undefined')
+      (window as any).posthog?.capture('upgrade_clicked', { market, monthlyVolume })
     if (!isAuthenticated) {
       setShowSignIn(true)
       return

@@ -11,12 +11,12 @@ const PUBLISHED: Record<"futures" | "spot", Record<string, Rate>> = {
   futures: {
     binance: { maker: 0.0002, taker: 0.0005 },
     bybit: { maker: 0.0002, taker: 0.00055 },
-    hyperliquid: { maker: 0.0001, taker: 0.00035 },
+    hyperliquid: { maker: 0.00015, taker: 0.00045 },
     okx: { maker: 0.0002, taker: 0.0005 },
     gateio: { maker: 0.00015, taker: 0.0005 },
     bitget: { maker: 0.0002, taker: 0.0006 },
     kucoin: { maker: 0.0002, taker: 0.0006 },
-    mexc: { maker: 0.0001, taker: 0.0004 },
+    mexc: { maker: 0.0, taker: 0.0002 },
     kraken: { maker: 0.0002, taker: 0.0005 },
   },
   spot: {
@@ -26,9 +26,9 @@ const PUBLISHED: Record<"futures" | "spot", Record<string, Rate>> = {
     okx: { maker: 0.0008, taker: 0.001 },
     gateio: { maker: 0.002, taker: 0.002 },
     bitget: { maker: 0.001, taker: 0.001 },
-    kucoin: { maker: 0.001, taker: 0.001 },
+    kucoin: { maker: 0.001, taker: 0.0012 },
     mexc: { maker: 0.0, taker: 0.0005 },
-    kraken: { maker: 0.0016, taker: 0.0026 },
+    kraken: { maker: 0.0025, taker: 0.004 },
   },
 };
 

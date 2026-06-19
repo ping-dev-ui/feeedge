@@ -30,7 +30,7 @@ export const EXCHANGES: Exchange[] = [
   },
   {
     name: 'Hyperliquid', slug: 'hyperliquid', colorClass: 'text-emerald-400',
-    futures: { maker: 0.0001, taker: 0.00035 }, spot: { maker: 0.0004, taker: 0.0007 },
+    futures: { maker: 0.00015, taker: 0.00045 }, spot: { maker: 0.0004, taker: 0.0007 },
     referral: 'https://app.hyperliquid.xyz/join/FEEEDGE',
   },
   {
@@ -53,17 +53,17 @@ export const EXCHANGES: Exchange[] = [
   },
   {
     name: 'KuCoin', slug: 'kucoin', colorClass: 'text-green-400',
-    futures: { maker: 0.0002, taker: 0.0006 }, spot: { maker: 0.001, taker: 0.001 },
+    futures: { maker: 0.0002, taker: 0.0006 }, spot: { maker: 0.001, taker: 0.0012 },
     token: 'KCS', tokenDiscount: 0.2,
   },
   {
     name: 'MEXC', slug: 'mexc', colorClass: 'text-blue-400',
-    futures: { maker: 0.0001, taker: 0.0004 }, spot: { maker: 0.0, taker: 0.0005 },
+    futures: { maker: 0.0, taker: 0.0002 }, spot: { maker: 0.0, taker: 0.0005 },
     referral: 'https://promote.mexc.com/r/KpQwPUMlv7',
   },
   {
     name: 'Kraken', slug: 'kraken', colorClass: 'text-purple-400',
-    futures: { maker: 0.0002, taker: 0.0005 }, spot: { maker: 0.0016, taker: 0.0026 },
+    futures: { maker: 0.0002, taker: 0.0005 }, spot: { maker: 0.0025, taker: 0.004 },
   },
 ]
 
