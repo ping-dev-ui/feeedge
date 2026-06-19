@@ -25,7 +25,8 @@ import {
   ExternalLink,
   Share2,
   Check,
-  Mail
+  Mail,
+  Swords
 } from 'lucide-react'
 
 export const Route = createFileRoute('/')({
@@ -691,6 +692,17 @@ function FeeEdge() {
         <p className="text-sm md:text-base text-zinc-400 mt-4 max-w-2xl mx-auto">
           Personalized fee rankings across {EXCHANGES.length} venues in 10 seconds — perps &amp; spot, tuned to your volume and style.
         </p>
+        <div className="mt-6 flex items-center justify-center gap-3 flex-wrap">
+          <Link
+            to="/versus"
+            className="group inline-flex items-center gap-2 rounded-full bg-emerald-500 text-[#03150f] font-black text-sm md:text-base px-5 py-2.5 shadow-lg shadow-emerald-500/20 hover:bg-emerald-400 transition-colors"
+          >
+            <Swords size={18} strokeWidth={2.5} />
+            Compare two exchanges head-to-head
+            <span className="transition-transform group-hover:translate-x-0.5">→</span>
+          </Link>
+          <span className="text-[11px] text-zinc-500">Pick any venues · side-by-side · instant</span>
+        </div>
       </div>
 
       {/* Pro value-prop banner (free users), led by the savings number */}
