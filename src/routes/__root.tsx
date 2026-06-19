@@ -3,7 +3,6 @@ import {
   Outlet,
   Scripts,
   createRootRouteWithContext,
-  useRouterState,
 } from '@tanstack/react-router'
 import * as React from 'react'
 import type { QueryClient } from '@tanstack/react-query'
@@ -47,7 +46,14 @@ const siteSchema = [
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
 }>()({
-  head: () => ({
+  head: ({ matches }) => {
+    // Self-referencing canonical for the current page, query-string stripped, so
+    // links with ?ref=/?v= don't create duplicate URLs. Computed from the most
+    // specific matched route's pathname (emitted via head() so it SSRs).
+    const path = matches[matches.length - 1]?.pathname || '/'
+    const cleanPath = path !== '/' ? path.replace(/\/$/, '') : '/'
+    const canonicalHref = `https://feeedge.com${cleanPath}`
+    return {
     meta: [
       {
         charSet: 'utf-8',
@@ -98,8 +104,10 @@ export const Route = createRootRouteWithContext<{
       { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32.png' },
       { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
       { rel: 'icon', href: '/favicon.ico' },
+      { rel: 'canonical', href: canonicalHref },
     ],
-  }),
+    }
+  },
   notFoundComponent: () => <div>Route not found</div>,
   component: RootComponent,
 })
@@ -146,14 +154,9 @@ function Analytics() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  // Self-referencing canonical for every page, server-rendered, with query
-  // params (?ref=, ?v=, etc.) stripped so shared links don't create duplicates.
-  const pathname = useRouterState({ select: (s) => s.location.pathname })
-  const canonical = `https://feeedge.com${pathname}`
   return (
     <html>
       <head>
-        <link rel="canonical" href={canonical} />
         <HeadContent />
       <body>
         {children}
