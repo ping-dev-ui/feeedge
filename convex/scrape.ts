@@ -1,18 +1,18 @@
+import { internalAction } from "./_generated/server";
+import { v } from "convex/values";
+
 // Bright Data–powered fee-page scraper for exchanges that don't expose a clean
 // public fee API. Used as the second source (after live APIs, before curated
 // fallback) by convex/fetcher.ts. Entirely no-op unless BRIGHTDATA_API_KEY is
 // set, so the build/deploy is safe before you configure it.
 //
-// Setup:
-//   1. Create a Bright Data "Web Unlocker" zone in your Bright Data dashboard.
-//   2. In the Convex dashboard → Settings → Environment Variables, add:
-//        BRIGHTDATA_API_KEY = <your API token>
-//        BRIGHTDATA_ZONE    = <your web-unlocker zone name>  (optional; defaults below)
+// Scraping only runs for an exchange/market that has BOTH a fee-page URL and a
+// VERIFIED parser below. Anything else falls back to the curated rate, so a bad
+// parse can never override an accurate curated value.
 //
-// Parsers are heuristic and conservative: if a page's maker/taker can't be
-// confidently parsed, the scraper returns null and fetcher.ts falls back to the
-// curated rate (with its verified date). Parsers can be tuned per-exchange once
-// live HTML is observed.
+// To add/verify a parser: run the `scrape:debugUnlock` action (Convex dashboard)
+// with a fee-page URL to see the exact text the parser receives, then write a
+// parser that targets that text and add it to PARSERS.
 
 type Rate = { maker: number; taker: number };
 type Market = "futures" | "spot";
@@ -24,28 +24,80 @@ export function scrapingEnabled(): boolean {
   return KEY().length > 0;
 }
 
-// Fee-schedule page per exchange. Only exchanges listed here are scraped; the
-// rest stay on curated values until a URL+parser is added.
-const FEE_PAGE: Record<string, string> = {
-  htx: "https://www.htx.com/en-us/rate/",
-  bingx: "https://bingx.com/en/support/articles/360046487573-perpetual-futures-fee-schedule",
-  coinbase: "https://www.coinbase.com/advanced-fees",
-  cryptocom: "https://crypto.com/exchange/fees",
-  bitfinex: "https://www.bitfinex.com/fees/",
-  whitebit: "https://whitebit.com/fees",
-  phemex: "https://phemex.com/contract-trading-fees",
-  bitmex: "https://www.bitmex.com/wallet/fees/trading",
-  backpack: "https://support.backpack.exchange/exchange/trading/trading-fees",
-  bitmart: "https://www.bitmart.com/fee/en-US",
-  coinex: "https://www.coinex.com/en/fees",
-  bitget: "https://www.bitget.com/rate",
-  kucoin: "https://www.kucoin.com/vip/level",
-  okx: "https://www.okx.com/fees",
-  gateio: "https://www.gate.io/fee",
+// Fee-schedule page per exchange, per market. Spot and futures often live on
+// different pages, so each market has its own URL.
+const FEE_PAGE: Record<string, Partial<Record<Market, string>>> = {
+  htx: {
+    spot: "https://www.htx.com/en-us/rate/",
+    futures: "https://www.htx.com/en-us/rate/",
+  },
+  bingx: {
+    futures: "https://bingx.com/en/support/articles/360046487573-perpetual-futures-fee-schedule",
+    spot: "https://bingx.com/en/support/articles/360027240173-fee-schedule",
+  },
+  bitget: {
+    spot: "https://www.bitget.com/rate",
+    futures: "https://www.bitget.com/rate",
+  },
+  kucoin: {
+    spot: "https://www.kucoin.com/vip/level",
+    futures: "https://www.kucoin.com/vip/level",
+  },
+  okx: {
+    spot: "https://www.okx.com/fees",
+    futures: "https://www.okx.com/fees",
+  },
+  bitmart: {
+    spot: "https://www.bitmart.com/fee/en-US",
+    futures: "https://www.bitmart.com/fee/en-US",
+  },
+  coinex: {
+    spot: "https://www.coinex.com/en/fees",
+    futures: "https://www.coinex.com/en/fees",
+  },
+  whitebit: {
+    spot: "https://whitebit.com/fees",
+    futures: "https://whitebit.com/fees",
+  },
+  phemex: {
+    futures: "https://phemex.com/contract-trading-fees",
+    spot: "https://phemex.com/spot-trading-fees",
+  },
+  bitmex: {
+    spot: "https://www.bitmex.com/wallet/fees/trading",
+    futures: "https://www.bitmex.com/wallet/fees/trading",
+  },
+  backpack: {
+    spot: "https://support.backpack.exchange/exchange/trading/trading-fees",
+    futures: "https://support.backpack.exchange/exchange/trading/trading-fees",
+  },
+  bitfinex: {
+    spot: "https://www.bitfinex.com/fees/",
+    futures: "https://www.bitfinex.com/fees/",
+  },
+  cryptocom: {
+    spot: "https://crypto.com/exchange/fees",
+    futures: "https://crypto.com/exchange/fees",
+  },
+  coinbase: {
+    spot: "https://www.coinbase.com/advanced-fees",
+    futures: "https://www.coinbase.com/advanced-fees",
+  },
 };
 
-// Fetch a page's HTML through Bright Data's Web Unlocker (handles bot-blocks +
-// JS rendering). Returns null on any failure.
+// Strip HTML to a normalized text string for parsing.
+function stripHtml(html: string): string {
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Fetch a page through Bright Data's Web Unlocker (handles bot-blocks + JS).
+// Returns the raw response text, or null on failure.
 async function unlock(url: string): Promise<string | null> {
   if (!scrapingEnabled()) return null;
   try {
@@ -59,7 +111,6 @@ async function unlock(url: string): Promise<string | null> {
         zone: ZONE(),
         url,
         format: "raw",
-        // Render JS so dynamically-loaded fee tables are present in the HTML.
         data_format: "html",
       }),
     });
@@ -76,20 +127,21 @@ async function unlock(url: string): Promise<string | null> {
 
 // --- Parsing helpers --------------------------------------------------------
 
-// Pull all percentage figures (e.g. "0.06%", "0.02 %") from text as decimals.
-function percentsToDecimals(text: string): number[] {
-  const out: number[] = [];
-  const re = /(-?\d+(?:\.\d+)?)\s*%/g;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(text))) {
-    const v = Number(m[1]) / 100;
-    if (isFinite(v)) out.push(v);
-  }
-  return out;
+const PCT = /(-?\d+(?:\.\d+)?)\s*%/;
+
+// Find a percentage immediately after a label within the next `window` chars.
+// e.g. labelledPct(text, /maker/i) on "... Maker 0.020% Taker ..." -> 0.0002.
+function labelledPct(text: string, label: RegExp, window = 60): number | null {
+  const m = label.exec(text);
+  if (!m) return null;
+  const seg = text.slice(m.index, m.index + window);
+  const p = PCT.exec(seg);
+  if (!p) return null;
+  const v = Number(p[1]) / 100;
+  return isFinite(v) ? v : null;
 }
 
-// A plausible base-tier maker/taker pair for crypto venues: between 0% and ~0.6%
-// and maker <= taker (the usual ordering). Used to reject garbage parses.
+// A plausible base-tier maker/taker pair: 0%–0.6%, maker <= taker.
 function plausible(r: Rate | null): r is Rate {
   if (!r) return false;
   const { maker, taker } = r;
@@ -97,30 +149,23 @@ function plausible(r: Rate | null): r is Rate {
   return maker <= taker + 1e-9;
 }
 
-// Generic heuristic: find the first "maker ... X%" and "taker ... Y%" near each
-// other in the rendered text. NOT used automatically — it produced wrong-but-
-// plausible values on real pages (e.g. grabbing arbitrary percentages). Kept and
-// exported for opt-in use by a verified per-exchange parser only.
+// Generic heuristic — NOT used automatically (produced wrong-but-plausible
+// values on real pages). Exported for reference / opt-in by a verified parser.
 export function genericParse(html: string, _market: Market): Rate | null {
-  const text = html
-    .replace(/<script[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style[\s\S]*?<\/style>/gi, " ")
-    .replace(/<[^>]+>/g, " ")
-    .replace(/\s+/g, " ");
-  const makerIdx = text.search(/maker/i);
-  const takerIdx = text.search(/taker/i);
-  if (makerIdx < 0 || takerIdx < 0) return null;
-  // Look at a window starting at the first fee-related keyword.
-  const start = Math.max(0, Math.min(makerIdx, takerIdx) - 40);
-  const window = text.slice(start, start + 400);
-  const pcts = percentsToDecimals(window);
-  if (pcts.length < 2) return null;
-  const r = { maker: pcts[0], taker: pcts[1] };
+  const text = stripHtml(html);
+  const maker = labelledPct(text, /maker/i);
+  const taker = labelledPct(text, /taker/i);
+  if (maker == null || taker == null) return null;
+  const r = { maker, taker };
   return plausible(r) ? r : null;
 }
 
-// Per-exchange parser overrides (add as needed). Keyed by exchange slug.
-const PARSERS: Record<string, (html: string, market: Market) => Rate | null> = {};
+// VERIFIED per-exchange/market parsers. Keyed by "exchange:market". Each is
+// written and confirmed against the real Bright Data output (via debugUnlock)
+// before being added here. Empty until verified — see build notes at top.
+const PARSERS: Record<string, (text: string) => Rate | null> = {
+  // populated as parsers are verified, e.g. "bitget:futures": (t) => {...}
+};
 
 // Public entry point: scrape one exchange/market. Returns a decimal Rate or null
 // (→ caller falls back to curated value).
@@ -128,14 +173,36 @@ export async function scrapeFee(
   exchange: string,
   market: Market,
 ): Promise<Rate | null> {
-  const url = FEE_PAGE[exchange];
-  const parser = PARSERS[exchange];
-  // Only scrape when we have a VERIFIED per-exchange parser. Without one we skip
-  // the request entirely (saves Bright Data credits) and keep the curated value,
-  // so a bad heuristic parse can never override an accurate curated rate.
+  const url = FEE_PAGE[exchange]?.[market];
+  const parser = PARSERS[`${exchange}:${market}`];
   if (!url || !parser || !scrapingEnabled()) return null;
   const html = await unlock(url);
   if (!html) return null;
-  const rate = parser(html, market);
+  const rate = parser(stripHtml(html));
   return plausible(rate) ? rate : null;
 }
+
+// Debug helper: fetch a URL via Bright Data and return a slice of the stripped
+// text, so parsers can be built against the exact content Convex receives.
+// Run from the Convex dashboard: scrape:debugUnlock { url, around?: "maker" }.
+export const debugUnlock = internalAction({
+  args: { url: v.string(), around: v.optional(v.string()) },
+  returns: v.object({
+    ok: v.boolean(),
+    length: v.number(),
+    text: v.string(),
+  }),
+  handler: async (_ctx, args) => {
+    const html = await unlock(args.url);
+    if (!html) return { ok: false, length: 0, text: "(no response — check key/zone)" };
+    const text = stripHtml(html);
+    let slice: string;
+    if (args.around) {
+      const i = text.toLowerCase().indexOf(args.around.toLowerCase());
+      slice = i >= 0 ? text.slice(Math.max(0, i - 200), i + 1800) : text.slice(0, 2000);
+    } else {
+      slice = text.slice(0, 2000);
+    }
+    return { ok: true, length: text.length, text: slice };
+  },
+});
