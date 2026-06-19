@@ -13,6 +13,7 @@ import { AlertsPanel } from '~/components/AlertsPanel'
 import { ProTools } from '~/components/ProTools'
 import { CountUp } from '~/components/CountUp'
 import { ExchangeLogo } from '~/components/ExchangeLogo'
+import { ShareButtons } from '~/components/ShareButtons'
 import {
   BarChart3,
   Info,
@@ -903,10 +904,19 @@ function FeeEdge() {
                   </>
                 ) : (
                   <>
-                    <Share2 size={14} /> Share my savings
+                    <Share2 size={14} /> Copy share link
                   </>
                 )}
               </button>
+              <ShareButtons
+                text={
+                  monthlySavings > 0
+                    ? `I could save ~$${Math.round(monthlySavings * 12).toLocaleString()}/yr on crypto trading fees with FeeEdge. Find your cheapest exchange:`
+                    : 'I found my cheapest crypto exchange with FeeEdge. Find yours:'
+                }
+                url={buildShareUrl()}
+                onShare={(name) => phCapture('share_click', { target: name })}
+              />
             </div>
           </section>
 
