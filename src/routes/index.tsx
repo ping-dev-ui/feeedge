@@ -388,16 +388,46 @@ function FeeEdge() {
         ? `I could save ~$${annual.toLocaleString()}/yr on crypto trading fees by using ${cheapest.name}. Find your cheapest exchange with FeeEdge:`
         : `I found my cheapest crypto exchange with FeeEdge. Find yours:`
     const url = buildShareUrl()
-    try {
-      if (typeof navigator !== 'undefined' && navigator.share) {
-        await navigator.share({ title: 'FeeEdge', text, url })
-        return
-      }
-      await navigator.clipboard.writeText(`${text} ${url}`)
+    const full = `${text} ${url}`
+    const flagCopied = () => {
       setShareCopied(true)
       setTimeout(() => setShareCopied(false), 1800)
+    }
+
+    // 1) Native share sheet (mostly mobile). Fall through to copy on any failure
+    //    — including when navigator.share exists but throws/cancels on desktop.
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ title: 'FeeEdge', text, url })
+        return
+      } catch {
+        /* unsupported, no share target, or cancelled — try clipboard next */
+      }
+    }
+
+    // 2) Async clipboard API (needs HTTPS + permission).
+    try {
+      await navigator.clipboard.writeText(full)
+      flagCopied()
+      return
     } catch {
-      /* user cancelled share or clipboard blocked — no-op */
+      /* blocked — fall back to legacy copy */
+    }
+
+    // 3) Legacy execCommand copy, then a prompt as a last resort so the button
+    //    always does *something* visible.
+    try {
+      const ta = document.createElement('textarea')
+      ta.value = full
+      ta.style.position = 'fixed'
+      ta.style.opacity = '0'
+      document.body.appendChild(ta)
+      ta.select()
+      document.execCommand('copy')
+      document.body.removeChild(ta)
+      flagCopied()
+    } catch {
+      window.prompt('Copy your FeeEdge link:', full)
     }
   }
 
