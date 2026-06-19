@@ -165,6 +165,22 @@ const sliderToVol = (s: number) => {
   return Math.round(v / step) * step
 }
 
+// PostHog event helper — retries briefly since posthog loads async (so events
+// fired on mount don't get dropped before the script is ready). No-op if absent.
+function phCapture(event: string, props?: Record<string, unknown>) {
+  if (typeof window === 'undefined') return
+  const w = window as any
+  let tries = 0
+  const fire = () => {
+    if (w.posthog?.capture) {
+      w.posthog.capture(event, props)
+    } else if (tries++ < 6) {
+      setTimeout(fire, 800)
+    }
+  }
+  fire()
+}
+
 function timeAgo(ts: number): string {
   const mins = Math.floor((Date.now() - ts) / 60000)
   if (mins < 1) return 'just now'
@@ -257,6 +273,16 @@ function FeeEdge() {
     }
   }, [])
 
+  // Analytics: funnel entry + Stripe-return conversion (fires once on mount).
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    phCapture('result_viewed', { market, monthlyVolume })
+    if (new URLSearchParams(window.location.search).get('checkout') === 'success') {
+      phCapture('pro_purchased')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const toggleAsset = (asset: string) =>
     setSelectedAssets((prev) =>
       prev.includes(asset) ? prev.filter((a) => a !== asset) : [...prev, asset],
@@ -276,7 +302,7 @@ function FeeEdge() {
   }
 
   const handleShareSavings = async () => {
-    if (typeof window !== 'undefined') (window as any).posthog?.capture('share_savings')
+    phCapture('share_savings')
     const annual = Math.round(monthlySavings * 12)
     const text =
       annual > 0
@@ -297,8 +323,7 @@ function FeeEdge() {
   }
 
   const handleUpgrade = async () => {
-    if (typeof window !== 'undefined')
-      (window as any).posthog?.capture('upgrade_clicked', { market, monthlyVolume })
+    phCapture('upgrade_clicked', { market, monthlyVolume })
     if (!isAuthenticated) {
       setShowSignIn(true)
       return
@@ -447,6 +472,7 @@ function FeeEdge() {
 
   // CSV export (Pro): the full visible results table as a downloadable file.
   const handleExportCsv = () => {
+    phCapture('export', { type: 'csv', market, monthlyVolume })
     const header = ['Rank', 'Exchange', 'Maker %', 'Taker %', 'Token Discount', 'Trading Fees (mo)', 'Funding Est (mo)', 'Total Monthly']
     const lines = visibleResults.map((ex, i) => [
       i + 1,
@@ -471,6 +497,7 @@ function FeeEdge() {
   }
 
   const handleExportPdf = () => {
+    phCapture('export', { type: 'pdf', market, monthlyVolume })
     const generatedAt = new Date().toLocaleString()
     const assets = selectedAssets.length ? selectedAssets.join(', ') : 'None'
     const rows = visibleResults
