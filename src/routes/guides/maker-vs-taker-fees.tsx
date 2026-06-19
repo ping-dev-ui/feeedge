@@ -1,5 +1,22 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { LegalPage } from '~/components/LegalPage'
+import { JsonLd } from '~/components/JsonLd'
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'Maker vs taker fees explained',
+  description:
+    'What maker and taker fees are, why takers usually pay more, and how to pay the cheaper maker fee.',
+  datePublished: '2026-06-18',
+  author: { '@type': 'Organization', name: 'FeeEdge' },
+  publisher: {
+    '@type': 'Organization',
+    name: 'FeeEdge',
+    logo: { '@type': 'ImageObject', url: 'https://feeedge.com/logo-mark.png' },
+  },
+  mainEntityOfPage: 'https://feeedge.com/guides/maker-vs-taker-fees',
+}
 
 export const Route = createFileRoute('/guides/maker-vs-taker-fees')({
   head: () => {
@@ -22,6 +39,7 @@ export const Route = createFileRoute('/guides/maker-vs-taker-fees')({
 function Page() {
   return (
     <LegalPage title="Maker vs taker fees explained">
+      <JsonLd data={articleSchema} />
       <p>
         The easiest way to cut your crypto trading costs usually isn't switching exchanges — it's
         understanding the difference between a <strong>maker</strong> and a <strong>taker</strong> fee and

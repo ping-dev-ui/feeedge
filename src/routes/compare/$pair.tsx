@@ -7,6 +7,7 @@ import {
   pct,
   allPairs,
   pairSlug,
+  DATA_UPDATED,
   type Exchange,
 } from '~/data/exchanges'
 
@@ -99,7 +100,7 @@ function ComparePage() {
   }
 
   return (
-    <LegalPage title={`${a.name} vs ${b.name} fees`}>
+    <LegalPage title={`${a.name} vs ${b.name} fees`} updated={DATA_UPDATED}>
       <JsonLd data={faqSchema} />
       <JsonLd data={breadcrumbSchema} />
       <p>

@@ -25,6 +25,22 @@ const siteSchema = [
     name: 'FeeEdge',
     url: 'https://feeedge.com/',
   },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'FeeEdge',
+    applicationCategory: 'FinanceApplication',
+    operatingSystem: 'Web',
+    url: 'https://feeedge.com/',
+    description:
+      'Compare real trading fees across 20 crypto exchanges — perps and spot — ranked for your volume and trading style.',
+    offers: {
+      '@type': 'Offer',
+      price: '29',
+      priceCurrency: 'USD',
+      description: 'FeeEdge Pro — one-time, no subscription',
+    },
+  },
 ]
 
 export const Route = createRootRouteWithContext<{

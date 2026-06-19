@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { LegalPage } from '~/components/LegalPage'
-import { allPairs, pairSlug } from '~/data/exchanges'
+import { allPairs, pairSlug, DATA_UPDATED } from '~/data/exchanges'
 
 export const Route = createFileRoute('/compare/')({
   head: () => {
@@ -23,7 +23,7 @@ export const Route = createFileRoute('/compare/')({
 function CompareIndex() {
   const pairs = allPairs()
   return (
-    <LegalPage title="Crypto exchange fee comparisons">
+    <LegalPage title="Crypto exchange fee comparisons" updated={DATA_UPDATED}>
       <p>
         Compare trading fees between the major crypto exchanges, head to head. Each page breaks down maker
         and taker rates for both perpetual futures and spot. To find the cheapest venue for{' '}
@@ -33,7 +33,12 @@ function CompareIndex() {
 
       <h2>Popular pages</h2>
       <ul>
+        <li><a href="/report">State of Crypto Exchange Fees 2026 (report)</a></li>
         <li><a href="/versus">Compare exchanges head-to-head (interactive)</a></li>
+        <li><a href="/cheapest-exchange-for-bitcoin">Cheapest exchange to buy Bitcoin</a></li>
+        <li><a href="/cheapest-exchange-for-ethereum">Cheapest exchange to buy Ethereum</a></li>
+        <li><a href="/best-exchange-for-scalping">Best exchange for scalping</a></li>
+        <li><a href="/guides/how-to-reduce-crypto-trading-fees">Guide: how to reduce crypto trading fees</a></li>
         <li><a href="/exchanges">All exchange fee pages (per-exchange)</a></li>
         <li><a href="/lowest-fee-crypto-exchange">Lowest-fee crypto exchange</a></li>
         <li><a href="/cheapest-exchange-for-perps">Cheapest exchange for perps (futures)</a></li>

@@ -1,0 +1,28 @@
+# FeeEdge
+
+> FeeEdge compares real trading fees across 20 major crypto exchanges — perpetual futures and spot — and ranks the cheapest venue for a trader's specific monthly volume, maker/taker mix, native-token discounts and (on perps) funding. Fees are refreshed daily; published entry-tier maker/taker rates, verified June 2026.
+
+## Key facts
+- Covers 20 exchanges: Binance, Bybit, OKX, Bitget, Gate.io, MEXC, Hyperliquid, HTX, BingX, Kraken, Coinbase, Crypto.com, KuCoin, Bitfinex, WhiteBIT, Phemex, BitMEX, Backpack, BitMart, CoinEx.
+- Perpetual-futures base taker fees range from ~0.00% (Bitfinex, MEXC) to ~0.06% across these venues; spot fees range from ~0.00% to ~0.60% (Coinbase Advanced).
+- Bitfinex currently advertises 0% maker/taker on spot and derivatives; MEXC is among the cheapest perps venues.
+- Native-token discounts (~10–25%) are offered via BNB (Binance), OKB (OKX), KCS (KuCoin), GT (Gate.io), BGB (Bitget), HT (HTX), BMX (BitMart), CET (CoinEx), WBT (WhiteBIT).
+- The cheapest exchange depends on market (perps vs spot), 30-day volume tier, and maker/taker mix — there is no single cheapest for everyone.
+
+## Core pages
+- [FeeEdge calculator](https://feeedge.com/): rank all 20 exchanges by your real monthly cost.
+- [State of Crypto Exchange Fees 2026](https://feeedge.com/report): data-driven report on the cheapest venues.
+- [Compare exchanges head-to-head](https://feeedge.com/versus): interactive side-by-side comparison.
+- [All fee comparisons](https://feeedge.com/compare) and [per-exchange fee pages](https://feeedge.com/exchanges).
+- [Methodology](https://feeedge.com/methodology): how fees are sourced and updated.
+
+## Guides
+- [Lowest-fee crypto exchange](https://feeedge.com/lowest-fee-crypto-exchange)
+- [Cheapest exchange for perps](https://feeedge.com/cheapest-exchange-for-perps)
+- [Cheapest exchange for spot](https://feeedge.com/cheapest-exchange-for-spot)
+- [Cheapest exchange to buy Bitcoin](https://feeedge.com/cheapest-exchange-for-bitcoin)
+- [Cheapest exchange to buy Ethereum](https://feeedge.com/cheapest-exchange-for-ethereum)
+- [Best exchange for scalping](https://feeedge.com/best-exchange-for-scalping)
+- [Maker vs taker fees explained](https://feeedge.com/guides/maker-vs-taker-fees)
+- [The hidden costs of crypto trading](https://feeedge.com/guides/hidden-costs-of-crypto-trading)
+- [How to reduce crypto trading fees](https://feeedge.com/guides/how-to-reduce-crypto-trading-fees)

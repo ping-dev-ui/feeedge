@@ -2,6 +2,39 @@ import type { CSSProperties } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { LegalPage } from '~/components/LegalPage'
 import { RankedFees } from '~/components/RankedFees'
+import { JsonLd } from '~/components/JsonLd'
+import { DATA_UPDATED } from '~/data/exchanges'
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Which exchange has the cheapest perpetual-futures fees?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'On base-tier taker fees, MEXC, Bitfinex and Hyperliquid are among the cheapest perp venues of the 20 FeeEdge tracks. But funding rates and your volume tier can change the real cost, so the cheapest venue for your trading is best found with the calculator.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Do funding rates matter more than trading fees on perps?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Often, yes. Funding is exchanged between longs and shorts roughly every 8 hours, and if you hold a leveraged position through several windows it can cost more than the trading fee itself. The cheapest venue to trade is not always the cheapest to hold.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Are perp fees lower than spot fees?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Usually yes — perpetual-futures maker/taker fees are typically much lower than spot fees on the same exchange (often around 0.02%/0.05% vs 0.1%+ on spot), which is one reason high-frequency traders prefer perps.',
+      },
+    },
+  ],
+}
 
 export const Route = createFileRoute('/cheapest-exchange-for-perps')({
   head: () => {
@@ -23,7 +56,8 @@ export const Route = createFileRoute('/cheapest-exchange-for-perps')({
 
 function Page() {
   return (
-    <LegalPage title="Cheapest exchange for perps">
+    <LegalPage title="Cheapest exchange for perps" updated={DATA_UPDATED}>
+      <JsonLd data={faqSchema} />
       <p>
         Perpetual-futures traders feel fees more than anyone — high frequency and leverage magnify every
         basis point. Here are the major exchanges ranked by published perp <strong>taker</strong> fee,
@@ -42,6 +76,25 @@ function Page() {
 
       <p>
         <a href="/" style={cta}>See your real perp cost across 20 venues →</a>
+      </p>
+
+      <h2>FAQ</h2>
+      <h3>Which exchange has the cheapest perpetual-futures fees?</h3>
+      <p>
+        On base-tier taker fees, MEXC, Bitfinex and Hyperliquid rank among the cheapest perp venues — but
+        funding and your volume tier change the real cost, so check your own profile in the{' '}
+        <a href="/">calculator</a>.
+      </p>
+      <h3>Do funding rates matter more than trading fees?</h3>
+      <p>
+        Often. Funding is exchanged between longs and shorts ~every 8 hours; holding a leveraged position
+        through several windows can cost more than the trade itself. The cheapest venue to trade isn't always
+        the cheapest to hold — see <a href="/guides/hidden-costs-of-crypto-trading">the hidden costs of crypto trading</a>.
+      </p>
+      <h3>Are perp fees lower than spot fees?</h3>
+      <p>
+        Usually — perp maker/taker fees (around 0.02%/0.05%) are typically far below spot fees (0.1%+) on the
+        same exchange, which is part of why active traders prefer perps.
       </p>
 
       <h2>Related</h2>

@@ -146,6 +146,10 @@ export function parsePair(pair: string): [Exchange, Exchange] | null {
 
 export const pct = (v: number) => `${(v * 100).toFixed(3)}%`
 
+// Human-readable "data last verified" label, shown on SEO pages as a freshness
+// signal. Bump alongside VERIFIED_AT in convex/fetcher.ts when fees are re-checked.
+export const DATA_UPDATED = 'June 2026'
+
 // Official domains, used to render each exchange's logo (via favicon service)
 // next to its name. Keyed by slug (which matches the calculator's `key`).
 export const EXCHANGE_DOMAIN: Record<string, string> = {

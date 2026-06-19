@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { LegalPage } from '~/components/LegalPage'
 import { ExchangeLogo } from '~/components/ExchangeLogo'
-import { EXCHANGES, pct } from '~/data/exchanges'
+import { EXCHANGES, pct, DATA_UPDATED } from '~/data/exchanges'
 
 export const Route = createFileRoute('/exchanges/')({
   head: () => {
@@ -23,7 +23,7 @@ export const Route = createFileRoute('/exchanges/')({
 
 function ExchangesIndex() {
   return (
-    <LegalPage title="Crypto exchange trading fees">
+    <LegalPage title="Crypto exchange trading fees" updated={DATA_UPDATED}>
       <p>
         Fee breakdowns for the major crypto exchanges. Each page covers maker and taker rates for
         perpetual futures and spot, native-token discounts, and how the exchange ranks against the others.

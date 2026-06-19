@@ -8,6 +8,7 @@ import {
   allPairs,
   pairSlug,
   pct,
+  DATA_UPDATED,
   type Exchange,
 } from '~/data/exchanges'
 
@@ -103,7 +104,7 @@ function ExchangePage() {
   }
 
   return (
-    <LegalPage title={`${e.name} trading fees`}>
+    <LegalPage title={`${e.name} trading fees`} updated={DATA_UPDATED}>
       <JsonLd data={faqSchema} />
       <JsonLd data={breadcrumbSchema} />
 

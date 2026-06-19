@@ -2,6 +2,39 @@ import type { CSSProperties } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { LegalPage } from '~/components/LegalPage'
 import { RankedFees } from '~/components/RankedFees'
+import { JsonLd } from '~/components/JsonLd'
+import { DATA_UPDATED } from '~/data/exchanges'
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Which crypto exchange has the lowest trading fees?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'There is no single cheapest exchange — it depends on whether you trade perpetual futures or spot, your 30-day volume, and whether you use maker or taker orders. Among the 20 venues FeeEdge tracks, MEXC, Bitfinex, Hyperliquid and WhiteBIT consistently rank lowest on base fees, but the cheapest venue for your specific profile is calculated in the FeeEdge calculator.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Are maker fees lower than taker fees?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. Makers add liquidity with limit orders and are charged less; takers remove liquidity with market orders and pay more — usually 2–3× the maker fee. Trading with limit orders is the simplest way to lower your costs.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How can I reduce my crypto trading fees?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Use limit (maker) orders, consolidate volume to reach cheaper fee tiers, hold an exchange’s native token for a discount where offered, and account for funding and withdrawal fees — not just the headline trading fee.',
+      },
+    },
+  ],
+}
 
 export const Route = createFileRoute('/lowest-fee-crypto-exchange')({
   head: () => {
@@ -23,7 +56,8 @@ export const Route = createFileRoute('/lowest-fee-crypto-exchange')({
 
 function Page() {
   return (
-    <LegalPage title="The lowest-fee crypto exchange">
+    <LegalPage title="The lowest-fee crypto exchange" updated={DATA_UPDATED}>
+      <JsonLd data={faqSchema} />
       <p>
         There's no single "cheapest" crypto exchange — it depends on whether you trade perps or spot, your
         monthly volume, and whether you use maker (limit) or taker (market) orders. But here's how the major
@@ -50,9 +84,27 @@ function Page() {
       <ul>
         <li><strong>Use limit (maker) orders</strong> where you can — maker fees are almost always lower than taker.</li>
         <li><strong>Watch volume tiers</strong> — many venues drop your rate sharply once you cross a monthly-volume threshold.</li>
-        <li><strong>Hold the native token</strong> (BNB, OKB, KCS, GT, BGB) for a fee discount on supported exchanges.</li>
+        <li><strong>Hold the native token</strong> (BNB, OKB, KCS, GT, BGB, HT, BMX, CET, WBT) for a fee discount on supported exchanges.</li>
         <li><strong>Don't forget funding and withdrawal fees</strong> — on perps and when moving coins, these add up.</li>
       </ul>
+
+      <h2>FAQ</h2>
+      <h3>Which crypto exchange has the lowest trading fees?</h3>
+      <p>
+        It depends on the market (perps vs spot), your 30-day volume, and your maker/taker mix. Among the 20
+        venues we track, MEXC, Bitfinex, Hyperliquid and WhiteBIT consistently rank lowest on base fees — but
+        the cheapest for <em>you</em> is whatever the <a href="/">calculator</a> returns for your profile.
+      </p>
+      <h3>Are maker fees lower than taker fees?</h3>
+      <p>
+        Yes — makers add liquidity (limit orders) and pay less; takers remove it (market orders) and pay more,
+        usually 2–3× as much. See <a href="/guides/maker-vs-taker-fees">maker vs taker fees explained</a>.
+      </p>
+      <h3>How can I reduce my crypto trading fees?</h3>
+      <p>
+        Use limit orders, consolidate volume to hit cheaper tiers, hold a native token for a discount where
+        offered, and account for funding and withdrawal costs — not just the headline fee.
+      </p>
 
       <h2>Related</h2>
       <ul>

@@ -1252,6 +1252,7 @@ function FeeEdge() {
           <Link to="/compare" className="hover:text-white transition-colors">Compare fees</Link>
           <Link to="/versus" className="hover:text-white transition-colors">Head-to-head</Link>
           <Link to="/exchanges" className="hover:text-white transition-colors">Exchanges</Link>
+          <Link to="/report" className="hover:text-white transition-colors">Report</Link>
           <Link to="/methodology" className="hover:text-white transition-colors">Methodology</Link>
           <Link to="/about" className="hover:text-white transition-colors">About</Link>
           <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>

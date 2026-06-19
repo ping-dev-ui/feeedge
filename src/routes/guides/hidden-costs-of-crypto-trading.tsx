@@ -1,5 +1,22 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { LegalPage } from '~/components/LegalPage'
+import { JsonLd } from '~/components/JsonLd'
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'The hidden costs of crypto trading',
+  description:
+    'Funding rates, withdrawal fees, spread/slippage, volume tiers and token discounts all change your true cost of trading crypto.',
+  datePublished: '2026-06-18',
+  author: { '@type': 'Organization', name: 'FeeEdge' },
+  publisher: {
+    '@type': 'Organization',
+    name: 'FeeEdge',
+    logo: { '@type': 'ImageObject', url: 'https://feeedge.com/logo-mark.png' },
+  },
+  mainEntityOfPage: 'https://feeedge.com/guides/hidden-costs-of-crypto-trading',
+}
 
 export const Route = createFileRoute('/guides/hidden-costs-of-crypto-trading')({
   head: () => {
@@ -22,6 +39,7 @@ export const Route = createFileRoute('/guides/hidden-costs-of-crypto-trading')({
 function Page() {
   return (
     <LegalPage title="The hidden costs of crypto trading">
+      <JsonLd data={articleSchema} />
       <p>
         When traders compare exchanges they look at one number: the maker/taker trading fee. But that's only
         part of what you actually pay. Here are the costs that quietly add up — and why your "cheapest"
