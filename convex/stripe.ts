@@ -143,7 +143,7 @@ async function sendWelcomeEmail(to: string): Promise<void> {
           `<h2 style="margin:0 0 8px">You're now FeeEdge Pro</h2>` +
           `<p>Thanks for upgrading! Your account is unlocked. You now have:</p>` +
           `<ul>` +
-          `<li>All 9 exchanges in the comparison (no more locked rows)</li>` +
+          `<li>All 20 exchanges in the comparison (no more locked rows)</li>` +
           `<li>Funding-cost estimates on perps</li>` +
           `<li>Unlimited saved scenarios &amp; email price alerts</li>` +
           `</ul>` +
