@@ -695,6 +695,7 @@ function FeeEdge() {
         <div className="mt-6 flex items-center justify-center gap-3 flex-wrap">
           <Link
             to="/versus"
+            onClick={() => phCapture('head_to_head_clicked', { market, monthlyVolume })}
             className="group inline-flex items-center gap-2 rounded-full bg-emerald-500 text-[#03150f] font-black text-sm md:text-base px-5 py-2.5 shadow-lg shadow-emerald-500/20 hover:bg-emerald-400 transition-colors"
           >
             <Swords size={18} strokeWidth={2.5} />
