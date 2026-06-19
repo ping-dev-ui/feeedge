@@ -158,6 +158,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     <html>
       <head>
         <HeadContent />
+      </head>
       <body>
         {children}
         <JsonLd data={siteSchema} />
