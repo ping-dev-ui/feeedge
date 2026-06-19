@@ -7,6 +7,25 @@ import {
 import * as React from 'react'
 import type { QueryClient } from '@tanstack/react-query'
 import appCss from '~/styles/app.css?url'
+import { JsonLd } from '~/components/JsonLd'
+
+const siteSchema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'FeeEdge',
+    url: 'https://feeedge.com/',
+    logo: 'https://feeedge.com/logo-mark.png',
+    description:
+      'FeeEdge compares real trading fees across 9 major crypto exchanges — perps and spot — ranked for your volume and trading style.',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'FeeEdge',
+    url: 'https://feeedge.com/',
+  },
+]
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
@@ -117,6 +136,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <JsonLd data={siteSchema} />
         <Analytics />
         <Scripts />
       </body>

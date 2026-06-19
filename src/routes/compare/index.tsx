@@ -33,6 +33,7 @@ function CompareIndex() {
 
       <h2>Popular pages</h2>
       <ul>
+        <li><a href="/exchanges">All exchange fee pages (per-exchange)</a></li>
         <li><a href="/lowest-fee-crypto-exchange">Lowest-fee crypto exchange</a></li>
         <li><a href="/cheapest-exchange-for-perps">Cheapest exchange for perps (futures)</a></li>
         <li><a href="/cheapest-exchange-for-spot">Cheapest exchange for spot trading</a></li>

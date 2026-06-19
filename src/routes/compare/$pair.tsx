@@ -1,5 +1,6 @@
 import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import { LegalPage } from '~/components/LegalPage'
+import { JsonLd } from '~/components/JsonLd'
 import {
   parsePair,
   pct,
@@ -48,9 +49,58 @@ function ComparePage() {
 
   const cheaperFutures = a.futures.taker <= b.futures.taker ? a : b
   const cheaperSpot = a.spot.taker <= b.spot.taker ? a : b
+  const other = (e: Exchange) => (e.slug === a.slug ? b : a)
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `Is ${a.name} cheaper than ${b.name}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `For base-tier perpetual futures, ${cheaperFutures.name} has the lower taker fee (${pct(cheaperFutures.futures.taker)} vs ${pct(other(cheaperFutures).futures.taker)}). For spot, ${cheaperSpot.name} is cheaper (${pct(cheaperSpot.spot.taker)} vs ${pct(other(cheaperSpot).spot.taker)}). Your actual cheapest venue depends on your monthly volume and maker/taker mix.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `What are ${a.name}'s trading fees?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `${a.name} charges roughly ${pct(a.futures.maker)} maker / ${pct(a.futures.taker)} taker on perpetual futures and ${pct(a.spot.maker)} maker / ${pct(a.spot.taker)} taker on spot at the entry tier${a.token ? `, with discounts if you pay fees with ${a.token}` : ''}.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `What are ${b.name}'s trading fees?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `${b.name} charges roughly ${pct(b.futures.maker)} maker / ${pct(b.futures.taker)} taker on perpetual futures and ${pct(b.spot.maker)} maker / ${pct(b.spot.taker)} taker on spot at the entry tier${b.token ? `, with discounts if you pay fees with ${b.token}` : ''}.`,
+        },
+      },
+    ],
+  }
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://feeedge.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Compare', item: 'https://feeedge.com/compare' },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: `${a.name} vs ${b.name}`,
+        item: `https://feeedge.com/compare/${pair}`,
+      },
+    ],
+  }
 
   return (
     <LegalPage title={`${a.name} vs ${b.name} fees`}>
+      <JsonLd data={faqSchema} />
+      <JsonLd data={breadcrumbSchema} />
       <p>
         Wondering whether <strong>{a.name}</strong> or <strong>{b.name}</strong> is cheaper for trading?
         Below are their published entry-tier fees side by side, for both perpetual futures and spot. The
@@ -83,6 +133,12 @@ function ComparePage() {
         >
           See your cheapest exchange →
         </a>
+      </p>
+
+      <p>
+        Want the full picture on either venue? See{' '}
+        <Link to="/exchanges/$slug" params={{ slug: a.slug }}>{a.name} fees</Link> and{' '}
+        <Link to="/exchanges/$slug" params={{ slug: b.slug }}>{b.name} fees</Link>.
       </p>
 
       <h2>Open an account</h2>
