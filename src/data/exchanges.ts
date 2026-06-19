@@ -145,3 +145,28 @@ export function parsePair(pair: string): [Exchange, Exchange] | null {
 }
 
 export const pct = (v: number) => `${(v * 100).toFixed(3)}%`
+
+// Official domains, used to render each exchange's logo (via favicon service)
+// next to its name. Keyed by slug (which matches the calculator's `key`).
+export const EXCHANGE_DOMAIN: Record<string, string> = {
+  binance: 'binance.com',
+  bybit: 'bybit.com',
+  hyperliquid: 'hyperliquid.xyz',
+  okx: 'okx.com',
+  gateio: 'gate.io',
+  bitget: 'bitget.com',
+  kucoin: 'kucoin.com',
+  mexc: 'mexc.com',
+  kraken: 'kraken.com',
+  htx: 'htx.com',
+  bingx: 'bingx.com',
+  coinbase: 'coinbase.com',
+  cryptocom: 'crypto.com',
+  bitfinex: 'bitfinex.com',
+  whitebit: 'whitebit.com',
+  phemex: 'phemex.com',
+  bitmex: 'bitmex.com',
+  backpack: 'backpack.exchange',
+  bitmart: 'bitmart.com',
+  coinex: 'coinex.com',
+}

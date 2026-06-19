@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import { LegalPage } from '~/components/LegalPage'
 import { JsonLd } from '~/components/JsonLd'
+import { ExchangeLogo } from '~/components/ExchangeLogo'
 import {
   EXCHANGES,
   exchangeBySlug,
@@ -105,6 +106,11 @@ function ExchangePage() {
     <LegalPage title={`${e.name} trading fees`}>
       <JsonLd data={faqSchema} />
       <JsonLd data={breadcrumbSchema} />
+
+      <p style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <ExchangeLogo slug={e.slug} name={e.name} colorClass={e.colorClass} size={28} />
+        <span className={e.colorClass} style={{ fontWeight: 800, fontSize: '18px' }}>{e.name}</span>
+      </p>
 
       <p>
         Here are <strong>{e.name}</strong>'s published entry-tier trading fees for both perpetual futures

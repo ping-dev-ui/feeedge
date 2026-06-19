@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { LegalPage } from '~/components/LegalPage'
+import { ExchangeLogo } from '~/components/ExchangeLogo'
 import { EXCHANGES, pct } from '~/data/exchanges'
 
 export const Route = createFileRoute('/exchanges/')({
@@ -33,7 +34,8 @@ function ExchangesIndex() {
       <h2>All exchanges</h2>
       <ul>
         {EXCHANGES.map((e) => (
-          <li key={e.slug}>
+          <li key={e.slug} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <ExchangeLogo slug={e.slug} name={e.name} colorClass={e.colorClass} size={20} />
             <Link to="/exchanges/$slug" params={{ slug: e.slug }}>
               {e.name} fees
             </Link>{' '}

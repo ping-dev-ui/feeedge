@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { EXCHANGES, exchangeBySlug, pct, type Exchange } from '~/data/exchanges'
+import { ExchangeLogo } from '~/components/ExchangeLogo'
 
 export const Route = createFileRoute('/versus')({
   head: () => {
@@ -187,7 +188,10 @@ function VersusPage() {
               className={`rounded-xl border p-4 bg-[#0a1a13] ${cheapest ? 'border-emerald-500' : 'border-zinc-800'}`}
             >
               <div className="flex items-center justify-between mb-2">
-                <span className={`text-lg font-black ${e.colorClass}`}>{e.name}</span>
+                <span className="flex items-center gap-2 min-w-0">
+                  <ExchangeLogo slug={e.slug} name={e.name} colorClass={e.colorClass} size={22} />
+                  <span className={`text-lg font-black truncate ${e.colorClass}`}>{e.name}</span>
+                </span>
                 {cheapest && (
                   <span className="text-[10px] font-black uppercase tracking-wide bg-emerald-500 text-[#03150f] px-2 py-0.5 rounded">
                     Cheapest

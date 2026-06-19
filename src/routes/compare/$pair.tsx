@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import { LegalPage } from '~/components/LegalPage'
 import { JsonLd } from '~/components/JsonLd'
+import { ExchangeLogo } from '~/components/ExchangeLogo'
 import {
   parsePair,
   pct,
@@ -216,8 +217,16 @@ function FeeTable({ a, b }: { a: Exchange; b: Exchange }) {
         <thead>
           <tr>
             <th style={{ textAlign: 'left', padding: '8px 12px', borderBottom: '1px solid rgba(255,255,255,0.15)', color: '#a1a1aa', fontWeight: 600 }}></th>
-            <th style={{ textAlign: 'right', padding: '8px 12px', borderBottom: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontWeight: 700 }}>{a.name}</th>
-            <th style={{ textAlign: 'right', padding: '8px 12px', borderBottom: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontWeight: 700 }}>{b.name}</th>
+            <th style={{ textAlign: 'right', padding: '8px 12px', borderBottom: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontWeight: 700 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-end' }}>
+                <ExchangeLogo slug={a.slug} name={a.name} colorClass={a.colorClass} size={18} />{a.name}
+              </span>
+            </th>
+            <th style={{ textAlign: 'right', padding: '8px 12px', borderBottom: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontWeight: 700 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-end' }}>
+                <ExchangeLogo slug={b.slug} name={b.name} colorClass={b.colorClass} size={18} />{b.name}
+              </span>
+            </th>
           </tr>
         </thead>
         <tbody>

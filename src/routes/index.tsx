@@ -12,6 +12,7 @@ import { ScenariosPanel } from '~/components/ScenariosPanel'
 import { AlertsPanel } from '~/components/AlertsPanel'
 import { ProTools } from '~/components/ProTools'
 import { CountUp } from '~/components/CountUp'
+import { ExchangeLogo } from '~/components/ExchangeLogo'
 import {
   BarChart3,
   Info,
@@ -994,6 +995,7 @@ function FeeEdge() {
                     <div className="text-2xl font-black text-zinc-700 w-6">#{idx + 1}</div>
                     <div>
                       <div className="flex items-center gap-2">
+                        <ExchangeLogo slug={ex.key} name={ex.name} colorClass={ex.color} size={22} />
                         <h3 className={`text-lg font-bold ${ex.color}`}>{ex.name}</h3>
                         {idx === 0 && (
                           <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-black px-1.5 py-0.5 rounded">

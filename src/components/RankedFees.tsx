@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react'
 import { EXCHANGES, pct, type Exchange } from '~/data/exchanges'
+import { ExchangeLogo } from '~/components/ExchangeLogo'
 
 // Ranked fee table for a given market, cheapest taker first. Used by the
 // cornerstone SEO pages.
@@ -23,7 +24,12 @@ export function RankedFees({ market }: { market: 'futures' | 'spot' }) {
           {ranked.map((e, i) => (
             <tr key={e.slug}>
               <td style={td('left', i === 0)}>{i + 1}</td>
-              <td style={td('left', i === 0)}>{e.name}{e.token ? ` (${e.token} discount)` : ''}</td>
+              <td style={td('left', i === 0)}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <ExchangeLogo slug={e.slug} name={e.name} colorClass={e.colorClass} size={18} />
+                  {e.name}{e.token ? ` (${e.token} discount)` : ''}
+                </span>
+              </td>
               <td style={{ ...td('right', i === 0), fontFamily: 'var(--font-mono, monospace)' }}>{pct(e[market].maker)}</td>
               <td style={{ ...td('right', i === 0), fontFamily: 'var(--font-mono, monospace)' }}>{pct(e[market].taker)}</td>
               <td style={td('left', i === 0)}>
