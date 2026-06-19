@@ -992,7 +992,7 @@ function FeeEdge() {
                 <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${ex.color}`} style={{ backgroundColor: 'currentColor' }} />
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="flex items-center gap-4">
-                    <div className="text-2xl font-black text-zinc-700 w-6">#{idx + 1}</div>
+                    <div className="text-2xl font-black text-zinc-700 w-11 shrink-0 text-right">#{idx + 1}</div>
                     <div>
                       <div className="flex items-center gap-2">
                         <ExchangeLogo slug={ex.key} name={ex.name} colorClass={ex.color} size={22} />
