@@ -36,6 +36,8 @@ function CompareIndex() {
         <li><a href="/lowest-fee-crypto-exchange">Lowest-fee crypto exchange</a></li>
         <li><a href="/cheapest-exchange-for-perps">Cheapest exchange for perps (futures)</a></li>
         <li><a href="/cheapest-exchange-for-spot">Cheapest exchange for spot trading</a></li>
+        <li><a href="/guides/maker-vs-taker-fees">Guide: maker vs taker fees explained</a></li>
+        <li><a href="/guides/hidden-costs-of-crypto-trading">Guide: the hidden costs of crypto trading</a></li>
       </ul>
 
       <h2>All comparisons</h2>
