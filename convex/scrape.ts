@@ -160,11 +160,23 @@ export function genericParse(html: string, _market: Market): Rate | null {
   return plausible(r) ? r : null;
 }
 
+// Find maker + taker by their labels anywhere in the text (taker may appear
+// before maker on the page). Works for pages that print "Maker … X%  Taker … Y%".
+function makerTaker(text: string): Rate | null {
+  const maker = labelledPct(text, /maker/i, 60);
+  const taker = labelledPct(text, /taker/i, 60);
+  if (maker == null || taker == null) return null;
+  return { maker, taker };
+}
+
 // VERIFIED per-exchange/market parsers. Keyed by "exchange:market". Each is
 // written and confirmed against the real Bright Data output (via debugUnlock)
-// before being added here. Empty until verified — see build notes at top.
+// before being added here.
 const PARSERS: Record<string, (text: string) => Rate | null> = {
-  // populated as parsers are verified, e.g. "bitget:futures": (t) => {...}
+  // BingX futures support article renders server-side as:
+  // "Taker (filled instantly): 0.05% Maker (pending orders): 0.02%"
+  // → maker 0.02%, taker 0.05% (verified 2026-06-19).
+  "bingx:futures": makerTaker,
 };
 
 // Public entry point: scrape one exchange/market. Returns a decimal Rate or null
