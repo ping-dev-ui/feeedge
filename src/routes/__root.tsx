@@ -3,6 +3,7 @@ import {
   Outlet,
   Scripts,
   createRootRouteWithContext,
+  useRouterState,
 } from '@tanstack/react-router'
 import * as React from 'react'
 import type { QueryClient } from '@tanstack/react-query'
@@ -145,11 +146,15 @@ function Analytics() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  // Self-referencing canonical for every page, server-rendered, with query
+  // params (?ref=, ?v=, etc.) stripped so shared links don't create duplicates.
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const canonical = `https://feeedge.com${pathname}`
   return (
     <html>
       <head>
+        <link rel="canonical" href={canonical} />
         <HeadContent />
-      </head>
       <body>
         {children}
         <JsonLd data={siteSchema} />
