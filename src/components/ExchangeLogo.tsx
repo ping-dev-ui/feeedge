@@ -39,7 +39,7 @@ export function ExchangeLogo({
       height={size}
       loading="lazy"
       onError={() => setErr(true)}
-      className="shrink-0 rounded-[5px] bg-white/5 object-contain"
+      className="shrink-0 rounded-[5px] bg-white object-contain p-px ring-1 ring-black/10"
       style={{ width: px, height: px }}
     />
   )
