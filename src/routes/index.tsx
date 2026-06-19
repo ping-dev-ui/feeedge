@@ -394,14 +394,17 @@ function FeeEdge() {
       setTimeout(() => setShareCopied(false), 1800)
     }
 
-    // 1) Native share sheet (mostly mobile). Fall through to copy on any failure
-    //    — including when navigator.share exists but throws/cancels on desktop.
-    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+    // 1) Native share sheet ONLY on touch devices (mobile), where it's reliable
+    //    and expected. On desktop navigator.share exists but is flaky/confusing
+    //    (it can "resolve" without sharing), so we skip it and copy instead.
+    const isTouch =
+      typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches
+    if (isTouch && typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
       try {
         await navigator.share({ title: 'FeeEdge', text, url })
         return
       } catch {
-        /* unsupported, no share target, or cancelled — try clipboard next */
+        /* cancelled or unsupported — fall through to copy */
       }
     }
 
