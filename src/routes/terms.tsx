@@ -2,7 +2,13 @@ import { createFileRoute } from '@tanstack/react-router'
 import { LegalPage } from '~/components/LegalPage'
 
 export const Route = createFileRoute('/terms')({
-  head: () => ({ meta: [{ title: 'Terms of Service — FeeEdge' }] }),
+  head: () => ({
+    meta: [
+      { title: 'Terms of Service — FeeEdge' },
+      { name: 'description', content: 'The terms for using FeeEdge, our crypto exchange fee comparison tool, and FeeEdge Pro.' },
+      { property: 'og:title', content: 'Terms of Service — FeeEdge' },
+    ],
+  }),
   component: TermsPage,
 })
 
