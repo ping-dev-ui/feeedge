@@ -987,11 +987,16 @@ function FeeEdge() {
               </div>
               <div className="space-y-2 border-t border-zinc-800 pt-3">
                 <p className="text-zinc-300 font-bold uppercase tracking-widest text-[11px]">Pro tools</p>
-                <p><span className="text-emerald-400 font-bold">Native-token discount:</span> toggle it on to recompute every rate as if you pay fees with each venue's token (BNB, OKB, KCS, GT, BGB). Rows show the discount applied — this is your true cost if you hold the token.</p>
+                <p><span className="text-emerald-400 font-bold">Native-token discount:</span> toggle it on to recompute every rate as if you pay fees with each venue's token (BNB, OKB, KCS, GT, BGB, HT, BMX, CET, WBT). Rows show the discount applied — this is your true cost if you hold the token.</p>
                 <p><span className="text-emerald-400 font-bold">Funding-rate optimizer (perps):</span> live 8h funding by venue, with the cheapest place to hold a long vs a short. Positive funding = longs pay shorts.</p>
                 <p><span className="text-emerald-400 font-bold">Withdrawal fees:</span> typical on-chain withdrawal cost per asset and network (USDT TRC20/ERC20, BTC, ETH) — a real cost the fee table alone misses.</p>
                 <p><span className="text-emerald-400 font-bold">Tier savings ladder:</span> where a little more volume unlocks a cheaper tier, ranked by the biggest monthly saving.</p>
                 <p><span className="text-emerald-400 font-bold">CSV export:</span> download the full comparison (rates, discount, fees, funding, totals) for your own spreadsheets.</p>
+              </div>
+              <div className="space-y-2 border-t border-zinc-800 pt-3">
+                <p className="text-zinc-300 font-bold uppercase tracking-widest text-[11px]">Data &amp; updates</p>
+                <p>We track all {EXCHANGES.length} exchanges and refresh rates <span className="text-zinc-300">daily</span>. Each row shows an <span className="text-zinc-300">"Updated"</span> date/time so you can see how current it is. Live-API venues (e.g. Kraken) update automatically each day; the rest use published rates we verify periodically, shown by their Updated date. All are entry-tier maker/taker rates, then adjusted for your volume tier.</p>
+                <p><span className="text-emerald-400 font-bold">Compare two head-to-head:</span> use the <span className="text-zinc-300">"Compare two exchanges head-to-head"</span> button at the top to put any venues side by side for your volume and style.</p>
               </div>
               <p className="text-zinc-400 italic">Free shows the 3 cheapest venues; Pro unlocks all {EXCHANGES.length} exchanges plus funding estimates, the native-token discount, the funding optimizer, withdrawal-fee comparison, the tier savings ladder, unlimited saved scenarios, price alerts, and PDF/CSV export. All figures are estimates — not financial advice.</p>
             </div>
