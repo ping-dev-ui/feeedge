@@ -1,12 +1,19 @@
 import { internalAction } from "./_generated/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
+import { scrapeFee, scrapingEnabled } from "./scrape";
 
 type Rate = { maker: number; taker: number };
 
+// Date the curated rates below were last hand-verified from the exchanges. Used
+// as the "last updated" stamp for any exchange/market still on the curated
+// fallback (i.e. not freshly fetched via API or scraped), so the UI never
+// claims a fresh update that didn't happen. Bump when you re-verify by hand.
+const VERIFIED_AT = Date.parse("2026-06-19T00:00:00Z");
+
 // Published maker/taker base rates (decimals: 0.0005 = 0.05%), used as the
-// fallback whenever an exchange has no clean public fee API (most don't without
-// auth). Keep the futures values in sync with the tier-0 rates shown in the UI.
+// fallback whenever an exchange has no clean public fee API and scraping is off
+// or fails. Keep the futures values in sync with the tier-0 rates shown in the UI.
 const PUBLISHED: Record<"futures" | "spot", Record<string, Rate>> = {
   futures: {
     binance: { maker: 0.0002, taker: 0.0005 },
@@ -18,6 +25,17 @@ const PUBLISHED: Record<"futures" | "spot", Record<string, Rate>> = {
     kucoin: { maker: 0.0002, taker: 0.0006 },
     mexc: { maker: 0.0, taker: 0.0002 },
     kraken: { maker: 0.0002, taker: 0.0005 },
+    htx: { maker: 0.0002, taker: 0.0006 },
+    bingx: { maker: 0.0002, taker: 0.0005 },
+    coinbase: { maker: 0.0, taker: 0.0003 },
+    cryptocom: { maker: 0.0002, taker: 0.0004 },
+    bitfinex: { maker: 0.0, taker: 0.0 },
+    whitebit: { maker: 0.0001, taker: 0.00035 },
+    phemex: { maker: 0.0001, taker: 0.0006 },
+    bitmex: { maker: 0.0002, taker: 0.0005 },
+    backpack: { maker: 0.0002, taker: 0.0005 },
+    bitmart: { maker: 0.0002, taker: 0.0006 },
+    coinex: { maker: 0.0003, taker: 0.0005 },
   },
   spot: {
     binance: { maker: 0.001, taker: 0.001 },
@@ -29,6 +47,17 @@ const PUBLISHED: Record<"futures" | "spot", Record<string, Rate>> = {
     kucoin: { maker: 0.001, taker: 0.0012 },
     mexc: { maker: 0.0, taker: 0.0005 },
     kraken: { maker: 0.0025, taker: 0.004 },
+    htx: { maker: 0.002, taker: 0.002 },
+    bingx: { maker: 0.001, taker: 0.001 },
+    coinbase: { maker: 0.004, taker: 0.006 },
+    cryptocom: { maker: 0.0025, taker: 0.005 },
+    bitfinex: { maker: 0.0, taker: 0.0 },
+    whitebit: { maker: 0.001, taker: 0.001 },
+    phemex: { maker: 0.001, taker: 0.001 },
+    bitmex: { maker: 0.0005, taker: 0.0005 },
+    backpack: { maker: 0.0002, taker: 0.0005 },
+    bitmart: { maker: 0.0015, taker: 0.0025 },
+    coinex: { maker: 0.002, taker: 0.002 },
   },
 };
 
@@ -91,17 +120,38 @@ export const fetchAllFees = internalAction({
   args: {},
   returns: v.null(),
   handler: async (ctx) => {
+    const scrapeOn = scrapingEnabled();
     for (const market of ["futures", "spot"] as const) {
       for (const exchange of Object.keys(PUBLISHED[market])) {
         let rate = PUBLISHED[market][exchange];
         let source = "published";
+        // Curated values keep their hand-verified date; only a real fetch
+        // (API or scrape) advances the timestamp to now.
+        let lastUpdated = VERIFIED_AT;
 
+        // 1) Live public API where one exists (most reliable).
         const fetcher = LIVE_FETCHERS[`${exchange}:${market}`];
         if (fetcher) {
           const live = await fetcher();
           if (live) {
             rate = live;
             source = "live";
+            lastUpdated = Date.now();
+          }
+        }
+
+        // 2) Otherwise scrape the exchange's fee page via Bright Data (if a key
+        //    is configured and the page parses to a plausible rate).
+        if (source === "published" && scrapeOn) {
+          try {
+            const scraped = await scrapeFee(exchange, market);
+            if (scraped) {
+              rate = scraped;
+              source = "scraped";
+              lastUpdated = Date.now();
+            }
+          } catch (e) {
+            console.error(`Scrape failed for ${exchange} ${market}:`, e);
           }
         }
 
@@ -113,6 +163,7 @@ export const fetchAllFees = internalAction({
             takerFee: rate.taker,
             stale: false,
             source,
+            lastUpdated,
           });
         } catch (e) {
           console.error(`Failed to upsert ${exchange} ${market}:`, e);

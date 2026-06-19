@@ -257,6 +257,18 @@ function timeAgo(ts: number): string {
   return `${Math.floor(hrs / 24)}d ago`
 }
 
+// Absolute date + time for the per-card "Updated" label, e.g. "Jun 19, 2026 14:30".
+function fmtDateTime(ts: number): string {
+  try {
+    return new Date(ts).toLocaleString('en-US', {
+      year: 'numeric', month: 'short', day: 'numeric',
+      hour: '2-digit', minute: '2-digit', hour12: false,
+    })
+  } catch {
+    return ''
+  }
+}
+
 function FeeEdge() {
   const [monthlyVolume, setMonthlyVolume] = useState<number>(1000000)
   const [makerRatio, setMakerRatio] = useState<number>(0.5) // 0 to 1
@@ -413,12 +425,13 @@ function FeeEdge() {
 
   // Live fee rates from Convex, keyed by "exchange:market".
   const liveMap = useMemo(() => {
-    const m: Record<string, { maker: number; taker: number; source: string }> = {}
+    const m: Record<string, { maker: number; taker: number; source: string; lastUpdated: number }> = {}
     for (const r of feeRates ?? []) {
       m[`${r.exchange}:${r.market}`] = {
         maker: r.makerFee,
         taker: r.takerFee,
         source: r.source ?? 'published',
+        lastUpdated: r.lastUpdated,
       }
     }
     return m
@@ -490,6 +503,7 @@ function FeeEdge() {
         effMaker,
         effTaker,
         rateSource,
+        lastUpdated: live?.lastUpdated ?? null,
         token: tokenInfo?.token ?? null,
         discount,
         monthlyFee,
@@ -1011,6 +1025,11 @@ function FeeEdge() {
                           T: <span className="text-zinc-300 font-mono">{(ex.effTaker * 100).toFixed(3)}%</span>
                         </span>
                       </div>
+                      {ex.lastUpdated && (
+                        <div className="mt-1 text-[10px] text-zinc-500">
+                          Updated {fmtDateTime(ex.lastUpdated)}
+                        </div>
+                      )}
                       {ex.discount > 0 && (
                         <span className="mt-1 inline-flex items-center gap-1 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-400">
                           −{Math.round(ex.discount * 100)}% with {ex.token}

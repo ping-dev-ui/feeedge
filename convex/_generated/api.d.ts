@@ -18,6 +18,7 @@ import type * as funding from "../funding.js";
 import type * as http from "../http.js";
 import type * as market from "../market.js";
 import type * as scenarios from "../scenarios.js";
+import type * as scrape from "../scrape.js";
 import type * as stripe from "../stripe.js";
 import type * as users from "../users.js";
 
@@ -38,6 +39,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   market: typeof market;
   scenarios: typeof scenarios;
+  scrape: typeof scrape;
   stripe: typeof stripe;
   users: typeof users;
 }>;
