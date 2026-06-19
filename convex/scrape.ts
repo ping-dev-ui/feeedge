@@ -98,9 +98,10 @@ function plausible(r: Rate | null): r is Rate {
 }
 
 // Generic heuristic: find the first "maker ... X%" and "taker ... Y%" near each
-// other in the rendered text. Works for many simple fee pages; per-exchange
-// overrides can be added below when this isn't enough.
-function genericParse(html: string, _market: Market): Rate | null {
+// other in the rendered text. NOT used automatically — it produced wrong-but-
+// plausible values on real pages (e.g. grabbing arbitrary percentages). Kept and
+// exported for opt-in use by a verified per-exchange parser only.
+export function genericParse(html: string, _market: Market): Rate | null {
   const text = html
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
@@ -128,10 +129,13 @@ export async function scrapeFee(
   market: Market,
 ): Promise<Rate | null> {
   const url = FEE_PAGE[exchange];
-  if (!url || !scrapingEnabled()) return null;
+  const parser = PARSERS[exchange];
+  // Only scrape when we have a VERIFIED per-exchange parser. Without one we skip
+  // the request entirely (saves Bright Data credits) and keep the curated value,
+  // so a bad heuristic parse can never override an accurate curated rate.
+  if (!url || !parser || !scrapingEnabled()) return null;
   const html = await unlock(url);
   if (!html) return null;
-  const parser = PARSERS[exchange] ?? genericParse;
   const rate = parser(html, market);
   return plausible(rate) ? rate : null;
 }
