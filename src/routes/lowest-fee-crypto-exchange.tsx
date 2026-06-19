@@ -7,7 +7,7 @@ export const Route = createFileRoute('/lowest-fee-crypto-exchange')({
   head: () => {
     const title = 'Lowest-fee crypto exchange (2026) — FeeEdge'
     const description =
-      'Which crypto exchange has the lowest trading fees? We rank 9 major exchanges by maker and taker fees — and show how to find the cheapest one for how you actually trade.'
+      'Which crypto exchange has the lowest trading fees? We rank the top 20 exchanges by maker and taker fees — and show how to find the cheapest one for how you actually trade.'
     return {
       meta: [
         { title },
@@ -39,7 +39,7 @@ function Page() {
       <h2>Find your cheapest exchange</h2>
       <p>
         The ranking above is a starting point. Your real cheapest venue depends on your numbers — FeeEdge
-        computes your actual monthly cost across all 9 exchanges in about 10 seconds, including funding on
+        computes your actual monthly cost across all 20 exchanges in about 10 seconds, including funding on
         perps and native-token discounts.
       </p>
       <p>

@@ -111,6 +111,67 @@ const EXCHANGES: ExchangeData[] = [
     ],
     spot: [{ volume: 0, maker: 0.0025, taker: 0.004 }],
   },
+  {
+    name: 'HTX', key: 'htx', color: 'text-sky-400',
+    futures: [
+      { volume: 0, maker: 0.0002, taker: 0.0006 },
+      { volume: 15000000, maker: 0.00014, taker: 0.00045 },
+    ],
+    spot: [{ volume: 0, maker: 0.002, taker: 0.002 }],
+  },
+  {
+    name: 'BingX', key: 'bingx', color: 'text-blue-300',
+    futures: [{ volume: 0, maker: 0.0002, taker: 0.0005 }],
+    spot: [{ volume: 0, maker: 0.001, taker: 0.001 }],
+  },
+  {
+    name: 'Coinbase', key: 'coinbase', color: 'text-blue-500',
+    futures: [{ volume: 0, maker: 0.0, taker: 0.0003 }],
+    spot: [{ volume: 0, maker: 0.004, taker: 0.006 }],
+  },
+  {
+    name: 'Crypto.com', key: 'cryptocom', color: 'text-indigo-400',
+    futures: [{ volume: 0, maker: 0.0002, taker: 0.0004 }],
+    spot: [{ volume: 0, maker: 0.0025, taker: 0.005 }],
+  },
+  {
+    name: 'Bitfinex', key: 'bitfinex', color: 'text-lime-400',
+    futures: [{ volume: 0, maker: 0.0, taker: 0.0 }],
+    spot: [{ volume: 0, maker: 0.0, taker: 0.0 }],
+  },
+  {
+    name: 'WhiteBIT', key: 'whitebit', color: 'text-zinc-200',
+    futures: [{ volume: 0, maker: 0.0001, taker: 0.00035 }],
+    spot: [{ volume: 0, maker: 0.001, taker: 0.001 }],
+  },
+  {
+    name: 'Phemex', key: 'phemex', color: 'text-amber-400',
+    futures: [{ volume: 0, maker: 0.0001, taker: 0.0006 }],
+    spot: [{ volume: 0, maker: 0.001, taker: 0.001 }],
+  },
+  {
+    name: 'BitMEX', key: 'bitmex', color: 'text-red-500',
+    futures: [
+      { volume: 0, maker: 0.0002, taker: 0.0005 },
+      { volume: 15000000, maker: 0.000175, taker: 0.0005 },
+    ],
+    spot: [{ volume: 0, maker: 0.0005, taker: 0.0005 }],
+  },
+  {
+    name: 'Backpack', key: 'backpack', color: 'text-orange-300',
+    futures: [{ volume: 0, maker: 0.0002, taker: 0.0005 }],
+    spot: [{ volume: 0, maker: 0.0002, taker: 0.0005 }],
+  },
+  {
+    name: 'BitMart', key: 'bitmart', color: 'text-emerald-300',
+    futures: [{ volume: 0, maker: 0.0002, taker: 0.0006 }],
+    spot: [{ volume: 0, maker: 0.0015, taker: 0.0025 }],
+  },
+  {
+    name: 'CoinEx', key: 'coinex', color: 'text-teal-400',
+    futures: [{ volume: 0, maker: 0.0003, taker: 0.0005 }],
+    spot: [{ volume: 0, maker: 0.002, taker: 0.002 }],
+  },
 ]
 
 // Affiliate / referral signup links per exchange. Only rendered for exchanges
@@ -134,6 +195,10 @@ const TOKEN_DISCOUNT: Record<string, { token: string; rate: number }> = {
   kucoin: { token: 'KCS', rate: 0.2 },
   gateio: { token: 'GT', rate: 0.15 },
   bitget: { token: 'BGB', rate: 0.2 },
+  htx: { token: 'HT', rate: 0.25 },
+  bitmart: { token: 'BMX', rate: 0.25 },
+  coinex: { token: 'CET', rate: 0.2 },
+  whitebit: { token: 'WBT', rate: 0.2 },
 }
 
 // Relative effective-cost multiplier by asset liquidity. Less-liquid assets
@@ -640,7 +705,7 @@ function FeeEdge() {
                 {monthlySavings > 0 ? (
                   <>Stop overpaying — traders at your volume leave up to <span className="text-emerald-400"><CountUp value={Math.round(monthlySavings * 12)} prefix="$" />/yr</span> on the table</>
                 ) : (
-                  <>See your true cost across all 9 venues — and stop overpaying on fees</>
+                  <>See your true cost across all 20 venues — and stop overpaying on fees</>
                 )}
               </h2>
               <p className="text-xs text-zinc-400 mt-1.5">
@@ -1146,6 +1211,8 @@ function FeeEdge() {
         </div>
         <div className="mt-3 flex items-center justify-center gap-4 flex-wrap text-[11px] text-zinc-400">
           <Link to="/compare" className="hover:text-white transition-colors">Compare fees</Link>
+          <Link to="/versus" className="hover:text-white transition-colors">Head-to-head</Link>
+          <Link to="/exchanges" className="hover:text-white transition-colors">Exchanges</Link>
           <Link to="/about" className="hover:text-white transition-colors">About</Link>
           <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
           <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>

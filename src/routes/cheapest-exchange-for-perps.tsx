@@ -7,7 +7,7 @@ export const Route = createFileRoute('/cheapest-exchange-for-perps')({
   head: () => {
     const title = 'Cheapest exchange for perps / futures (2026) — FeeEdge'
     const description =
-      'The cheapest crypto exchange for perpetual futures, ranked by maker and taker fees across 9 venues. Plus how funding rates change your real cost.'
+      'The cheapest crypto exchange for perpetual futures, ranked by maker and taker fees across 20 venues. Plus how funding rates change your real cost.'
     return {
       meta: [
         { title },
@@ -41,7 +41,7 @@ function Page() {
       </p>
 
       <p>
-        <a href="/" style={cta}>See your real perp cost across 9 venues →</a>
+        <a href="/" style={cta}>See your real perp cost across 20 venues →</a>
       </p>
 
       <h2>Related</h2>

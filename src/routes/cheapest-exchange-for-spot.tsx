@@ -7,7 +7,7 @@ export const Route = createFileRoute('/cheapest-exchange-for-spot')({
   head: () => {
     const title = 'Cheapest exchange for spot trading (2026) — FeeEdge'
     const description =
-      'The cheapest crypto exchange for spot trading, ranked by maker and taker fees across 9 major venues — and how to find the best one for your volume.'
+      'The cheapest crypto exchange for spot trading, ranked by maker and taker fees across 20 major venues — and how to find the best one for your volume.'
     return {
       meta: [
         { title },
@@ -38,7 +38,7 @@ function Page() {
       <h2>Find your cheapest venue</h2>
       <p>
         Spot fees compress as your volume grows, and some venues run zero-maker promotions. FeeEdge ranks
-        all 9 exchanges by your real cost based on your volume and maker/taker mix.
+        all 20 exchanges by your real cost based on your volume and maker/taker mix.
       </p>
       <p>
         <a href="/" style={cta}>Compare spot fees for your volume →</a>

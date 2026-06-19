@@ -32,9 +32,9 @@ function AboutPage() {
 
       <h2>What it does</h2>
       <p>
-        You enter how you trade, and FeeEdge ranks 9 exchanges by your real estimated monthly cost — factoring in
+        You enter how you trade, and FeeEdge ranks 20 exchanges by your real estimated monthly cost — factoring in
         maker/taker fees, funding rates on perps, native-token discounts, and volume tiers. The free version shows
-        your three cheapest venues; <strong>Pro</strong> ($29 once, no subscription) unlocks all 9 plus the funding
+        your three cheapest venues; <strong>Pro</strong> ($29 once, no subscription) unlocks all 20 plus the funding
         optimizer, withdrawal-fee comparison, tier savings ladder, price alerts, and PDF/CSV export.
       </p>
 

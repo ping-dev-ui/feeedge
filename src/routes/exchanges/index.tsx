@@ -6,7 +6,7 @@ export const Route = createFileRoute('/exchanges/')({
   head: () => {
     const title = 'Crypto exchange trading fees (2026) — FeeEdge'
     const description =
-      'Trading-fee breakdowns for 9 major crypto exchanges — Binance, Bybit, OKX, Hyperliquid, Gate.io, Bitget, KuCoin, MEXC and Kraken. Maker, taker, spot, futures and token discounts.'
+      'Trading-fee breakdowns for the top 20 crypto exchanges — Binance, OKX, Bybit, Bitget, Gate.io, MEXC, Hyperliquid, HTX, BingX, Kraken and more. Maker, taker, spot, futures and token discounts.'
     return {
       meta: [
         { title },
@@ -47,6 +47,7 @@ function ExchangesIndex() {
 
       <h2>Related</h2>
       <ul>
+        <li><a href="/versus">Compare exchanges head-to-head (interactive)</a></li>
         <li><a href="/compare">All exchange fee comparisons</a></li>
         <li><a href="/lowest-fee-crypto-exchange">Lowest-fee crypto exchange</a></li>
         <li><a href="/cheapest-exchange-for-perps">Cheapest exchange for perps</a></li>

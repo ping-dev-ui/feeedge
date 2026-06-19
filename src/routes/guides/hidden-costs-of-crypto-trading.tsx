@@ -68,7 +68,7 @@ function Page() {
         Real cost = trading fees + funding (perps) + withdrawal fees + spread/slippage, minus volume-tier and
         token discounts. The lowest headline fee can easily lose to a venue with better funding, cheaper
         withdrawals, or a discount you'd actually use. <a href="/">FeeEdge</a> folds these into one personalized
-        number across 9 exchanges.
+        number across 20 exchanges.
       </p>
       <p>
         <a

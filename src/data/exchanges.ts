@@ -65,6 +65,54 @@ export const EXCHANGES: Exchange[] = [
     name: 'Kraken', slug: 'kraken', colorClass: 'text-purple-400',
     futures: { maker: 0.0002, taker: 0.0005 }, spot: { maker: 0.0025, taker: 0.004 },
   },
+  {
+    name: 'HTX', slug: 'htx', colorClass: 'text-sky-400',
+    futures: { maker: 0.0002, taker: 0.0006 }, spot: { maker: 0.002, taker: 0.002 },
+    token: 'HT', tokenDiscount: 0.25,
+  },
+  {
+    name: 'BingX', slug: 'bingx', colorClass: 'text-blue-300',
+    futures: { maker: 0.0002, taker: 0.0005 }, spot: { maker: 0.001, taker: 0.001 },
+  },
+  {
+    name: 'Coinbase', slug: 'coinbase', colorClass: 'text-blue-500',
+    futures: { maker: 0.0, taker: 0.0003 }, spot: { maker: 0.004, taker: 0.006 },
+  },
+  {
+    name: 'Crypto.com', slug: 'cryptocom', colorClass: 'text-indigo-400',
+    futures: { maker: 0.0002, taker: 0.0004 }, spot: { maker: 0.0025, taker: 0.005 },
+  },
+  {
+    name: 'Bitfinex', slug: 'bitfinex', colorClass: 'text-lime-400',
+    futures: { maker: 0.0, taker: 0.0 }, spot: { maker: 0.0, taker: 0.0 },
+  },
+  {
+    name: 'WhiteBIT', slug: 'whitebit', colorClass: 'text-zinc-200',
+    futures: { maker: 0.0001, taker: 0.00035 }, spot: { maker: 0.001, taker: 0.001 },
+    token: 'WBT', tokenDiscount: 0.2,
+  },
+  {
+    name: 'Phemex', slug: 'phemex', colorClass: 'text-amber-400',
+    futures: { maker: 0.0001, taker: 0.0006 }, spot: { maker: 0.001, taker: 0.001 },
+  },
+  {
+    name: 'BitMEX', slug: 'bitmex', colorClass: 'text-red-500',
+    futures: { maker: 0.0002, taker: 0.0005 }, spot: { maker: 0.0005, taker: 0.0005 },
+  },
+  {
+    name: 'Backpack', slug: 'backpack', colorClass: 'text-orange-300',
+    futures: { maker: 0.0002, taker: 0.0005 }, spot: { maker: 0.0002, taker: 0.0005 },
+  },
+  {
+    name: 'BitMart', slug: 'bitmart', colorClass: 'text-emerald-300',
+    futures: { maker: 0.0002, taker: 0.0006 }, spot: { maker: 0.0015, taker: 0.0025 },
+    token: 'BMX', tokenDiscount: 0.25,
+  },
+  {
+    name: 'CoinEx', slug: 'coinex', colorClass: 'text-teal-400',
+    futures: { maker: 0.0003, taker: 0.0005 }, spot: { maker: 0.002, taker: 0.002 },
+    token: 'CET', tokenDiscount: 0.2,
+  },
 ]
 
 export function exchangeBySlug(slug: string): Exchange | undefined {

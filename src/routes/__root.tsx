@@ -17,7 +17,7 @@ const siteSchema = [
     url: 'https://feeedge.com/',
     logo: 'https://feeedge.com/logo-mark.png',
     description:
-      'FeeEdge compares real trading fees across 9 major crypto exchanges — perps and spot — ranked for your volume and trading style.',
+      'FeeEdge compares real trading fees across 20 major crypto exchanges — perps and spot — ranked for your volume and trading style.',
   },
   {
     '@context': 'https://schema.org',
@@ -45,7 +45,7 @@ export const Route = createRootRouteWithContext<{
       {
         name: 'description',
         content:
-          'Find the cheapest crypto exchange for how you trade. Compare real trading fees across 9 exchanges — perps & spot — ranked for your volume and style.',
+          'Find the cheapest crypto exchange for how you trade. Compare real trading fees across 20 exchanges — perps & spot — ranked for your volume and style.',
       },
       // Open Graph
       { property: 'og:type', content: 'website' },
@@ -54,7 +54,7 @@ export const Route = createRootRouteWithContext<{
       {
         property: 'og:description',
         content:
-          'Compare real trading fees across 9 exchanges — perps & spot — ranked for your volume and style. $29 once, no subscription.',
+          'Compare real trading fees across 20 exchanges — perps & spot — ranked for your volume and style. $29 once, no subscription.',
       },
       { property: 'og:url', content: 'https://feeedge.com/' },
       { property: 'og:image', content: 'https://feeedge.com/og.png' },
@@ -66,7 +66,7 @@ export const Route = createRootRouteWithContext<{
       {
         name: 'twitter:description',
         content:
-          'Compare real trading fees across 9 exchanges — perps & spot — ranked for your volume and style.',
+          'Compare real trading fees across 20 exchanges — perps & spot — ranked for your volume and style.',
       },
       { name: 'twitter:image', content: 'https://feeedge.com/og.png' },
     ],

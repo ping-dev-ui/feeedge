@@ -106,7 +106,7 @@ function ComparePage() {
         Below are their published entry-tier fees side by side, for both perpetual futures and spot. The
         cheapest venue for <em>you</em> depends on your volume and whether you trade maker or taker —
         run your own numbers in the{' '}
-        <a href="/">FeeEdge calculator</a> to see your real monthly cost across all 9 exchanges.
+        <a href="/">FeeEdge calculator</a> to see your real monthly cost across all 20 exchanges.
       </p>
 
       <h2>Fee comparison</h2>

@@ -6,7 +6,7 @@ export const Route = createFileRoute('/compare/')({
   head: () => {
     const title = 'Crypto exchange fee comparisons — FeeEdge'
     const description =
-      'Side-by-side trading-fee comparisons for 9 major crypto exchanges — Binance, Bybit, OKX, Hyperliquid, Gate.io, Bitget, KuCoin, MEXC, and Kraken.'
+      'Side-by-side trading-fee comparisons for the top 20 crypto exchanges — Binance, OKX, Bybit, Bitget, Gate.io, MEXC, Hyperliquid, HTX, BingX, Kraken and more.'
     return {
       meta: [
         { title },
@@ -27,12 +27,13 @@ function CompareIndex() {
       <p>
         Compare trading fees between the major crypto exchanges, head to head. Each page breaks down maker
         and taker rates for both perpetual futures and spot. To find the cheapest venue for{' '}
-        <em>your</em> volume and trading style across all 9 exchanges at once, use the{' '}
+        <em>your</em> volume and trading style across all 20 exchanges at once, use the{' '}
         <a href="/">FeeEdge calculator</a>.
       </p>
 
       <h2>Popular pages</h2>
       <ul>
+        <li><a href="/versus">Compare exchanges head-to-head (interactive)</a></li>
         <li><a href="/exchanges">All exchange fee pages (per-exchange)</a></li>
         <li><a href="/lowest-fee-crypto-exchange">Lowest-fee crypto exchange</a></li>
         <li><a href="/cheapest-exchange-for-perps">Cheapest exchange for perps (futures)</a></li>
