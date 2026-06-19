@@ -76,6 +76,39 @@ function RootComponent() {
   )
 }
 
+// Loads PostHog only when VITE_POSTHOG_KEY is set (so it's a no-op until you
+// add the key + redeploy — no npm dependency, can't break the build).
+function Analytics() {
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return
+    const env = (import.meta as any).env || {}
+    const key = env.VITE_POSTHOG_KEY
+    if (!key) return
+    const host = (env.VITE_POSTHOG_HOST || 'https://us.i.posthog.com').replace(/\/$/, '')
+    const w = window as any
+    if (w.__phLoaded) return
+    w.__phLoaded = true
+    const s = document.createElement('script')
+    s.src = host + '/static/array.js'
+    s.async = true
+    s.onload = () => {
+      try {
+        w.posthog?.init(key, {
+          api_host: host,
+          capture_pageview: true,
+          person_profiles: 'identified_only',
+        })
+        const ref = new URLSearchParams(window.location.search).get('ref')
+        if (ref) w.posthog?.register({ ref })
+      } catch {
+        /* analytics is best-effort */
+      }
+    }
+    document.head.appendChild(s)
+  }, [])
+  return null
+}
+
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html>
@@ -84,6 +117,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <Analytics />
         <Scripts />
       </body>
     </html>
