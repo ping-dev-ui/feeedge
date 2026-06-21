@@ -1302,6 +1302,22 @@ function FeeEdge() {
           <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
           <Link to="/refunds" className="hover:text-white transition-colors">Refunds</Link>
         </div>
+        <div className="mt-4 flex justify-center">
+          <a
+            href="https://postyourstartup.co/startup/feeedge-1?ref=badge"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Featured on PostYourStartup"
+            className="inline-block"
+          >
+            <img
+              src="https://postyourstartup.co/api/badge/feeedge-1?theme=dark"
+              alt="Featured on PostYourStartup"
+              width="212"
+              height="55"
+            />
+          </a>
+        </div>
       </footer>
     </div>
   )
