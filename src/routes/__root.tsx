@@ -80,7 +80,7 @@ export const Route = createRootRouteWithContext<{
           'Compare real trading fees across 20 exchanges — perps & spot — ranked for your volume and style. $29 once, no subscription.',
       },
       { property: 'og:url', content: 'https://feeedge.com/' },
-      { property: 'og:image', content: 'https://feeedge.com/og.png' },
+      { property: 'og:image', content: 'https://feeedge.com/og.png?v=2' },
       { property: 'og:image:width', content: '1200' },
       { property: 'og:image:height', content: '630' },
       // Twitter
@@ -91,7 +91,7 @@ export const Route = createRootRouteWithContext<{
         content:
           'Compare real trading fees across 20 exchanges — perps & spot — ranked for your volume and style.',
       },
-      { name: 'twitter:image', content: 'https://feeedge.com/og.png' },
+      { name: 'twitter:image', content: 'https://feeedge.com/og.png?v=2' },
     ],
     links: [
       { rel: 'stylesheet', href: appCss },
