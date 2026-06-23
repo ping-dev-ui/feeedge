@@ -368,17 +368,23 @@ function FeeEdge() {
       prev.includes(asset) ? prev.filter((a) => a !== asset) : [...prev, asset],
     )
 
-  // Build a shareable URL that pre-fills this exact profile for the recipient.
+  // Build a shareable URL that opens the /r share landing. It carries this exact
+  // profile plus the computed annual saving + cheapest venue, so the link
+  // unfurls as a personalized "You could save $X/yr" card (via /api/og) and the
+  // recipient can run their own numbers from there. (share loop)
   const buildShareUrl = () => {
     const origin = typeof window !== 'undefined' ? window.location.origin : 'https://feeedge.com'
+    const annualSaving = Math.max(0, Math.round(monthlySavings * 12))
     const q = new URLSearchParams({
       v: String(monthlyVolume),
       m: market,
       mk: makerRatio.toFixed(2),
       h: String(holdTime),
       a: selectedAssets.join(','),
+      save: String(annualSaving),
+      top: cheapest?.name ?? '',
     })
-    return `${origin}/?${q.toString()}`
+    return `${origin}/r?${q.toString()}`
   }
 
   const handleShareSavings = async () => {

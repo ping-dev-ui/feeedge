@@ -12,11 +12,14 @@
 //   .vercel/output/static/**                          -> dist/client (assets, favicon)
 //   .vercel/output/functions/render.func/index.mjs    -> bundled SSR function
 //   .vercel/output/functions/render.func/.vc-config.json
+//   .vercel/output/functions/api/og.func/index.mjs    -> dynamic share-card PNG
 import { build } from 'esbuild'
 import { cpSync, mkdirSync, rmSync, writeFileSync, existsSync } from 'node:fs'
 
 const OUT = '.vercel/output'
 const FUNC = `${OUT}/functions/render.func`
+// Nested .func path -> reachable at /api/og. Renders the dynamic share-card PNG.
+const OG_FUNC = `${OUT}/functions/api/og.func`
 
 if (!existsSync('dist/client') || !existsSync('dist/server/server.js')) {
   throw new Error(
@@ -27,6 +30,7 @@ if (!existsSync('dist/client') || !existsSync('dist/server/server.js')) {
 // Clean and recreate the output tree.
 rmSync(OUT, { recursive: true, force: true })
 mkdirSync(FUNC, { recursive: true })
+mkdirSync(OG_FUNC, { recursive: true })
 
 // 1) Static assets: everything Vite emitted for the client.
 cpSync('dist/client', `${OUT}/static`, { recursive: true })
@@ -60,7 +64,36 @@ writeFileSync(
   ),
 )
 
-// 4) Routing: serve static files first, then send everything else to the SSR function.
+// 4) OG share-card function: satori + resvg-wasm, with the fonts (.ttf) and the
+// resvg wasm (.wasm) inlined as binary so the function is fully self-contained.
+await build({
+  entryPoints: ['scripts/og-entry.mjs'],
+  bundle: true,
+  platform: 'node',
+  format: 'esm',
+  target: 'node22',
+  outfile: `${OG_FUNC}/index.mjs`,
+  loader: { '.wasm': 'binary', '.ttf': 'binary' },
+  banner: {
+    js: "import { createRequire as __cr } from 'module'; const require = __cr(import.meta.url);",
+  },
+})
+writeFileSync(
+  `${OG_FUNC}/.vc-config.json`,
+  JSON.stringify(
+    {
+      runtime: 'nodejs22.x',
+      handler: 'index.mjs',
+      launcherType: 'Nodejs',
+      shouldAddHelpers: true,
+    },
+    null,
+    2,
+  ),
+)
+
+// 5) Routing: static files first, then the OG image endpoint, then send
+// everything else to the SSR function.
 writeFileSync(
   `${OUT}/config.json`,
   JSON.stringify(
@@ -68,6 +101,7 @@ writeFileSync(
       version: 3,
       routes: [
         { handle: 'filesystem' },
+        { src: '^/api/og(?:\\.png)?(?:\\?.*)?$', dest: '/api/og' },
         { src: '/.*', dest: '/render' },
       ],
     },
@@ -76,4 +110,4 @@ writeFileSync(
   ),
 )
 
-console.log('Built .vercel/output (static + render.func)')
+console.log('Built .vercel/output (static + render.func + api/og.func)')

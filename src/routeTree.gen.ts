@@ -9,38 +9,487 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VersusRouteImport } from './routes/versus'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as ReportRouteImport } from './routes/report'
+import { Route as RefundsRouteImport } from './routes/refunds'
+import { Route as RRouteImport } from './routes/r'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as MethodologyRouteImport } from './routes/methodology'
+import { Route as LowestFeeCryptoExchangeRouteImport } from './routes/lowest-fee-crypto-exchange'
+import { Route as CheapestExchangeForSpotRouteImport } from './routes/cheapest-exchange-for-spot'
+import { Route as CheapestExchangeForSolanaRouteImport } from './routes/cheapest-exchange-for-solana'
+import { Route as CheapestExchangeForPerpsRouteImport } from './routes/cheapest-exchange-for-perps'
+import { Route as CheapestExchangeForEthereumRouteImport } from './routes/cheapest-exchange-for-ethereum'
+import { Route as CheapestExchangeForBitcoinRouteImport } from './routes/cheapest-exchange-for-bitcoin'
+import { Route as BestExchangeForScalpingRouteImport } from './routes/best-exchange-for-scalping'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ExchangesIndexRouteImport } from './routes/exchanges/index'
+import { Route as CompareIndexRouteImport } from './routes/compare/index'
+import { Route as GuidesNativeTokenFeeDiscountsRouteImport } from './routes/guides/native-token-fee-discounts'
+import { Route as GuidesMakerVsTakerFeesRouteImport } from './routes/guides/maker-vs-taker-fees'
+import { Route as GuidesHowToReduceCryptoTradingFeesRouteImport } from './routes/guides/how-to-reduce-crypto-trading-fees'
+import { Route as GuidesHiddenCostsOfCryptoTradingRouteImport } from './routes/guides/hidden-costs-of-crypto-trading'
+import { Route as GuidesCryptoFundingRatesExplainedRouteImport } from './routes/guides/crypto-funding-rates-explained'
+import { Route as ExchangesSlugRouteImport } from './routes/exchanges/$slug'
+import { Route as ComparePairRouteImport } from './routes/compare/$pair'
 
+const VersusRoute = VersusRouteImport.update({
+  id: '/versus',
+  path: '/versus',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportRoute = ReportRouteImport.update({
+  id: '/report',
+  path: '/report',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RefundsRoute = RefundsRouteImport.update({
+  id: '/refunds',
+  path: '/refunds',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RRoute = RRouteImport.update({
+  id: '/r',
+  path: '/r',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MethodologyRoute = MethodologyRouteImport.update({
+  id: '/methodology',
+  path: '/methodology',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LowestFeeCryptoExchangeRoute = LowestFeeCryptoExchangeRouteImport.update({
+  id: '/lowest-fee-crypto-exchange',
+  path: '/lowest-fee-crypto-exchange',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheapestExchangeForSpotRoute = CheapestExchangeForSpotRouteImport.update({
+  id: '/cheapest-exchange-for-spot',
+  path: '/cheapest-exchange-for-spot',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheapestExchangeForSolanaRoute =
+  CheapestExchangeForSolanaRouteImport.update({
+    id: '/cheapest-exchange-for-solana',
+    path: '/cheapest-exchange-for-solana',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const CheapestExchangeForPerpsRoute =
+  CheapestExchangeForPerpsRouteImport.update({
+    id: '/cheapest-exchange-for-perps',
+    path: '/cheapest-exchange-for-perps',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const CheapestExchangeForEthereumRoute =
+  CheapestExchangeForEthereumRouteImport.update({
+    id: '/cheapest-exchange-for-ethereum',
+    path: '/cheapest-exchange-for-ethereum',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const CheapestExchangeForBitcoinRoute =
+  CheapestExchangeForBitcoinRouteImport.update({
+    id: '/cheapest-exchange-for-bitcoin',
+    path: '/cheapest-exchange-for-bitcoin',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const BestExchangeForScalpingRoute = BestExchangeForScalpingRouteImport.update({
+  id: '/best-exchange-for-scalping',
+  path: '/best-exchange-for-scalping',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExchangesIndexRoute = ExchangesIndexRouteImport.update({
+  id: '/exchanges/',
+  path: '/exchanges/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompareIndexRoute = CompareIndexRouteImport.update({
+  id: '/compare/',
+  path: '/compare/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuidesNativeTokenFeeDiscountsRoute =
+  GuidesNativeTokenFeeDiscountsRouteImport.update({
+    id: '/guides/native-token-fee-discounts',
+    path: '/guides/native-token-fee-discounts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const GuidesMakerVsTakerFeesRoute = GuidesMakerVsTakerFeesRouteImport.update({
+  id: '/guides/maker-vs-taker-fees',
+  path: '/guides/maker-vs-taker-fees',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuidesHowToReduceCryptoTradingFeesRoute =
+  GuidesHowToReduceCryptoTradingFeesRouteImport.update({
+    id: '/guides/how-to-reduce-crypto-trading-fees',
+    path: '/guides/how-to-reduce-crypto-trading-fees',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const GuidesHiddenCostsOfCryptoTradingRoute =
+  GuidesHiddenCostsOfCryptoTradingRouteImport.update({
+    id: '/guides/hidden-costs-of-crypto-trading',
+    path: '/guides/hidden-costs-of-crypto-trading',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const GuidesCryptoFundingRatesExplainedRoute =
+  GuidesCryptoFundingRatesExplainedRouteImport.update({
+    id: '/guides/crypto-funding-rates-explained',
+    path: '/guides/crypto-funding-rates-explained',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ExchangesSlugRoute = ExchangesSlugRouteImport.update({
+  id: '/exchanges/$slug',
+  path: '/exchanges/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComparePairRoute = ComparePairRouteImport.update({
+  id: '/compare/$pair',
+  path: '/compare/$pair',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
+  '/best-exchange-for-scalping': typeof BestExchangeForScalpingRoute
+  '/cheapest-exchange-for-bitcoin': typeof CheapestExchangeForBitcoinRoute
+  '/cheapest-exchange-for-ethereum': typeof CheapestExchangeForEthereumRoute
+  '/cheapest-exchange-for-perps': typeof CheapestExchangeForPerpsRoute
+  '/cheapest-exchange-for-solana': typeof CheapestExchangeForSolanaRoute
+  '/cheapest-exchange-for-spot': typeof CheapestExchangeForSpotRoute
+  '/lowest-fee-crypto-exchange': typeof LowestFeeCryptoExchangeRoute
+  '/methodology': typeof MethodologyRoute
+  '/privacy': typeof PrivacyRoute
+  '/r': typeof RRoute
+  '/refunds': typeof RefundsRoute
+  '/report': typeof ReportRoute
+  '/terms': typeof TermsRoute
+  '/versus': typeof VersusRoute
+  '/compare/$pair': typeof ComparePairRoute
+  '/exchanges/$slug': typeof ExchangesSlugRoute
+  '/guides/crypto-funding-rates-explained': typeof GuidesCryptoFundingRatesExplainedRoute
+  '/guides/hidden-costs-of-crypto-trading': typeof GuidesHiddenCostsOfCryptoTradingRoute
+  '/guides/how-to-reduce-crypto-trading-fees': typeof GuidesHowToReduceCryptoTradingFeesRoute
+  '/guides/maker-vs-taker-fees': typeof GuidesMakerVsTakerFeesRoute
+  '/guides/native-token-fee-discounts': typeof GuidesNativeTokenFeeDiscountsRoute
+  '/compare/': typeof CompareIndexRoute
+  '/exchanges/': typeof ExchangesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
+  '/best-exchange-for-scalping': typeof BestExchangeForScalpingRoute
+  '/cheapest-exchange-for-bitcoin': typeof CheapestExchangeForBitcoinRoute
+  '/cheapest-exchange-for-ethereum': typeof CheapestExchangeForEthereumRoute
+  '/cheapest-exchange-for-perps': typeof CheapestExchangeForPerpsRoute
+  '/cheapest-exchange-for-solana': typeof CheapestExchangeForSolanaRoute
+  '/cheapest-exchange-for-spot': typeof CheapestExchangeForSpotRoute
+  '/lowest-fee-crypto-exchange': typeof LowestFeeCryptoExchangeRoute
+  '/methodology': typeof MethodologyRoute
+  '/privacy': typeof PrivacyRoute
+  '/r': typeof RRoute
+  '/refunds': typeof RefundsRoute
+  '/report': typeof ReportRoute
+  '/terms': typeof TermsRoute
+  '/versus': typeof VersusRoute
+  '/compare/$pair': typeof ComparePairRoute
+  '/exchanges/$slug': typeof ExchangesSlugRoute
+  '/guides/crypto-funding-rates-explained': typeof GuidesCryptoFundingRatesExplainedRoute
+  '/guides/hidden-costs-of-crypto-trading': typeof GuidesHiddenCostsOfCryptoTradingRoute
+  '/guides/how-to-reduce-crypto-trading-fees': typeof GuidesHowToReduceCryptoTradingFeesRoute
+  '/guides/maker-vs-taker-fees': typeof GuidesMakerVsTakerFeesRoute
+  '/guides/native-token-fee-discounts': typeof GuidesNativeTokenFeeDiscountsRoute
+  '/compare': typeof CompareIndexRoute
+  '/exchanges': typeof ExchangesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
+  '/best-exchange-for-scalping': typeof BestExchangeForScalpingRoute
+  '/cheapest-exchange-for-bitcoin': typeof CheapestExchangeForBitcoinRoute
+  '/cheapest-exchange-for-ethereum': typeof CheapestExchangeForEthereumRoute
+  '/cheapest-exchange-for-perps': typeof CheapestExchangeForPerpsRoute
+  '/cheapest-exchange-for-solana': typeof CheapestExchangeForSolanaRoute
+  '/cheapest-exchange-for-spot': typeof CheapestExchangeForSpotRoute
+  '/lowest-fee-crypto-exchange': typeof LowestFeeCryptoExchangeRoute
+  '/methodology': typeof MethodologyRoute
+  '/privacy': typeof PrivacyRoute
+  '/r': typeof RRoute
+  '/refunds': typeof RefundsRoute
+  '/report': typeof ReportRoute
+  '/terms': typeof TermsRoute
+  '/versus': typeof VersusRoute
+  '/compare/$pair': typeof ComparePairRoute
+  '/exchanges/$slug': typeof ExchangesSlugRoute
+  '/guides/crypto-funding-rates-explained': typeof GuidesCryptoFundingRatesExplainedRoute
+  '/guides/hidden-costs-of-crypto-trading': typeof GuidesHiddenCostsOfCryptoTradingRoute
+  '/guides/how-to-reduce-crypto-trading-fees': typeof GuidesHowToReduceCryptoTradingFeesRoute
+  '/guides/maker-vs-taker-fees': typeof GuidesMakerVsTakerFeesRoute
+  '/guides/native-token-fee-discounts': typeof GuidesNativeTokenFeeDiscountsRoute
+  '/compare/': typeof CompareIndexRoute
+  '/exchanges/': typeof ExchangesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/admin'
+    | '/best-exchange-for-scalping'
+    | '/cheapest-exchange-for-bitcoin'
+    | '/cheapest-exchange-for-ethereum'
+    | '/cheapest-exchange-for-perps'
+    | '/cheapest-exchange-for-solana'
+    | '/cheapest-exchange-for-spot'
+    | '/lowest-fee-crypto-exchange'
+    | '/methodology'
+    | '/privacy'
+    | '/r'
+    | '/refunds'
+    | '/report'
+    | '/terms'
+    | '/versus'
+    | '/compare/$pair'
+    | '/exchanges/$slug'
+    | '/guides/crypto-funding-rates-explained'
+    | '/guides/hidden-costs-of-crypto-trading'
+    | '/guides/how-to-reduce-crypto-trading-fees'
+    | '/guides/maker-vs-taker-fees'
+    | '/guides/native-token-fee-discounts'
+    | '/compare/'
+    | '/exchanges/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/admin'
+    | '/best-exchange-for-scalping'
+    | '/cheapest-exchange-for-bitcoin'
+    | '/cheapest-exchange-for-ethereum'
+    | '/cheapest-exchange-for-perps'
+    | '/cheapest-exchange-for-solana'
+    | '/cheapest-exchange-for-spot'
+    | '/lowest-fee-crypto-exchange'
+    | '/methodology'
+    | '/privacy'
+    | '/r'
+    | '/refunds'
+    | '/report'
+    | '/terms'
+    | '/versus'
+    | '/compare/$pair'
+    | '/exchanges/$slug'
+    | '/guides/crypto-funding-rates-explained'
+    | '/guides/hidden-costs-of-crypto-trading'
+    | '/guides/how-to-reduce-crypto-trading-fees'
+    | '/guides/maker-vs-taker-fees'
+    | '/guides/native-token-fee-discounts'
+    | '/compare'
+    | '/exchanges'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/admin'
+    | '/best-exchange-for-scalping'
+    | '/cheapest-exchange-for-bitcoin'
+    | '/cheapest-exchange-for-ethereum'
+    | '/cheapest-exchange-for-perps'
+    | '/cheapest-exchange-for-solana'
+    | '/cheapest-exchange-for-spot'
+    | '/lowest-fee-crypto-exchange'
+    | '/methodology'
+    | '/privacy'
+    | '/r'
+    | '/refunds'
+    | '/report'
+    | '/terms'
+    | '/versus'
+    | '/compare/$pair'
+    | '/exchanges/$slug'
+    | '/guides/crypto-funding-rates-explained'
+    | '/guides/hidden-costs-of-crypto-trading'
+    | '/guides/how-to-reduce-crypto-trading-fees'
+    | '/guides/maker-vs-taker-fees'
+    | '/guides/native-token-fee-discounts'
+    | '/compare/'
+    | '/exchanges/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRoute
+  BestExchangeForScalpingRoute: typeof BestExchangeForScalpingRoute
+  CheapestExchangeForBitcoinRoute: typeof CheapestExchangeForBitcoinRoute
+  CheapestExchangeForEthereumRoute: typeof CheapestExchangeForEthereumRoute
+  CheapestExchangeForPerpsRoute: typeof CheapestExchangeForPerpsRoute
+  CheapestExchangeForSolanaRoute: typeof CheapestExchangeForSolanaRoute
+  CheapestExchangeForSpotRoute: typeof CheapestExchangeForSpotRoute
+  LowestFeeCryptoExchangeRoute: typeof LowestFeeCryptoExchangeRoute
+  MethodologyRoute: typeof MethodologyRoute
+  PrivacyRoute: typeof PrivacyRoute
+  RRoute: typeof RRoute
+  RefundsRoute: typeof RefundsRoute
+  ReportRoute: typeof ReportRoute
+  TermsRoute: typeof TermsRoute
+  VersusRoute: typeof VersusRoute
+  ComparePairRoute: typeof ComparePairRoute
+  ExchangesSlugRoute: typeof ExchangesSlugRoute
+  GuidesCryptoFundingRatesExplainedRoute: typeof GuidesCryptoFundingRatesExplainedRoute
+  GuidesHiddenCostsOfCryptoTradingRoute: typeof GuidesHiddenCostsOfCryptoTradingRoute
+  GuidesHowToReduceCryptoTradingFeesRoute: typeof GuidesHowToReduceCryptoTradingFeesRoute
+  GuidesMakerVsTakerFeesRoute: typeof GuidesMakerVsTakerFeesRoute
+  GuidesNativeTokenFeeDiscountsRoute: typeof GuidesNativeTokenFeeDiscountsRoute
+  CompareIndexRoute: typeof CompareIndexRoute
+  ExchangesIndexRoute: typeof ExchangesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/versus': {
+      id: '/versus'
+      path: '/versus'
+      fullPath: '/versus'
+      preLoaderRoute: typeof VersusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/report': {
+      id: '/report'
+      path: '/report'
+      fullPath: '/report'
+      preLoaderRoute: typeof ReportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/refunds': {
+      id: '/refunds'
+      path: '/refunds'
+      fullPath: '/refunds'
+      preLoaderRoute: typeof RefundsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/r': {
+      id: '/r'
+      path: '/r'
+      fullPath: '/r'
+      preLoaderRoute: typeof RRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/methodology': {
+      id: '/methodology'
+      path: '/methodology'
+      fullPath: '/methodology'
+      preLoaderRoute: typeof MethodologyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lowest-fee-crypto-exchange': {
+      id: '/lowest-fee-crypto-exchange'
+      path: '/lowest-fee-crypto-exchange'
+      fullPath: '/lowest-fee-crypto-exchange'
+      preLoaderRoute: typeof LowestFeeCryptoExchangeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cheapest-exchange-for-spot': {
+      id: '/cheapest-exchange-for-spot'
+      path: '/cheapest-exchange-for-spot'
+      fullPath: '/cheapest-exchange-for-spot'
+      preLoaderRoute: typeof CheapestExchangeForSpotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cheapest-exchange-for-solana': {
+      id: '/cheapest-exchange-for-solana'
+      path: '/cheapest-exchange-for-solana'
+      fullPath: '/cheapest-exchange-for-solana'
+      preLoaderRoute: typeof CheapestExchangeForSolanaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cheapest-exchange-for-perps': {
+      id: '/cheapest-exchange-for-perps'
+      path: '/cheapest-exchange-for-perps'
+      fullPath: '/cheapest-exchange-for-perps'
+      preLoaderRoute: typeof CheapestExchangeForPerpsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cheapest-exchange-for-ethereum': {
+      id: '/cheapest-exchange-for-ethereum'
+      path: '/cheapest-exchange-for-ethereum'
+      fullPath: '/cheapest-exchange-for-ethereum'
+      preLoaderRoute: typeof CheapestExchangeForEthereumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cheapest-exchange-for-bitcoin': {
+      id: '/cheapest-exchange-for-bitcoin'
+      path: '/cheapest-exchange-for-bitcoin'
+      fullPath: '/cheapest-exchange-for-bitcoin'
+      preLoaderRoute: typeof CheapestExchangeForBitcoinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/best-exchange-for-scalping': {
+      id: '/best-exchange-for-scalping'
+      path: '/best-exchange-for-scalping'
+      fullPath: '/best-exchange-for-scalping'
+      preLoaderRoute: typeof BestExchangeForScalpingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +497,101 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/exchanges/': {
+      id: '/exchanges/'
+      path: '/exchanges'
+      fullPath: '/exchanges/'
+      preLoaderRoute: typeof ExchangesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compare/': {
+      id: '/compare/'
+      path: '/compare'
+      fullPath: '/compare/'
+      preLoaderRoute: typeof CompareIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guides/native-token-fee-discounts': {
+      id: '/guides/native-token-fee-discounts'
+      path: '/guides/native-token-fee-discounts'
+      fullPath: '/guides/native-token-fee-discounts'
+      preLoaderRoute: typeof GuidesNativeTokenFeeDiscountsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guides/maker-vs-taker-fees': {
+      id: '/guides/maker-vs-taker-fees'
+      path: '/guides/maker-vs-taker-fees'
+      fullPath: '/guides/maker-vs-taker-fees'
+      preLoaderRoute: typeof GuidesMakerVsTakerFeesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guides/how-to-reduce-crypto-trading-fees': {
+      id: '/guides/how-to-reduce-crypto-trading-fees'
+      path: '/guides/how-to-reduce-crypto-trading-fees'
+      fullPath: '/guides/how-to-reduce-crypto-trading-fees'
+      preLoaderRoute: typeof GuidesHowToReduceCryptoTradingFeesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guides/hidden-costs-of-crypto-trading': {
+      id: '/guides/hidden-costs-of-crypto-trading'
+      path: '/guides/hidden-costs-of-crypto-trading'
+      fullPath: '/guides/hidden-costs-of-crypto-trading'
+      preLoaderRoute: typeof GuidesHiddenCostsOfCryptoTradingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guides/crypto-funding-rates-explained': {
+      id: '/guides/crypto-funding-rates-explained'
+      path: '/guides/crypto-funding-rates-explained'
+      fullPath: '/guides/crypto-funding-rates-explained'
+      preLoaderRoute: typeof GuidesCryptoFundingRatesExplainedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/exchanges/$slug': {
+      id: '/exchanges/$slug'
+      path: '/exchanges/$slug'
+      fullPath: '/exchanges/$slug'
+      preLoaderRoute: typeof ExchangesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compare/$pair': {
+      id: '/compare/$pair'
+      path: '/compare/$pair'
+      fullPath: '/compare/$pair'
+      preLoaderRoute: typeof ComparePairRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  AdminRoute: AdminRoute,
+  BestExchangeForScalpingRoute: BestExchangeForScalpingRoute,
+  CheapestExchangeForBitcoinRoute: CheapestExchangeForBitcoinRoute,
+  CheapestExchangeForEthereumRoute: CheapestExchangeForEthereumRoute,
+  CheapestExchangeForPerpsRoute: CheapestExchangeForPerpsRoute,
+  CheapestExchangeForSolanaRoute: CheapestExchangeForSolanaRoute,
+  CheapestExchangeForSpotRoute: CheapestExchangeForSpotRoute,
+  LowestFeeCryptoExchangeRoute: LowestFeeCryptoExchangeRoute,
+  MethodologyRoute: MethodologyRoute,
+  PrivacyRoute: PrivacyRoute,
+  RRoute: RRoute,
+  RefundsRoute: RefundsRoute,
+  ReportRoute: ReportRoute,
+  TermsRoute: TermsRoute,
+  VersusRoute: VersusRoute,
+  ComparePairRoute: ComparePairRoute,
+  ExchangesSlugRoute: ExchangesSlugRoute,
+  GuidesCryptoFundingRatesExplainedRoute:
+    GuidesCryptoFundingRatesExplainedRoute,
+  GuidesHiddenCostsOfCryptoTradingRoute: GuidesHiddenCostsOfCryptoTradingRoute,
+  GuidesHowToReduceCryptoTradingFeesRoute:
+    GuidesHowToReduceCryptoTradingFeesRoute,
+  GuidesMakerVsTakerFeesRoute: GuidesMakerVsTakerFeesRoute,
+  GuidesNativeTokenFeeDiscountsRoute: GuidesNativeTokenFeeDiscountsRoute,
+  CompareIndexRoute: CompareIndexRoute,
+  ExchangesIndexRoute: ExchangesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

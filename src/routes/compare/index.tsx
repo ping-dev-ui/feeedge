@@ -37,6 +37,9 @@ function CompareIndex() {
         <li><a href="/versus">Compare exchanges head-to-head (interactive)</a></li>
         <li><a href="/cheapest-exchange-for-bitcoin">Cheapest exchange to buy Bitcoin</a></li>
         <li><a href="/cheapest-exchange-for-ethereum">Cheapest exchange to buy Ethereum</a></li>
+        <li><a href="/cheapest-exchange-for-solana">Cheapest exchange to buy Solana</a></li>
+        <li><a href="/guides/native-token-fee-discounts">Guide: native-token fee discounts compared</a></li>
+        <li><a href="/guides/crypto-funding-rates-explained">Guide: crypto funding rates explained</a></li>
         <li><a href="/best-exchange-for-scalping">Best exchange for scalping</a></li>
         <li><a href="/guides/how-to-reduce-crypto-trading-fees">Guide: how to reduce crypto trading fees</a></li>
         <li><a href="/exchanges">All exchange fee pages (per-exchange)</a></li>
