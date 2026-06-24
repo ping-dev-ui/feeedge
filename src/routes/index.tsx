@@ -748,52 +748,33 @@ function FeeEdge() {
         <p className="text-sm md:text-base text-zinc-400 mt-4 max-w-2xl mx-auto">
           Personalized fee rankings across {EXCHANGES.length} venues in 10 seconds — perps &amp; spot, tuned to your volume and style.
         </p>
-        <div className="mt-6 flex items-center justify-center gap-3 flex-wrap">
-          <Link
-            to="/versus"
-            onClick={() => phCapture('head_to_head_clicked', { market, monthlyVolume })}
-            className="group inline-flex items-center gap-2 rounded-full bg-emerald-500 text-[#03150f] font-black text-sm md:text-base px-5 py-2.5 shadow-lg shadow-emerald-500/20 hover:bg-emerald-400 transition-colors"
-          >
-            <Swords size={18} strokeWidth={2.5} />
-            Compare two exchanges head-to-head
-            <span className="transition-transform group-hover:translate-x-0.5">→</span>
-          </Link>
-          <span className="text-[11px] text-zinc-500">Pick any venues · side-by-side · instant</span>
-        </div>
       </div>
 
-      {/* Top featured row: Your Fees analyzer + (free) savings banner */}
+      {/* Top featured row: Your Fees analyzer + Compare head-to-head */}
       <div className="max-w-7xl mx-auto px-6 pt-8">
-        {!isPro ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-            <FeeAnalyzer isPro={false} onUpgrade={handleUpgrade} />
-            <div className="relative overflow-hidden bg-gradient-to-br from-emerald-500/10 to-zinc-900/40 border border-emerald-500/30 rounded-2xl p-5 md:p-6 h-full flex flex-col justify-center gap-3">
-              <p className="text-[11px] uppercase tracking-widest text-emerald-400 font-bold">
-                FeeEdge Pro · $29 once · no subscription
-              </p>
-              <h2 className="text-white font-bold text-xl">
-                {monthlySavings > 0 ? (
-                  <>Stop overpaying — traders at your volume leave up to <span className="text-emerald-400"><CountUp value={Math.round(monthlySavings * 12)} prefix="$" />/yr</span> on the table</>
-                ) : (
-                  <>See your true cost across all 20 venues — and stop overpaying on fees</>
-                )}
-              </h2>
-              <p className="text-xs text-zinc-400">
-                Unlock all {EXCHANGES.length} exchanges, the funding-rate optimizer, native-token discounts, withdrawal-fee comparison, the tier savings ladder, unlimited saved scenarios, price alerts, and PDF/CSV export.
-              </p>
-              <button
-                onClick={handleUpgrade}
-                disabled={upgrading}
-                className="self-start bg-emerald-500 text-black px-6 py-2.5 rounded-full font-bold text-sm hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/20 disabled:opacity-60 flex items-center gap-2"
-              >
-                <Zap size={15} fill="currentColor" />
-                {upgrading ? 'Redirecting…' : 'Unlock Pro for $29'}
-              </button>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+          <FeeAnalyzer isPro={isPro} onUpgrade={handleUpgrade} />
+          <div className="bg-[#0b1f16] border border-emerald-500/30 rounded-2xl p-5 md:p-6 h-full flex flex-col">
+            <div className="text-[11px] uppercase tracking-widest text-emerald-400 font-bold mb-2">Free · instant · no signup</div>
+            <h3 className="text-2xl md:text-3xl font-black text-white leading-[1.08] tracking-tight mb-2">
+              Compare two exchanges <span className="text-emerald-400">head-to-head</span>
+            </h3>
+            <p className="text-[11px] text-zinc-400 mb-4">Pick any two venues and see which is cheaper for your exact volume and style.</p>
+            <div className="flex items-center justify-center gap-3 bg-[#06140e] border border-zinc-800 rounded-lg py-4 mb-4">
+              <span className="text-sm font-bold text-zinc-200">Binance</span>
+              <span className="text-[11px] font-black text-emerald-400">VS</span>
+              <span className="text-sm font-bold text-emerald-400">Hyperliquid</span>
             </div>
+            <Link
+              to="/versus"
+              onClick={() => phCapture('head_to_head_clicked', { market, monthlyVolume })}
+              className="mt-auto w-full bg-emerald-500 text-black font-bold text-sm rounded-full py-2.5 hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2"
+            >
+              <Swords size={16} strokeWidth={2.5} /> Compare exchanges
+            </Link>
+            <div className="text-[11px] text-zinc-500 text-center mt-3">Side-by-side · instant · {EXCHANGES.length} venues</div>
           </div>
-        ) : (
-          <FeeAnalyzer isPro={true} onUpgrade={handleUpgrade} />
-        )}
+        </div>
       </div>
 
       <main className="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -985,38 +966,6 @@ function FeeEdge() {
             </div>
           </div>
 
-          {/* Native-token fee discounts (Pro) — select the tokens you actually hold */}
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3">
-            <div className="text-xs mb-2.5">
-              <span className="text-zinc-200 font-bold flex items-center gap-1">
-                Native-token fee discounts {!isPro && <Lock size={11} className="text-zinc-400" />}
-              </span>
-              <span className="text-[11px] text-zinc-400">
-                Tap the exchange tokens you hold — the discount applies to that venue only.
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {EXCHANGES.filter((ex) => TOKEN_DISCOUNT[ex.key]).map((ex) => {
-                const info = TOKEN_DISCOUNT[ex.key]
-                const active = isPro && tokenKeys.includes(ex.key)
-                return (
-                  <button
-                    key={ex.key}
-                    onClick={() => (isPro ? toggleToken(ex.key) : handleUpgrade())}
-                    title={`${ex.name}: −${Math.round(info.rate * 100)}% when you pay fees with ${info.token}`}
-                    className={`px-2.5 py-1 rounded-md text-[11px] font-bold border transition-colors ${
-                      active
-                        ? 'bg-emerald-500/15 border-emerald-500 text-emerald-400'
-                        : 'bg-black border-zinc-800 text-zinc-400 hover:border-emerald-500'
-                    }`}
-                  >
-                    {ex.name} · {info.token} −{Math.round(info.rate * 100)}%
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-
           {/* How to read this */}
           {showGuide && (
             <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 text-xs text-zinc-400 space-y-4">
@@ -1088,10 +1037,19 @@ function FeeEdge() {
                           Updated {fmtDateTime(ex.lastUpdated)}
                         </div>
                       )}
-                      {ex.discount > 0 && (
-                        <span className="mt-1 inline-flex items-center gap-1 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-400">
-                          −{Math.round(ex.discount * 100)}% with {ex.token}
-                        </span>
+                      {TOKEN_DISCOUNT[ex.key] && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); if (isPro) { toggleToken(ex.key) } else { handleUpgrade() } }}
+                          title={`Pay fees with ${TOKEN_DISCOUNT[ex.key]!.token} for −${Math.round(TOKEN_DISCOUNT[ex.key]!.rate * 100)}% on ${ex.name}`}
+                          className={`mt-1.5 inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold border transition-colors ${
+                            ex.discount > 0
+                              ? 'bg-emerald-500/15 border-emerald-500 text-emerald-400'
+                              : 'bg-black border-zinc-800 text-zinc-400 hover:border-emerald-500'
+                          }`}
+                        >
+                          {ex.discount > 0 ? <Check size={10} /> : (!isPro && <Lock size={9} />)}
+                          Pay in {TOKEN_DISCOUNT[ex.key]!.token} −{Math.round(TOKEN_DISCOUNT[ex.key]!.rate * 100)}%
+                        </button>
                       )}
                       {REFERRAL_LINKS[ex.key] && (
                         <a
