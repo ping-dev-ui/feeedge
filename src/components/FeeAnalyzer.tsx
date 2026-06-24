@@ -317,6 +317,25 @@ export function FeeAnalyzer({ isPro, onUpgrade }: { isPro: boolean; onUpgrade: (
           </div>
         </div>
 
+        <div className="grid grid-cols-2 gap-2 mb-3">
+          <div className="bg-[#06140e] border border-zinc-800 rounded-lg p-3">
+            <div className="text-[10px] uppercase tracking-wider text-zinc-500">Traded volume</div>
+            <div className="text-sm font-bold text-white mt-0.5">{r.haveVolume && r.volume > 0 ? money(r.volume, r.ccy) : '—'}</div>
+          </div>
+          <div className="bg-[#06140e] border border-zinc-800 rounded-lg p-3">
+            <div className="text-[10px] uppercase tracking-wider text-zinc-500">Fees % of volume</div>
+            <div className="text-sm font-bold text-white mt-0.5">{r.haveVolume && r.volume > 0 ? pct(r.totalFees / r.volume * 100) : '—'}</div>
+          </div>
+          <div className="bg-[#06140e] border border-zinc-800 rounded-lg p-3">
+            <div className="text-[10px] uppercase tracking-wider text-zinc-500">Total fees</div>
+            <div className="text-sm font-bold text-white mt-0.5">{money(r.totalFees, r.ccy)}</div>
+          </div>
+          <div className="bg-[#06140e] border border-zinc-800 rounded-lg p-3">
+            <div className="text-[10px] uppercase tracking-wider text-zinc-500">Funding paid</div>
+            <div className="text-sm font-bold text-white mt-0.5">{r.haveFunding ? money(r.fundingPaid, r.ccy) : '—'}</div>
+          </div>
+        </div>
+
         <div className="space-y-3">
           <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-4">
             <div className="text-[11px] uppercase tracking-wider text-zinc-400 font-bold mb-1">Taker vs maker</div>

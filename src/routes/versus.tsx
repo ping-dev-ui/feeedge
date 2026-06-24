@@ -1,5 +1,11 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
+import { useConvexAuth, useAction } from 'convex/react'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { convexQuery } from '@convex-dev/react-query'
+import { api } from '../../convex/_generated/api'
+import { SignInModal } from '~/components/SignInModal'
+import { Lock } from 'lucide-react'
 import { EXCHANGES, exchangeBySlug, pct, type Exchange } from '~/data/exchanges'
 import { ExchangeLogo } from '~/components/ExchangeLogo'
 
@@ -42,6 +48,30 @@ function VersusPage() {
   const [slugs, setSlugs] = useState<string[]>(['binance', 'bybit', 'hyperliquid'])
   const [tokenOn, setTokenOn] = useState<Record<string, boolean>>({})
 
+  const { isAuthenticated } = useConvexAuth()
+  const { data: viewer } = useSuspenseQuery(convexQuery(api.users.viewer, {}))
+  const isPro = viewer?.isPro ?? false
+  const createCheckoutSession = useAction(api.stripe.createCheckoutSession)
+  const [showSignIn, setShowSignIn] = useState(false)
+  const [upgrading, setUpgrading] = useState(false)
+  const handleUpgrade = async () => {
+    if (!isAuthenticated) {
+      setShowSignIn(true)
+      return
+    }
+    if (isPro) return
+    try {
+      setUpgrading(true)
+      const ref =
+        typeof window !== 'undefined' ? localStorage.getItem('feeedge_ref') ?? undefined : undefined
+      const url = await createCheckoutSession(ref ? { ref } : {})
+      window.location.href = url
+    } catch {
+      setUpgrading(false)
+      alert('Could not start checkout. Please try again.')
+    }
+  }
+
   const makerRatio = makerPct / 100
 
   const rows = useMemo(() => {
@@ -68,6 +98,51 @@ function VersusPage() {
 
   const inputCls =
     'w-full rounded-lg bg-[#0a1a13] border border-zinc-700 text-white px-3 py-2 text-sm focus:outline-none focus:border-emerald-500'
+
+  if (!isPro) {
+    return (
+      <div className="min-h-screen bg-[#06140e] text-zinc-300 font-sans">
+        {showSignIn && (
+          <SignInModal onClose={() => setShowSignIn(false)} onSignedIn={() => setShowSignIn(false)} />
+        )}
+        <header className="border-b border-zinc-800 bg-[#0a1a13] px-6 py-4">
+          <div className="max-w-5xl mx-auto flex items-center justify-between">
+            <Link to="/" className="flex items-center gap-2.5">
+              <img src="/logo-mark.png" width="30" height="30" alt="FeeEdge" className="rounded-lg" />
+              <span className="text-lg font-black text-white">FeeEdge</span>
+            </Link>
+            <Link to="/" className="text-xs text-zinc-400 hover:text-white transition-colors">
+              ← Back to app
+            </Link>
+          </div>
+        </header>
+        <main className="max-w-5xl mx-auto px-6 py-10">
+          <h1 className="text-2xl md:text-3xl font-black text-white mb-2">Compare exchanges head-to-head</h1>
+          <p className="text-zinc-400 mb-8 max-w-2xl">
+            Pick any crypto exchanges and compare their trading fees side by side — perps or spot, tuned to your
+            monthly volume and maker/taker style, with native-token discounts.
+          </p>
+          <div className="bg-[#0b1f16] border border-emerald-500/30 rounded-2xl p-8 text-center max-w-xl">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-800 text-zinc-300">
+              <Lock size={20} />
+            </div>
+            <h2 className="mb-2 text-xl font-bold text-white">Head-to-head is a Pro feature</h2>
+            <p className="mb-5 text-sm text-zinc-400">
+              Unlock side-by-side comparison of any exchanges for your exact volume and style — plus the full
+              calculator, all {EXCHANGES.length} venues, funding estimates, native-token discounts and more.
+            </p>
+            <button
+              onClick={handleUpgrade}
+              disabled={upgrading}
+              className="rounded-full bg-emerald-500 px-6 py-2.5 text-sm font-bold text-black transition-colors hover:bg-emerald-400 disabled:opacity-60"
+            >
+              {upgrading ? 'Redirecting…' : 'Unlock Pro for $29 · one-time'}
+            </button>
+          </div>
+        </main>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-[#06140e] text-zinc-300 font-sans">

@@ -214,7 +214,7 @@ const ASSET_LIQUIDITY_MULTIPLIER: Record<string, number> = {
   OTHER: 1.3,
 }
 
-const FREE_VISIBLE_COUNT = 3
+const FREE_VISIBLE_COUNT = 5
 
 // Monthly-volume slider: log-scaled across $100k–$100M so the whole range is
 // usable. Slider runs 0–1000; values snap to 2 significant figures.
@@ -653,7 +653,7 @@ function FeeEdge() {
         <strong>Execution:</strong> ${Math.round(makerRatio * 100)}% maker / ${Math.round((1 - makerRatio) * 100)}% taker<br/>
         <strong>Avg hold time:</strong> ${holdTime}h<br/>
         <strong>Assets:</strong> ${assets}<br/>
-        <strong>Plan:</strong> ${isPro ? 'Pro (all exchanges)' : 'Free (top 3 shown)'}<br/>
+        <strong>Plan:</strong> ${isPro ? 'Pro (all exchanges)' : 'Free (top 5 shown)'}<br/>
         <strong>Native-token discounts:</strong> ${isPro && tokenKeys.length ? `${tokenKeys.length} applied` : 'Off'}
       </div>
       <table>
@@ -755,7 +755,7 @@ function FeeEdge() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
           <FeeAnalyzer isPro={isPro} onUpgrade={handleUpgrade} />
           <div className="bg-[#0b1f16] border border-emerald-500/30 rounded-2xl p-5 md:p-6 h-full flex flex-col">
-            <div className="text-[11px] uppercase tracking-widest text-emerald-400 font-bold mb-2">Free · instant · no signup</div>
+            <div className="text-[11px] uppercase tracking-widest text-emerald-400 font-bold mb-2">Pro · side-by-side</div>
             <h3 className="text-2xl md:text-3xl font-black text-white leading-[1.08] tracking-tight mb-2">
               Compare two exchanges <span className="text-emerald-400">head-to-head</span>
             </h3>
@@ -765,13 +765,23 @@ function FeeEdge() {
               <span className="text-[11px] font-black text-emerald-400">VS</span>
               <span className="text-sm font-bold text-emerald-400">Hyperliquid</span>
             </div>
-            <Link
-              to="/versus"
-              onClick={() => phCapture('head_to_head_clicked', { market, monthlyVolume })}
-              className="mt-auto w-full bg-emerald-500 text-black font-bold text-sm rounded-full py-2.5 hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2"
-            >
-              <Swords size={16} strokeWidth={2.5} /> Compare exchanges
-            </Link>
+            {isPro ? (
+              <Link
+                to="/versus"
+                onClick={() => phCapture('head_to_head_clicked', { market, monthlyVolume })}
+                className="mt-auto w-full bg-emerald-500 text-black font-bold text-sm rounded-full py-2.5 hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2"
+              >
+                <Swords size={16} strokeWidth={2.5} /> Compare exchanges
+              </Link>
+            ) : (
+              <button
+                onClick={handleUpgrade}
+                disabled={upgrading}
+                className="mt-auto w-full bg-emerald-500 text-black font-bold text-sm rounded-full py-2.5 hover:bg-emerald-400 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+              >
+                <Zap size={14} fill="currentColor" /> Unlock Pro to compare — $29
+              </button>
+            )}
             <div className="text-[11px] text-zinc-500 text-center mt-3">Side-by-side · instant · {EXCHANGES.length} venues</div>
           </div>
         </div>
@@ -1000,7 +1010,7 @@ function FeeEdge() {
                 <p>We track all {EXCHANGES.length} exchanges and refresh rates <span className="text-zinc-300">daily</span>. Each row shows an <span className="text-zinc-300">"Updated"</span> date/time so you can see how current it is. Live-API venues (e.g. Kraken) update automatically each day; the rest use published rates we verify periodically, shown by their Updated date. All are entry-tier maker/taker rates, then adjusted for your volume tier.</p>
                 <p><span className="text-emerald-400 font-bold">Compare two head-to-head:</span> use the <span className="text-zinc-300">"Compare two exchanges head-to-head"</span> button at the top to put any venues side by side for your volume and style.</p>
               </div>
-              <p className="text-zinc-400 italic">Free shows the 3 cheapest venues; Pro unlocks all {EXCHANGES.length} exchanges plus funding estimates, the native-token discount, the funding optimizer, withdrawal-fee comparison, the tier savings ladder, unlimited saved scenarios, price alerts, and PDF/CSV export. All figures are estimates — not financial advice.</p>
+              <p className="text-zinc-400 italic">Free shows the 5 cheapest venues; Pro unlocks all {EXCHANGES.length} exchanges plus funding estimates, the native-token discount, the funding optimizer, withdrawal-fee comparison, the tier savings ladder, unlimited saved scenarios, price alerts, and PDF/CSV export. All figures are estimates — not financial advice.</p>
             </div>
           )}
 
