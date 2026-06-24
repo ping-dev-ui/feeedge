@@ -15,11 +15,11 @@ type FieldDef = { key: string; label: string; req: boolean; cands: string[] }
 const FIELDS: FieldDef[] = [
   { key: 'timestamp', label: 'Timestamp', req: false, cands: ['time', 'timestamp', 'date', 'datetime', 'createdat', 'created', 'tradetime', 'filltime', 'closedtime'] },
   { key: 'symbol', label: 'Symbol / Market', req: false, cands: ['symbol', 'market', 'coin', 'pair', 'instrument', 'ticker', 'contract'] },
-  { key: 'size', label: 'Size / Quantity', req: false, cands: ['qty', 'quantity', 'size', 'amount', 'filled', 'filledqty', 'baseqty', 'execqty', 'vol', 'volume'] },
-  { key: 'price', label: 'Price', req: false, cands: ['price', 'fillprice', 'avgprice', 'execprice', 'tradeprice', 'entryprice'] },
-  { key: 'notional', label: 'Notional / Value', req: false, cands: ['notional', 'value', 'quoteqty', 'turnover', 'tradevalue', 'amountusd', 'usdvalue', 'cost'] },
+  { key: 'size', label: 'Size / Quantity', req: false, cands: ['qty', 'quantity', 'size', 'sz', 'amount', 'filled', 'filledqty', 'baseqty', 'basesize', 'baseamount', 'execqty', 'contracts', 'vol', 'volume'] },
+  { key: 'price', label: 'Price', req: false, cands: ['price', 'px', 'fillprice', 'fillpx', 'avgprice', 'avgpx', 'execprice', 'tradeprice', 'entryprice', 'limitpx'] },
+  { key: 'notional', label: 'Notional / Value', req: false, cands: ['notional', 'ntl', 'notionalvalue', 'value', 'execvalue', 'quoteqty', 'quotevolume', 'quoteamount', 'turnover', 'tradevalue', 'amountusd', 'usdvalue', 'cost'] },
   { key: 'fee', label: 'Fee / Commission', req: true, cands: ['fee', 'commission', 'fees', 'feepaid', 'tradefee', 'txfee', 'feeamount'] },
-  { key: 'feeccy', label: 'Fee currency', req: false, cands: ['feecurrency', 'feecoin', 'commissionasset', 'feeasset', 'feeccy'] },
+  { key: 'feeccy', label: 'Fee currency', req: false, cands: ['feecurrency', 'feecoin', 'feetoken', 'commissionasset', 'feeasset', 'feeccy'] },
   { key: 'liquidity', label: 'Maker/Taker flag', req: false, cands: ['liquidity', 'makerortaker', 'ismaker', 'role', 'feetype', 'makertaker', 'liquidityindicator', 'takerormaker'] },
   { key: 'pnl', label: 'Realized PnL', req: false, cands: ['realizedpnl', 'closedpnl', 'pnl', 'realizedprofit', 'profit', 'realisedpnl', 'netpnl'] },
   { key: 'funding', label: 'Funding payment', req: false, cands: ['funding', 'fundingfee', 'fundingpayment', 'fundingpaid', 'fundingamount'] },
@@ -335,6 +335,15 @@ export function FeeAnalyzer({ isPro, onUpgrade }: { isPro: boolean; onUpgrade: (
             <div className="text-sm font-bold text-white mt-0.5">{r.haveFunding ? money(r.fundingPaid, r.ccy) : '—'}</div>
           </div>
         </div>
+
+        {!r.haveVolume && (
+          <button
+            onClick={() => setShowMapping(true)}
+            className="mb-3 text-left text-[11px] font-bold text-amber-400 hover:text-amber-300"
+          >
+            Volume not detected — tap to map your size &amp; price (or notional) column →
+          </button>
+        )}
 
         <div className="space-y-3">
           <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-4">
