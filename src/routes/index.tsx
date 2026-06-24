@@ -691,6 +691,14 @@ function FeeEdge() {
           <h1 className="text-xl font-black tracking-tight text-white">FeeEdge</h1>
         </div>
         <div className="flex items-center gap-2 sm:gap-4 text-xs">
+          <button
+            onClick={() => setShowGuide((v) => !v)}
+            className="flex items-center gap-1.5 text-sm font-bold text-emerald-400 hover:text-emerald-300 transition-colors"
+            title="How to use FeeEdge"
+          >
+            <HelpCircle size={18} />
+            <span className="hidden sm:inline">How to use</span>
+          </button>
           <div
             className="hidden sm:flex items-center gap-1 text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20"
             title={feeMeta ? `${feeMeta.liveCount} live · ${feeMeta.total} tracked · updated ${timeAgo(feeMeta.lastUpdated)}` : 'Using built-in rates'}
@@ -942,13 +950,6 @@ function FeeEdge() {
             </h2>
             <div className="flex items-center gap-4 shrink-0">
               <button
-                onClick={() => setShowGuide((v) => !v)}
-                className="text-xs text-zinc-400 hover:text-white flex items-center gap-1 transition-colors"
-              >
-                <HelpCircle size={14} />
-                How to use
-              </button>
-              <button
                 onClick={handleExportPdf}
                 className="text-xs text-zinc-400 hover:text-white flex items-center gap-1 transition-colors"
               >
@@ -989,7 +990,8 @@ function FeeEdge() {
               </div>
               <div className="space-y-2 border-t border-zinc-800 pt-3">
                 <p className="text-zinc-300 font-bold uppercase tracking-widest text-[11px]">Pro tools</p>
-                <p><span className="text-emerald-400 font-bold">Native-token discount:</span> toggle it on to recompute every rate as if you pay fees with each venue's token (BNB, OKB, KCS, GT, BGB, HT, BMX, CET, WBT). Rows show the discount applied — this is your true cost if you hold the token.</p>
+                <p><span className="text-emerald-400 font-bold">Native-token discount:</span> tap the token toggle on any exchange row (BNB, OKB, KCS, GT, BGB, HT, BMX, CET, WBT) to recompute that venue's rate as if you pay fees with its token — your true cost if you hold it.</p>
+                <p><span className="text-emerald-400 font-bold">Your Fees analyzer:</span> drop your exchange trade-history (or account-ledger) CSV into the "Your Fees" box at the top to see exactly what you paid in fees and funding. It runs entirely in your browser — nothing is uploaded.</p>
                 <p><span className="text-emerald-400 font-bold">Funding-rate optimizer (perps):</span> live 8h funding by venue, with the cheapest place to hold a long vs a short. Positive funding = longs pay shorts.</p>
                 <p><span className="text-emerald-400 font-bold">Withdrawal fees:</span> typical on-chain withdrawal cost per asset and network (USDT TRC20/ERC20, BTC, ETH) — a real cost the fee table alone misses.</p>
                 <p><span className="text-emerald-400 font-bold">Tier savings ladder:</span> where a little more volume unlocks a cheaper tier, ranked by the biggest monthly saving.</p>
@@ -998,7 +1000,7 @@ function FeeEdge() {
               <div className="space-y-2 border-t border-zinc-800 pt-3">
                 <p className="text-zinc-300 font-bold uppercase tracking-widest text-[11px]">Data &amp; updates</p>
                 <p>We track all {EXCHANGES.length} exchanges and refresh rates <span className="text-zinc-300">daily</span>. Each row shows an <span className="text-zinc-300">"Updated"</span> date/time so you can see how current it is. Live-API venues (e.g. Kraken) update automatically each day; the rest use published rates we verify periodically, shown by their Updated date. All are entry-tier maker/taker rates, then adjusted for your volume tier.</p>
-                <p><span className="text-emerald-400 font-bold">Compare two head-to-head:</span> use the <span className="text-zinc-300">"Compare two exchanges head-to-head"</span> button at the top to put any venues side by side for your volume and style.</p>
+                <p><span className="text-emerald-400 font-bold">Compare two head-to-head:</span> use the <span className="text-zinc-300">Compare exchanges</span> box at the top to put any venues side by side (a Pro feature).</p>
               </div>
               <p className="text-zinc-400 italic">Free shows the 5 cheapest venues; Pro unlocks all {EXCHANGES.length} exchanges plus funding estimates, the native-token discount, the funding optimizer, withdrawal-fee comparison, the tier savings ladder, unlimited saved scenarios, price alerts, and PDF/CSV export. All figures are estimates — not financial advice.</p>
             </div>

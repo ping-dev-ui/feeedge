@@ -425,7 +425,7 @@ export function FeeAnalyzer({ isPro, onUpgrade }: { isPro: boolean; onUpgrade: (
         )}
         {r.mode === 'ledger' && (
           <div className="mb-3 text-[11px] text-zinc-500">
-            Read from your account ledger — fees and funding totalled by entry type. No per-trade volume or maker/taker in this export.
+            Read from your account ledger — fees and funding by entry type. No per-trade volume or maker/taker here: for those, export your <span className="font-bold text-zinc-300">trade history</span> (per-fill) CSV instead.
           </div>
         )}
 
