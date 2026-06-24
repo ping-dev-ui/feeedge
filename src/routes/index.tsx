@@ -762,47 +762,39 @@ function FeeEdge() {
         </div>
       </div>
 
-      {/* Your Fees — fee & funding bleed analyzer, FEATURED at top */}
+      {/* Top featured row: Your Fees analyzer + (free) savings banner */}
       <div className="max-w-7xl mx-auto px-6 pt-8">
-        <div className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 to-zinc-900/40 p-5 md:p-6">
-          <div className="mb-3 flex items-center gap-2">
-            <span className="rounded bg-emerald-500 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-black">New</span>
-            <span className="text-[11px] font-bold uppercase tracking-widest text-emerald-400">See your real crypto trading fees</span>
-          </div>
-          <FeeAnalyzer isPro={isPro} onUpgrade={handleUpgrade} />
-        </div>
-      </div>
-
-      {/* Pro value-prop banner (free users), led by the savings number */}
-      {!isPro && (
-        <div className="max-w-7xl mx-auto px-6 pt-6">
-          <div className="relative overflow-hidden bg-gradient-to-r from-emerald-500/10 via-zinc-900/40 to-zinc-900/40 border border-emerald-500/30 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="min-w-0">
+        {!isPro ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+            <FeeAnalyzer isPro={false} onUpgrade={handleUpgrade} />
+            <div className="relative overflow-hidden bg-gradient-to-br from-emerald-500/10 to-zinc-900/40 border border-emerald-500/30 rounded-2xl p-5 md:p-6 h-full flex flex-col justify-center gap-3">
               <p className="text-[11px] uppercase tracking-widest text-emerald-400 font-bold">
                 FeeEdge Pro · $29 once · no subscription
               </p>
-              <h2 className="text-white font-bold text-xl mt-1">
+              <h2 className="text-white font-bold text-xl">
                 {monthlySavings > 0 ? (
                   <>Stop overpaying — traders at your volume leave up to <span className="text-emerald-400"><CountUp value={Math.round(monthlySavings * 12)} prefix="$" />/yr</span> on the table</>
                 ) : (
                   <>See your true cost across all 20 venues — and stop overpaying on fees</>
                 )}
               </h2>
-              <p className="text-xs text-zinc-400 mt-1.5">
+              <p className="text-xs text-zinc-400">
                 Unlock all {EXCHANGES.length} exchanges, the funding-rate optimizer, native-token discounts, withdrawal-fee comparison, the tier savings ladder, unlimited saved scenarios, price alerts, and PDF/CSV export.
               </p>
+              <button
+                onClick={handleUpgrade}
+                disabled={upgrading}
+                className="self-start bg-emerald-500 text-black px-6 py-2.5 rounded-full font-bold text-sm hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/20 disabled:opacity-60 flex items-center gap-2"
+              >
+                <Zap size={15} fill="currentColor" />
+                {upgrading ? 'Redirecting…' : 'Unlock Pro for $29'}
+              </button>
             </div>
-            <button
-              onClick={handleUpgrade}
-              disabled={upgrading}
-              className="shrink-0 bg-emerald-500 text-black px-6 py-2.5 rounded-full font-bold text-sm hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/20 disabled:opacity-60 flex items-center gap-2"
-            >
-              <Zap size={15} fill="currentColor" />
-              {upgrading ? 'Redirecting…' : 'Unlock Pro for $29'}
-            </button>
           </div>
-        </div>
-      )}
+        ) : (
+          <FeeAnalyzer isPro={true} onUpgrade={handleUpgrade} />
+        )}
+      </div>
 
       <main className="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Input Panel */}

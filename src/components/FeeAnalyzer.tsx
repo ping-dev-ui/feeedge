@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Lock, Zap, ShieldCheck, Info, Upload } from 'lucide-react'
+import { useRef, useState, type Dispatch, type SetStateAction } from 'react'
+import { Upload, Download, BarChart3, ShieldCheck, Info, Zap } from 'lucide-react'
 
 // ---------------------------------------------------------------------------
 // FeeAnalyzer — "Your Fees" (Pro)
@@ -232,32 +232,11 @@ function topOf(obj: Record<string, number>): { k: string; v: number } | null {
   return bk ? { k: bk, v: bv } : null
 }
 
-// ---- locked (non-Pro) tease ----
-function LockedTease({ onUpgrade }: { onUpgrade: () => void }) {
-  return (
-    <div
-      onClick={onUpgrade}
-      className="relative cursor-pointer bg-zinc-900/40 border border-dashed border-zinc-800 rounded-xl p-8 flex flex-col items-center justify-center gap-3 text-center hover:border-zinc-700 transition-colors"
-    >
-      <div className="w-11 h-11 bg-zinc-800 rounded-full flex items-center justify-center text-zinc-300">
-        <Lock size={18} />
-      </div>
-      <div>
-        <h4 className="text-white font-bold">Your Fees — fee &amp; funding bleed</h4>
-        <p className="text-zinc-400 text-xs mt-1 max-w-sm">
-          Upload your own fills export and see exactly how much of your trading
-          went to taker fees and funding — and what trading maker would have saved.
-        </p>
-      </div>
-      <p className="text-[11px] text-emerald-400/90 flex items-center gap-1.5">
-        <ShieldCheck size={13} /> Runs entirely in your browser — your file never leaves your device.
-      </p>
-      <span className="bg-emerald-500 text-black px-5 py-1.5 rounded-full font-bold text-xs">
-        Unlock Pro for $29 · one-time
-      </span>
-    </div>
-  )
-}
+const STEPS: { icon: typeof Upload; label: string }[] = [
+  { icon: Download, label: 'Export' },
+  { icon: Upload, label: 'Drop' },
+  { icon: BarChart3, label: 'See cost' },
+]
 
 export function FeeAnalyzer({ isPro, onUpgrade }: { isPro: boolean; onUpgrade: () => void }) {
   const [headers, setHeaders] = useState<string[]>([])
@@ -266,11 +245,11 @@ export function FeeAnalyzer({ isPro, onUpgrade }: { isPro: boolean; onUpgrade: (
   const [showMapping, setShowMapping] = useState(false)
   const [result, setResult] = useState<AnalyzerResult | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [fileName, setFileName] = useState<string | null>(null)
   const [dragOver, setDragOver] = useState(false)
   const [makerRateInput, setMakerRateInput] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  if (!isPro) return <LockedTease onUpgrade={onUpgrade} />
+  const openPicker = () => fileInputRef.current?.click()
 
   const runCompute = (rws: Record<string, string>[], map: Mapping) => {
     const r = compute(rws, map)
@@ -281,7 +260,6 @@ export function FeeAnalyzer({ isPro, onUpgrade }: { isPro: boolean; onUpgrade: (
   }
 
   const handleFile = async (file: File) => {
-    setFileName(file.name)
     try {
       const text = await file.text()
       const parsed = parseCsv(text)
@@ -298,10 +276,6 @@ export function FeeAnalyzer({ isPro, onUpgrade }: { isPro: boolean; onUpgrade: (
     }
   }
 
-  const onMapSelect = (key: string, value: string) => {
-    setMapping((m) => ({ ...m, [key]: value || null }))
-  }
-
   const calcFromMapping = () => {
     if (!mapping.fee) { setError('The Fee column is required.'); return }
     runCompute(rows, mapping)
@@ -309,245 +283,214 @@ export function FeeAnalyzer({ isPro, onUpgrade }: { isPro: boolean; onUpgrade: (
 
   const reset = () => {
     setHeaders([]); setRows([]); setMapping({}); setShowMapping(false)
-    setResult(null); setError(null); setFileName(null); setMakerRateInput('')
+    setResult(null); setError(null); setMakerRateInput('')
   }
 
-  return (
-    <div className="space-y-5">
-      <div className="flex items-center gap-2">
-        <Zap size={16} className="text-emerald-400" />
-        <h3 className="text-sm font-bold text-white uppercase tracking-widest">Your Fees — Fee &amp; Funding Bleed</h3>
-        <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-black px-1.5 py-0.5 rounded">Pro</span>
-      </div>
+  const card = 'bg-[#0b1f16] border border-emerald-500/30 rounded-2xl p-5 md:p-6 h-full flex flex-col'
 
-      {/* Privacy notice — prominent */}
-      <div className="flex items-start gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-lg px-3 py-2.5">
-        <ShieldCheck size={15} className="text-emerald-400 shrink-0 mt-0.5" />
-        <p className="text-[11px] text-emerald-200/90 leading-relaxed">
-          <span className="font-bold text-emerald-300">Your data never leaves your browser.</span>{' '}
-          Your file is read and analysed locally on this page — FeeEdge does not upload, receive, or store any of it. Nothing is sent to a server.
-        </p>
-      </div>
+  // ---- RESULTS (Pro, after a file is analysed) ----
+  if (isPro && result) {
+    const r = result
+    const tSym = topOf(r.bySymbol)
+    const tDay = topOf(r.byDay)
+    const totNot = r.takerNotional + r.makerNotional
+    const takerShare = totNot > 0 ? r.takerNotional / totNot * 100 : null
+    const takerRate = r.takerNotional > 0 ? r.takerFees / r.takerNotional : null
+    const makerRate = r.makerNotional > 0 ? r.makerFees / r.makerNotional : null
+    return (
+      <div className={card}>
+        <div className="flex items-center gap-2 mb-3">
+          <Zap size={15} className="text-emerald-400" />
+          <h3 className="text-sm font-bold text-white uppercase tracking-widest">Your Fees</h3>
+          <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-black px-1.5 py-0.5 rounded">Pro</span>
+        </div>
 
-      {/* Dropzone */}
-      <label
-        onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
-        onDragLeave={() => setDragOver(false)}
-        onDrop={(e) => {
-          e.preventDefault(); setDragOver(false)
-          const f = e.dataTransfer.files?.[0]
-          if (f) void handleFile(f)
-        }}
-        className={`block cursor-pointer rounded-xl border-2 border-dashed p-7 text-center transition-colors ${
-          dragOver ? 'border-emerald-500 bg-emerald-500/5' : 'border-zinc-800 bg-black/30 hover:border-zinc-700'
-        }`}
-      >
-        <input
-          type="file"
-          accept=".csv,text/csv"
-          className="hidden"
-          onChange={(e) => { const f = e.target.files?.[0]; if (f) void handleFile(f) }}
-        />
-        <div className="flex flex-col items-center gap-1.5">
-          <Upload size={20} className="text-emerald-400" />
-          <div className="text-sm text-zinc-200 font-bold">
-            {fileName ? `Loaded: ${fileName}` : 'Drop your fills CSV here, or click to choose'}
-          </div>
-          <div className="text-[11px] text-zinc-500">
-            Hyperliquid / Bybit / Binance / OKX exports all work — columns are auto-detected.
+        <div className="bg-[#06140e] border border-zinc-800 rounded-xl p-5 mb-3">
+          <div className="text-[11px] uppercase tracking-widest text-zinc-400">Total cost this period</div>
+          <div className="text-3xl md:text-4xl font-black text-emerald-400 mt-1 tracking-tight">{money(r.heroCost, r.ccy)}</div>
+          <div className="text-xs text-zinc-300 mt-2">
+            Across <span className="font-bold">{r.feeCount.toLocaleString()}</span> fills. Fees {money(r.totalFees, r.ccy)}
+            {r.haveFunding && <> + funding paid {money(r.fundingPaid, r.ccy)}</>}.
+            {r.haveVolume && r.volume > 0 && (
+              <> That's <span className="font-bold text-emerald-400">{pct(r.totalFees / r.volume * 100)}</span> of your traded volume.</>
+            )}
           </div>
         </div>
-      </label>
 
-      {error && (
-        <div className="text-[11px] text-amber-400 bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-2">
-          {error}
-        </div>
-      )}
-
-      {/* Column mapping (when auto-detect is incomplete, or to adjust) */}
-      {showMapping && headers.length > 0 && (
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 space-y-3">
-          <div>
-            <h4 className="text-xs font-bold text-zinc-300 uppercase tracking-widest">Map your columns</h4>
-            <p className="text-[11px] text-zinc-400 mt-1">
-              Confirm the mapping below, then calculate. Only <span className="text-emerald-400 font-bold">Fee</span> is required.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {FIELDS.map((f) => (
-              <div key={f.key}>
-                <label className={`block text-[11px] mb-1 ${f.req ? 'text-emerald-400 font-bold' : 'text-zinc-400'}`}>
-                  {f.label}{f.req ? ' *' : ''}
-                </label>
-                <select
-                  value={mapping[f.key] ?? ''}
-                  onChange={(e) => onMapSelect(f.key, e.target.value)}
-                  className="w-full bg-black border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-emerald-500"
-                >
-                  <option value="">(none)</option>
-                  {headers.map((h) => (
-                    <option key={h} value={h}>{h}</option>
-                  ))}
-                </select>
+        <div className="space-y-3">
+          <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-4">
+            <div className="text-[11px] uppercase tracking-wider text-zinc-400 font-bold mb-1">Taker vs maker</div>
+            {!r.haveLiq ? (
+              <div className="text-xs text-zinc-300">Your export didn't include a maker/taker flag, so the maker what-if is skipped. Re-export with that column to unlock it.</div>
+            ) : takerRate !== null && makerRate !== null && takerRate > makerRate ? (
+              <div className="text-xs text-zinc-300">
+                {takerShare !== null && <><span className="font-bold text-white">{pct(takerShare)}</span> of your volume was taker. </>}
+                At your own maker rate ({ratePct(makerRate)} vs taker {ratePct(takerRate)}), the same volume as maker would have cost
+                ~<span className="font-bold text-emerald-400">{money(r.takerNotional * (takerRate - makerRate), r.ccy)}</span> less.
               </div>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={calcFromMapping}
-              className="bg-emerald-500 text-black px-4 py-2 rounded font-bold text-xs hover:bg-emerald-400 transition-colors"
-            >
-              Calculate
-            </button>
-            <button
-              onClick={() => setShowMapping(false)}
-              className="border border-zinc-700 text-zinc-300 px-4 py-2 rounded font-bold text-xs hover:border-zinc-600 transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Results */}
-      {result && (
-        <div className="space-y-4">
-          {/* Hero */}
-          <div className="bg-gradient-to-b from-emerald-500/10 to-zinc-900/40 border border-zinc-800 rounded-xl p-6">
-            <div className="text-[11px] uppercase tracking-widest text-zinc-400">Total cost this period</div>
-            <div className="text-3xl md:text-4xl font-black text-emerald-400 mt-1 tracking-tight">
-              {money(result.heroCost, result.ccy)}
-            </div>
-            <div className="text-xs text-zinc-300 mt-2">
-              Across <span className="font-bold">{result.feeCount.toLocaleString()}</span> fills. Fees {money(result.totalFees, result.ccy)}
-              {result.haveFunding && <> + funding paid {money(result.fundingPaid, result.ccy)}</>}.
-              {result.haveVolume && result.volume > 0 && (
-                <> That's <span className="font-bold text-emerald-400">{pct(result.totalFees / result.volume * 100)}</span> of your traded volume.</>
-              )}
-            </div>
-          </div>
-
-          {/* Supporting lines */}
-          <div className="grid grid-cols-1 gap-3">
-            {/* Taker vs maker */}
-            <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-4">
-              <div className="text-[11px] uppercase tracking-wider text-zinc-400 font-bold mb-1">Taker vs maker</div>
-              {(() => {
-                if (!result.haveLiq) {
-                  return <div className="text-xs text-zinc-300">Your export didn't include a maker/taker flag, so the maker what-if is skipped. Re-export with that column to unlock it.</div>
-                }
-                const totNot = result.takerNotional + result.makerNotional
-                const takerShare = totNot > 0 ? result.takerNotional / totNot * 100 : null
-                const takerRate = result.takerNotional > 0 ? result.takerFees / result.takerNotional : null
-                const makerRate = result.makerNotional > 0 ? result.makerFees / result.makerNotional : null
-                if (takerRate !== null && makerRate !== null && takerRate > makerRate) {
-                  const savings = result.takerNotional * (takerRate - makerRate)
-                  return (
-                    <div className="text-xs text-zinc-300">
-                      {takerShare !== null && <><span className="font-bold text-white">{pct(takerShare)}</span> of your volume was taker. </>}
-                      At your own maker rate ({ratePct(makerRate)} vs taker {ratePct(takerRate)}), the same volume as maker would have cost
-                      ~<span className="font-bold text-emerald-400">{money(savings, result.ccy)}</span> less.
-                    </div>
-                  )
-                }
-                if (takerRate !== null && makerRate === null) {
-                  const mk = num(makerRateInput) / 100
-                  const savings = !Number.isNaN(mk) ? result.takerNotional * Math.max(0, takerRate - mk) : null
-                  return (
-                    <div className="text-xs text-zinc-300">
-                      {takerShare !== null && <><span className="font-bold text-white">{pct(takerShare)}</span> of your volume was taker. </>}
-                      You have no maker fills to compare. Enter your exchange's maker rate to estimate the saving:
-                      <div className="flex items-center gap-2 mt-2">
-                        <input
-                          type="number"
-                          step="0.001"
-                          value={makerRateInput}
-                          onChange={(e) => setMakerRateInput(e.target.value)}
-                          placeholder="e.g. 0.02"
-                          className="w-28 bg-black border border-zinc-800 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-emerald-500"
-                        />
-                        <span className="text-[11px] text-zinc-400">% maker</span>
-                      </div>
-                      {savings !== null && makerRateInput !== '' && (
-                        <div className="mt-2">
-                          ≈ <span className="font-bold text-emerald-400">{money(savings, result.ccy)}</span> saved if that volume had been maker
-                          (your taker rate {ratePct(takerRate)}).
-                        </div>
-                      )}
-                    </div>
-                  )
-                }
-                return <div className="text-xs text-zinc-300">Not enough data to compute a maker comparison.</div>
-              })()}
-            </div>
-
-            {/* Funding */}
-            <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-4">
-              <div className="text-[11px] uppercase tracking-wider text-zinc-400 font-bold mb-1">Funding</div>
-              {result.haveFunding ? (
-                <div className="text-xs text-zinc-300">
-                  Net funding: <span className="font-bold text-white">{money(result.fundingNet, result.ccy)}</span> (negative = you paid).
-                  {result.fundingPaid > 0 && <> You paid {money(result.fundingPaid, result.ccy)} in funding.</>}
-                  {result.fundingRecv > 0 && <> You received {money(result.fundingRecv, result.ccy)}.</>}
+            ) : takerRate !== null && makerRate === null ? (
+              <div className="text-xs text-zinc-300">
+                {takerShare !== null && <><span className="font-bold text-white">{pct(takerShare)}</span> of your volume was taker. </>}
+                No maker fills to compare. Enter your exchange's maker rate to estimate:
+                <div className="flex items-center gap-2 mt-2">
+                  <input
+                    type="number" step="0.001" value={makerRateInput}
+                    onChange={(e) => setMakerRateInput(e.target.value)} placeholder="e.g. 0.02"
+                    className="w-24 bg-black border border-zinc-800 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-emerald-500"
+                  />
+                  <span className="text-[11px] text-zinc-400">% maker</span>
                 </div>
-              ) : (
-                <div className="text-xs text-zinc-300">No funding column detected. On perps, export your funding history separately to include it.</div>
-              )}
-            </div>
-
-            {/* Worst offender */}
-            {(() => {
-              const tSym = topOf(result.bySymbol)
-              const tDay = topOf(result.byDay)
-              if (!tSym && !tDay) return null
-              return (
-                <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-4">
-                  <div className="text-[11px] uppercase tracking-wider text-zinc-400 font-bold mb-1">Worst offender</div>
-                  <div className="text-xs text-zinc-300">
-                    {tSym && <>Most expensive symbol for fees: <span className="font-bold text-white">{tSym.k}</span> at {money(tSym.v, result.ccy)}. </>}
-                    {tDay && <>Worst single day: <span className="font-bold text-white">{tDay.k}</span> at {money(tDay.v, result.ccy)}.</>}
-                  </div>
-                </div>
-              )
-            })()}
-
-            {/* PnL context */}
-            {result.havePnl && result.pnlSum !== 0 && (
-              <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-4">
-                <div className="text-[11px] uppercase tracking-wider text-zinc-400 font-bold mb-1">Versus your PnL</div>
-                <div className="text-xs text-zinc-300">
-                  Your export's realized-PnL column sums to <span className="font-bold text-white">{money(result.pnlSum, result.ccy)}</span>.
-                  Fees + funding were <span className="font-bold text-emerald-400">{pct(result.heroCost / Math.abs(result.pnlSum) * 100)}</span> of that (absolute).
-                </div>
+                {makerRateInput !== '' && !Number.isNaN(num(makerRateInput)) && (
+                  <div className="mt-2">≈ <span className="font-bold text-emerald-400">{money(r.takerNotional * Math.max(0, takerRate - num(makerRateInput) / 100), r.ccy)}</span> saved as maker (taker rate {ratePct(takerRate)}).</div>
+                )}
               </div>
+            ) : (
+              <div className="text-xs text-zinc-300">Not enough data to compute a maker comparison.</div>
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={() => setShowMapping((v) => !v)}
-              className="text-[11px] font-bold text-zinc-400 hover:text-white transition-colors"
-            >
-              Adjust column mapping
-            </button>
-            <span className="text-zinc-700">·</span>
-            <button
-              onClick={reset}
-              className="text-[11px] font-bold text-zinc-400 hover:text-white transition-colors"
-            >
-              Load another file
-            </button>
+          <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-4">
+            <div className="text-[11px] uppercase tracking-wider text-zinc-400 font-bold mb-1">Funding</div>
+            {r.haveFunding ? (
+              <div className="text-xs text-zinc-300">
+                Net funding: <span className="font-bold text-white">{money(r.fundingNet, r.ccy)}</span> (negative = you paid).
+                {r.fundingPaid > 0 && <> You paid {money(r.fundingPaid, r.ccy)} in funding.</>}
+                {r.fundingRecv > 0 && <> You received {money(r.fundingRecv, r.ccy)}.</>}
+              </div>
+            ) : (
+              <div className="text-xs text-zinc-300">No funding column detected. On perps, export your funding history separately to include it.</div>
+            )}
           </div>
 
-          <div className="flex items-start gap-2 text-[11px] text-zinc-500 bg-black/40 border border-zinc-800 rounded-lg p-3">
-            <Info size={12} className="shrink-0 mt-0.5" />
-            <span>
-              Figures are summed directly from your file. The maker what-if uses your own effective maker vs taker rates — it's a scenario, not a guarantee. Estimates only, not financial advice.
-            </span>
-          </div>
+          {(tSym || tDay) && (
+            <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-4">
+              <div className="text-[11px] uppercase tracking-wider text-zinc-400 font-bold mb-1">Worst offender</div>
+              <div className="text-xs text-zinc-300">
+                {tSym && <>Most expensive symbol: <span className="font-bold text-white">{tSym.k}</span> at {money(tSym.v, r.ccy)}. </>}
+                {tDay && <>Worst day: <span className="font-bold text-white">{tDay.k}</span> at {money(tDay.v, r.ccy)}.</>}
+              </div>
+            </div>
+          )}
+
+          {r.havePnl && r.pnlSum !== 0 && (
+            <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-4">
+              <div className="text-[11px] uppercase tracking-wider text-zinc-400 font-bold mb-1">Versus your PnL</div>
+              <div className="text-xs text-zinc-300">
+                Realized-PnL column sums to <span className="font-bold text-white">{money(r.pnlSum, r.ccy)}</span>. Fees + funding were <span className="font-bold text-emerald-400">{pct(r.heroCost / Math.abs(r.pnlSum) * 100)}</span> of that (absolute).
+              </div>
+            </div>
+          )}
         </div>
+
+        <div className="flex flex-wrap items-center gap-3 mt-4">
+          <button onClick={() => setShowMapping((v) => !v)} className="text-[11px] font-bold text-zinc-400 hover:text-white transition-colors">Adjust column mapping</button>
+          <span className="text-zinc-700">·</span>
+          <button onClick={reset} className="text-[11px] font-bold text-zinc-400 hover:text-white transition-colors">Load another file</button>
+        </div>
+
+        {showMapping && headers.length > 0 && <MappingPanel headers={headers} mapping={mapping} setMapping={setMapping} onCalc={calcFromMapping} onCancel={() => setShowMapping(false)} />}
+
+        <div className="flex items-start gap-2 text-[11px] text-zinc-500 mt-3">
+          <Info size={12} className="shrink-0 mt-0.5" />
+          <span>Summed directly from your file. The maker what-if uses your own maker vs taker rates — a scenario, not a guarantee. Estimates only, not financial advice.</span>
+        </div>
+
+        <input type="file" ref={fileInputRef} accept=".csv,text/csv" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) void handleFile(f) }} />
+      </div>
+    )
+  }
+
+  // ---- ENTRY (marketing card: free tease OR Pro uploader) ----
+  return (
+    <div className={card}>
+      <div className="text-[11px] uppercase tracking-widest text-emerald-400 font-bold mb-2">Free to try · nothing uploaded</div>
+      <h3 className="text-2xl md:text-3xl font-black text-white leading-[1.08] tracking-tight mb-2">
+        What are fees <span className="text-emerald-400">really</span> costing you?
+      </h3>
+      <p className="text-[11px] text-zinc-400 mb-4">
+        e.g. one trader: <span className="text-emerald-400 font-bold">$1,847</span> over 90 days <span className="opacity-70">(example)</span>
+      </p>
+
+      <div className="flex gap-1.5 mb-4">
+        {STEPS.map((s, i) => {
+          const Icon = s.icon
+          return (
+            <div key={s.label} className="flex-1 bg-[#06140e] border border-zinc-800 rounded-lg py-2.5 px-1 text-center">
+              <Icon size={16} className="text-emerald-400 mx-auto" />
+              <div className="text-[11px] font-bold text-zinc-200 mt-1">{i + 1} · {s.label}</div>
+            </div>
+          )
+        })}
+      </div>
+
+      {isPro ? (
+        <>
+          <div
+            onClick={openPicker}
+            onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={(e) => { e.preventDefault(); setDragOver(false); const f = e.dataTransfer.files?.[0]; if (f) void handleFile(f) }}
+            className={`cursor-pointer rounded-lg border-2 border-dashed p-3.5 text-center transition-colors mb-2.5 ${dragOver ? 'border-emerald-500 bg-emerald-500/5' : 'border-zinc-800 hover:border-zinc-700'}`}
+          >
+            <div className="text-xs font-bold text-zinc-200">
+              <Upload size={14} className="inline align-[-2px] text-emerald-400 mr-1" /> Drop your fills CSV, or click
+            </div>
+          </div>
+          <button onClick={openPicker} className="w-full bg-emerald-500 text-black font-bold text-sm rounded-full py-2.5 hover:bg-emerald-400 transition-colors">
+            See your real cost
+          </button>
+          {error && <div className="text-[11px] text-amber-400 bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-2 mt-2.5">{error}</div>}
+          {showMapping && headers.length > 0 && <MappingPanel headers={headers} mapping={mapping} setMapping={setMapping} onCalc={calcFromMapping} onCancel={() => setShowMapping(false)} />}
+        </>
+      ) : (
+        <button onClick={onUpgrade} className="w-full bg-emerald-500 text-black font-bold text-sm rounded-full py-2.5 hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2">
+          <Zap size={14} fill="currentColor" /> Unlock Pro to run yours — $29
+        </button>
       )}
+
+      <div className="text-[11px] text-zinc-500 text-center mt-3">
+        <ShieldCheck size={12} className="inline align-[-2px] text-emerald-500/80 mr-1" />
+        Parsed in your browser — your file never leaves your device
+      </div>
+
+      <input type="file" ref={fileInputRef} accept=".csv,text/csv" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) void handleFile(f) }} />
+    </div>
+  )
+}
+
+function MappingPanel({
+  headers, mapping, setMapping, onCalc, onCancel,
+}: {
+  headers: string[]
+  mapping: Mapping
+  setMapping: Dispatch<SetStateAction<Mapping>>
+  onCalc: () => void
+  onCancel: () => void
+}) {
+  return (
+    <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 mt-3 space-y-3">
+      <p className="text-[11px] text-zinc-400">
+        Confirm the mapping, then calculate. Only <span className="text-emerald-400 font-bold">Fee</span> is required.
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        {FIELDS.map((f) => (
+          <div key={f.key}>
+            <label className={`block text-[11px] mb-1 ${f.req ? 'text-emerald-400 font-bold' : 'text-zinc-400'}`}>{f.label}{f.req ? ' *' : ''}</label>
+            <select
+              value={mapping[f.key] ?? ''}
+              onChange={(e) => setMapping((m) => ({ ...m, [f.key]: e.target.value || null }))}
+              className="w-full bg-black border border-zinc-800 rounded p-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+            >
+              <option value="">(none)</option>
+              {headers.map((h) => <option key={h} value={h}>{h}</option>)}
+            </select>
+          </div>
+        ))}
+      </div>
+      <div className="flex gap-2">
+        <button onClick={onCalc} className="bg-emerald-500 text-black px-4 py-2 rounded font-bold text-xs hover:bg-emerald-400 transition-colors">Calculate</button>
+        <button onClick={onCancel} className="border border-zinc-700 text-zinc-300 px-4 py-2 rounded font-bold text-xs hover:border-zinc-600 transition-colors">Cancel</button>
+      </div>
     </div>
   )
 }
