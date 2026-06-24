@@ -11,6 +11,7 @@ import { MarketTrend } from '~/components/MarketTrend'
 import { ScenariosPanel } from '~/components/ScenariosPanel'
 import { AlertsPanel } from '~/components/AlertsPanel'
 import { ProTools } from '~/components/ProTools'
+import { FeeAnalyzer } from '~/components/FeeAnalyzer'
 import { CountUp } from '~/components/CountUp'
 import { ExchangeLogo } from '~/components/ExchangeLogo'
 import { ShareButtons } from '~/components/ShareButtons'
@@ -1237,6 +1238,21 @@ function FeeEdge() {
             assetMultiplier={assetMultiplier}
             onUpgrade={handleUpgrade}
           />
+
+          {/* ── Separator: Your Fees analyzer (Pro) ── */}
+          <div className="relative pt-4">
+            <div className="absolute inset-0 flex items-center" aria-hidden="true">
+              <div className="w-full border-t border-zinc-800" />
+            </div>
+            <div className="relative flex justify-center">
+              <span className="bg-[#06140e] px-4 text-[11px] font-bold uppercase tracking-widest text-emerald-400">
+                Now check your real fees ↓
+              </span>
+            </div>
+          </div>
+
+          {/* Your Fees — upload your fills, see your fee & funding bleed (Pro) */}
+          <FeeAnalyzer isPro={isPro} onUpgrade={handleUpgrade} />
 
           {/* Asset Selection & Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
