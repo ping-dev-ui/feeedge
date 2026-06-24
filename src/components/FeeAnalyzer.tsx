@@ -15,17 +15,18 @@ type FieldDef = { key: string; label: string; req: boolean; cands: string[] }
 const FIELDS: FieldDef[] = [
   { key: 'timestamp', label: 'Timestamp', req: false, cands: ['time', 'timestamp', 'date', 'datetime', 'createdat', 'created', 'tradetime', 'filltime', 'closedtime'] },
   { key: 'symbol', label: 'Symbol / Market', req: false, cands: ['symbol', 'market', 'coin', 'pair', 'instrument', 'ticker', 'contract'] },
-  { key: 'size', label: 'Size / Quantity', req: false, cands: ['qty', 'quantity', 'size', 'sz', 'amount', 'filled', 'filledqty', 'baseqty', 'basesize', 'baseamount', 'execqty', 'contracts', 'vol', 'volume'] },
-  { key: 'price', label: 'Price', req: false, cands: ['price', 'px', 'fillprice', 'fillpx', 'avgprice', 'avgpx', 'execprice', 'tradeprice', 'entryprice', 'limitpx'] },
-  { key: 'notional', label: 'Notional / Value', req: false, cands: ['notional', 'ntl', 'notionalvalue', 'value', 'execvalue', 'quoteqty', 'quotevolume', 'quoteamount', 'turnover', 'tradevalue', 'amountusd', 'usdvalue', 'cost'] },
-  { key: 'fee', label: 'Fee / Commission', req: true, cands: ['fee', 'commission', 'fees', 'feepaid', 'tradefee', 'txfee', 'feeamount'] },
-  { key: 'feeccy', label: 'Fee currency', req: false, cands: ['feecurrency', 'feecoin', 'feetoken', 'commissionasset', 'feeasset', 'feeccy'] },
+  { key: 'size', label: 'Size / Quantity', req: false, cands: ['filledquantity', 'quantity', 'qty', 'size', 'sz', 'baseqty', 'basesize', 'baseamount', 'execqty', 'contracts', 'filledqty', 'vol', 'volume', 'filled', 'amount'] },
+  { key: 'price', label: 'Price', req: false, cands: ['filledprice', 'fillprice', 'fillpx', 'avgprice', 'avgpx', 'execprice', 'tradeprice', 'price', 'px', 'orderprice', 'entryprice', 'limitpx'] },
+  { key: 'notional', label: 'Notional / Value', req: false, cands: ['notional', 'ntl', 'notionalvalue', 'execvalue', 'quotevolume', 'quoteamount', 'quoteqty', 'turnover', 'tradevalue', 'amountusd', 'usdvalue', 'value', 'cost'] },
+  { key: 'fee', label: 'Fee / Commission', req: true, cands: ['tradingfee', 'tradefee', 'commission', 'feepaid', 'feeamount', 'execfee', 'txfee', 'fees', 'fee'] },
+  { key: 'feeccy', label: 'Fee currency', req: false, cands: ['feecoin', 'feecurrency', 'feetoken', 'commissionasset', 'feeasset', 'feeccy'] },
   { key: 'liquidity', label: 'Maker/Taker flag', req: false, cands: ['liquidity', 'makerortaker', 'ismaker', 'role', 'feetype', 'makertaker', 'liquidityindicator', 'takerormaker'] },
   { key: 'pnl', label: 'Realized PnL', req: false, cands: ['realizedpnl', 'closedpnl', 'pnl', 'realizedprofit', 'profit', 'realisedpnl', 'netpnl'] },
   { key: 'funding', label: 'Funding payment', req: false, cands: ['funding', 'fundingfee', 'fundingpayment', 'fundingpaid', 'fundingamount'] },
 ]
 
 type AnalyzerResult = {
+  mode: 'fills' | 'ledger'
   ccy: string
   totalFees: number
   feeCount: number
@@ -80,6 +81,7 @@ function parseDate(v: string | undefined): Date | null {
 
 // Tiny dependency-free CSV parser (handles quoted fields, commas, newlines).
 function parseCsv(text: string): { headers: string[]; rows: Record<string, string>[] } {
+  text = text.replace(/^﻿/, '')
   const records: string[][] = []
   let cur: string[] = []
   let field = ''
@@ -118,23 +120,80 @@ function parseCsv(text: string): { headers: string[]; rows: Record<string, strin
 function autoMap(headers: string[]): Mapping {
   const map: Mapping = {}
   const used = new Set<string>()
+  // Pass 1: exact normalized match — claims headers across all fields first.
   for (const f of FIELDS) {
-    let best: string | null = null
-    for (const h of headers) {
-      if (used.has(h)) continue
-      if (f.cands.some((c) => norm(h) === c)) { best = h; break }
+    for (const c of f.cands) {
+      const h = headers.find((x) => !used.has(x) && norm(x) === c)
+      if (h) { map[f.key] = h; used.add(h); break }
     }
-    if (!best) {
-      for (const h of headers) {
-        if (used.has(h)) continue
-        const nh = norm(h)
-        if (f.cands.some((c) => nh.includes(c) || c.includes(nh))) { best = h; break }
-      }
-    }
-    map[f.key] = best
-    if (best) used.add(best)
   }
+  // Pass 2: substring match in CANDIDATE-priority order (not column order), so
+  // "Trading Fee" beats "Fee Rate" and "Filled Quantity" beats "Filled Type".
+  for (const f of FIELDS) {
+    if (map[f.key]) continue
+    for (const c of f.cands) {
+      const h = headers.find((x) => {
+        if (used.has(x)) return false
+        const nx = norm(x)
+        return nx.includes(c) || c.includes(nx)
+      })
+      if (h) { map[f.key] = h; used.add(h); break }
+    }
+  }
+  for (const f of FIELDS) if (!(f.key in map)) map[f.key] = null
   return map
+}
+
+// ---- ledger mode: account-statement exports (rows are Fee/Funding/PnL entries) ----
+const LEDGER_TYPE_COLS = ['actiontype', 'type', 'category', 'operation']
+const LEDGER_CHANGE_COLS = ['changeamount', 'change', 'delta', 'amount']
+
+function findCol(headers: string[], cands: string[]): string | null {
+  for (const c of cands) { const h = headers.find((x) => norm(x) === c); if (h) return h }
+  for (const c of cands) { const h = headers.find((x) => norm(x).includes(c)); if (h) return h }
+  return null
+}
+
+function detectLedger(headers: string[], rows: Record<string, string>[]): { typeCol: string; changeCol: string } | null {
+  const typeCol = findCol(headers, LEDGER_TYPE_COLS)
+  const changeCol = findCol(headers, LEDGER_CHANGE_COLS)
+  if (!typeCol || !changeCol || typeCol === changeCol) return null
+  const looksLedger = rows.some((r) => {
+    const t = norm(r[typeCol] ?? '')
+    return t.includes('fee') || t.includes('fund') || t.includes('pnl') || t.includes('profit')
+  })
+  return looksLedger ? { typeCol, changeCol } : null
+}
+
+function computeLedger(rows: Record<string, string>[], typeCol: string, changeCol: string): AnalyzerResult | { error: string } {
+  let totalFees = 0
+  let feeCount = 0
+  let fundingNet = 0
+  let pnlSum = 0
+  let havePnl = false
+  let haveFunding = false
+  let ccy = ''
+  for (const r of rows) {
+    const raw = r[changeCol]
+    const amt = num(raw)
+    if (Number.isNaN(amt)) continue
+    if (!ccy) { const m = String(raw ?? '').match(/[A-Za-z]{2,6}/); if (m) ccy = m[0].toUpperCase() }
+    const t = norm(r[typeCol] ?? '')
+    if (t.includes('fee') && !t.includes('rebate')) { totalFees += Math.abs(amt); feeCount++ }
+    else if (t.includes('fund')) { fundingNet += amt; haveFunding = true }
+    else if (t.includes('pnl') || t.includes('profit')) { pnlSum += amt; havePnl = true }
+  }
+  if (feeCount === 0 && !haveFunding) return { error: 'This looks like an account ledger, but no fee or funding entries were found.' }
+  if (!ccy) ccy = 'USDT'
+  const fundingPaid = fundingNet < 0 ? -fundingNet : 0
+  const fundingRecv = fundingNet > 0 ? fundingNet : 0
+  return {
+    mode: 'ledger' as const,
+    ccy, totalFees, feeCount, volume: 0, haveVolume: false, haveLiq: false,
+    takerNotional: 0, makerNotional: 0, takerFees: 0, makerFees: 0,
+    haveFunding, fundingNet, fundingPaid, fundingRecv,
+    havePnl, pnlSum, heroCost: totalFees + fundingPaid, bySymbol: {}, byDay: {},
+  }
 }
 
 function compute(rows: Record<string, string>[], map: Mapping): AnalyzerResult | { error: string } {
@@ -212,6 +271,7 @@ function compute(rows: Record<string, string>[], map: Mapping): AnalyzerResult |
   const heroCost = totalFees + fundingPaid
 
   return {
+    mode: 'fills' as const,
     ccy, totalFees, feeCount, volume, haveVolume, haveLiq,
     takerNotional, makerNotional, takerFees, makerFees,
     haveFunding, fundingNet, fundingPaid, fundingRecv,
@@ -267,6 +327,13 @@ export function FeeAnalyzer({ isPro, onUpgrade }: { isPro: boolean; onUpgrade: (
       setHeaders(parsed.headers)
       setRows(parsed.rows)
       setError(null)
+      const ledger = detectLedger(parsed.headers, parsed.rows)
+      if (ledger) {
+        const lr = computeLedger(parsed.rows, ledger.typeCol, ledger.changeCol)
+        if ('error' in lr) { setError(lr.error); setResult(null) }
+        else { setResult(lr); setShowMapping(false) }
+        return
+      }
       const map = autoMap(parsed.headers)
       setMapping(map)
       if (!map.fee) { setShowMapping(true); setResult(null) }
@@ -336,13 +403,18 @@ export function FeeAnalyzer({ isPro, onUpgrade }: { isPro: boolean; onUpgrade: (
           </div>
         </div>
 
-        {!r.haveVolume && (
+        {r.mode === 'fills' && !r.haveVolume && (
           <button
             onClick={() => setShowMapping(true)}
             className="mb-3 text-left text-[11px] font-bold text-amber-400 hover:text-amber-300"
           >
             Volume not detected — tap to map your size &amp; price (or notional) column →
           </button>
+        )}
+        {r.mode === 'ledger' && (
+          <div className="mb-3 text-[11px] text-zinc-500">
+            Read from your account ledger — fees and funding totalled by entry type. No per-trade volume or maker/taker in this export.
+          </div>
         )}
 
         <div className="space-y-3">
