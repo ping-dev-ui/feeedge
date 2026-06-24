@@ -691,14 +691,6 @@ function FeeEdge() {
           <h1 className="text-xl font-black tracking-tight text-white">FeeEdge</h1>
         </div>
         <div className="flex items-center gap-2 sm:gap-4 text-xs">
-          <button
-            onClick={() => setShowGuide((v) => !v)}
-            className="flex items-center gap-1.5 text-sm font-bold text-emerald-400 hover:text-emerald-300 transition-colors"
-            title="How to use FeeEdge"
-          >
-            <HelpCircle size={18} />
-            <span className="hidden sm:inline">How to use</span>
-          </button>
           <div
             className="hidden sm:flex items-center gap-1 text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20"
             title={feeMeta ? `${feeMeta.liveCount} live · ${feeMeta.total} tracked · updated ${timeAgo(feeMeta.lastUpdated)}` : 'Using built-in rates'}
@@ -706,19 +698,27 @@ function FeeEdge() {
             <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
             {feeMeta ? `UPDATED ${timeAgo(feeMeta.lastUpdated)}` : 'FEE DATA'}
           </div>
-          <button
-            onClick={handleUpgrade}
-            disabled={upgrading || isPro}
-            className="bg-zinc-100 text-black px-3 py-1.5 rounded font-bold hover:bg-white transition-colors flex items-center gap-2 disabled:opacity-60"
-          >
-            <Zap size={14} fill="currentColor" />
-            {isPro ? 'PRO ACTIVE' : upgrading ? '…' : (
-              <>
-                <span className="sm:hidden">Pro</span>
-                <span className="hidden sm:inline">UPGRADE TO PRO</span>
-              </>
-            )}
-          </button>
+          <div className="flex flex-col items-stretch gap-1">
+            <button
+              onClick={handleUpgrade}
+              disabled={upgrading || isPro}
+              className="bg-zinc-100 text-black px-3 py-1.5 rounded font-bold hover:bg-white transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
+            >
+              <Zap size={14} fill="currentColor" />
+              {isPro ? 'PRO ACTIVE' : upgrading ? '…' : (
+                <>
+                  <span className="sm:hidden">Pro</span>
+                  <span className="hidden sm:inline">UPGRADE TO PRO</span>
+                </>
+              )}
+            </button>
+            <button
+              onClick={() => setShowGuide(true)}
+              className="flex items-center justify-center gap-1 text-[11px] font-bold text-emerald-400 hover:text-emerald-300 transition-colors"
+            >
+              <HelpCircle size={13} /> How to use
+            </button>
+          </div>
           {isAuthenticated ? (
             <button
               onClick={() => signOut()}
@@ -967,10 +967,24 @@ function FeeEdge() {
             </div>
           </div>
 
-          {/* How to read this */}
+          {/* How to use — modal */}
           {showGuide && (
-            <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 text-xs text-zinc-400 space-y-4">
-              <div className="space-y-2">
+            <div
+              className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/70 p-4"
+              onClick={() => setShowGuide(false)}
+            >
+              <div
+                className="relative my-8 w-full max-w-2xl bg-[#0b1f16] border border-zinc-800 rounded-2xl p-6 text-xs text-zinc-400 space-y-4"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={() => setShowGuide(false)}
+                  aria-label="Close"
+                  className="absolute top-3 right-4 text-lg leading-none text-zinc-400 hover:text-white transition-colors"
+                >
+                  ✕
+                </button>
+                <div className="space-y-2">
                 <p className="text-zinc-300 font-bold uppercase tracking-widest text-[11px]">How to use FeeEdge</p>
                 <ol className="space-y-1.5 list-decimal list-inside marker:text-emerald-400 marker:font-bold">
                   <li>Set your <span className="text-zinc-200">Trader Profile</span> (left) — monthly volume, maker/taker mix, average hold time, and the assets you trade.</li>
@@ -1003,6 +1017,7 @@ function FeeEdge() {
                 <p><span className="text-emerald-400 font-bold">Compare two head-to-head:</span> use the <span className="text-zinc-300">Compare exchanges</span> box at the top to put any venues side by side (a Pro feature).</p>
               </div>
               <p className="text-zinc-400 italic">Free shows the 5 cheapest venues; Pro unlocks all {EXCHANGES.length} exchanges plus funding estimates, the native-token discount, the funding optimizer, withdrawal-fee comparison, the tier savings ladder, unlimited saved scenarios, price alerts, and PDF/CSV export. All figures are estimates — not financial advice.</p>
+              </div>
             </div>
           )}
 
