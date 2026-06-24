@@ -763,7 +763,7 @@ function FeeEdge() {
       {/* Top featured row: Your Fees analyzer + Compare head-to-head */}
       <div className="max-w-7xl mx-auto px-6 pt-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-          <FeeAnalyzer isPro={isPro} onUpgrade={handleUpgrade} />
+          <FeeAnalyzer isPro={isPro} onUpgrade={handleUpgrade} track={phCapture} />
           <div className="bg-[#0b1f16] border border-emerald-500/30 rounded-2xl p-5 md:p-6 h-full flex flex-col">
             <div className="text-[11px] uppercase tracking-widest text-emerald-400 font-bold mb-2">Pro · side-by-side</div>
             <h3 className="text-2xl md:text-3xl font-black text-white leading-[1.08] tracking-tight mb-2">

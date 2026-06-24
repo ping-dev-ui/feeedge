@@ -1,5 +1,5 @@
 import { useRef, useState, type Dispatch, type SetStateAction } from 'react'
-import { Upload, Download, BarChart3, ShieldCheck, Info, Zap } from 'lucide-react'
+import { Upload, Download, BarChart3, ShieldCheck, Info, Zap, Lock } from 'lucide-react'
 
 // ---------------------------------------------------------------------------
 // FeeAnalyzer — "Your Fees" (Pro)
@@ -311,7 +311,7 @@ function Metric({ label, value }: { label: string; value: string }) {
   )
 }
 
-export function FeeAnalyzer({ isPro, onUpgrade }: { isPro: boolean; onUpgrade: () => void }) {
+export function FeeAnalyzer({ isPro, onUpgrade, track = () => {} }: { isPro: boolean; onUpgrade: () => void; track?: (event: string, props?: Record<string, unknown>) => void }) {
   const [headers, setHeaders] = useState<string[]>([])
   const [rows, setRows] = useState<Record<string, string>[]>([])
   const [mapping, setMapping] = useState<Mapping>({})
@@ -330,6 +330,7 @@ export function FeeAnalyzer({ isPro, onUpgrade }: { isPro: boolean; onUpgrade: (
     setError(null)
     setResult(r)
     setShowMapping(false)
+    track('analyzer_run', { mode: r.mode, pro: isPro })
   }
 
   const handleFile = async (file: File) => {
@@ -344,7 +345,7 @@ export function FeeAnalyzer({ isPro, onUpgrade }: { isPro: boolean; onUpgrade: (
       if (ledger) {
         const lr = computeLedger(parsed.rows, ledger.typeCol, ledger.changeCol)
         if ('error' in lr) { setError(lr.error); setResult(null) }
-        else { setResult(lr); setShowMapping(false) }
+        else { setResult(lr); setShowMapping(false); track('analyzer_run', { mode: lr.mode, pro: isPro }) }
         return
       }
       const map = autoMap(parsed.headers)
@@ -369,7 +370,7 @@ export function FeeAnalyzer({ isPro, onUpgrade }: { isPro: boolean; onUpgrade: (
   const card = 'bg-[#0b1f16] border border-emerald-500/30 rounded-2xl p-5 md:p-6 h-full flex flex-col'
 
   // ---- RESULTS (Pro, after a file is analysed) ----
-  if (isPro && result) {
+  if (result) {
     const r = result
     const tSym = topOf(r.bySymbol)
     const tDay = topOf(r.byDay)
@@ -382,7 +383,7 @@ export function FeeAnalyzer({ isPro, onUpgrade }: { isPro: boolean; onUpgrade: (
         <div className="flex items-center gap-2 mb-3">
           <Zap size={15} className="text-emerald-400" />
           <h3 className="text-sm font-bold text-white uppercase tracking-widest">Your Fees</h3>
-          <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-black px-1.5 py-0.5 rounded">Pro</span>
+          {isPro && <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-black px-1.5 py-0.5 rounded">Pro</span>}
         </div>
 
         <div className="bg-[#06140e] border border-zinc-800 rounded-xl p-5 mb-3">
@@ -429,6 +430,7 @@ export function FeeAnalyzer({ isPro, onUpgrade }: { isPro: boolean; onUpgrade: (
           </div>
         )}
 
+        {isPro ? (
         <div className="space-y-3">
           <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-4">
             <div className="text-[11px] uppercase tracking-wider text-zinc-400 font-bold mb-1">Taker vs maker</div>
@@ -493,6 +495,19 @@ export function FeeAnalyzer({ isPro, onUpgrade }: { isPro: boolean; onUpgrade: (
             </div>
           )}
         </div>
+        ) : (
+          <button
+            onClick={() => { track('analyzer_upgrade_click', { mode: r.mode }); onUpgrade() }}
+            className="w-full rounded-xl border border-dashed border-emerald-500/40 bg-emerald-500/5 p-4 text-left hover:border-emerald-500 transition-colors"
+          >
+            <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+              <Lock size={14} /> Unlock the full breakdown — $29
+            </div>
+            <div className="text-[11px] text-zinc-400 mt-1">
+              See what trading maker would've saved, your costliest symbols, funding detail, your fees vs PnL — plus all {20} exchanges, alerts and export.
+            </div>
+          </button>
+        )}
 
         <div className="flex flex-wrap items-center gap-3 mt-4">
           <button onClick={() => setShowMapping((v) => !v)} className="text-[11px] font-bold text-zinc-400 hover:text-white transition-colors">Adjust column mapping</button>
@@ -520,7 +535,7 @@ export function FeeAnalyzer({ isPro, onUpgrade }: { isPro: boolean; onUpgrade: (
         What are fees <span className="text-emerald-400">really</span> costing you?
       </h3>
       <p className="text-[11px] text-zinc-400 mb-4">
-        e.g. one trader: <span className="text-emerald-400 font-bold">$1,847</span> over 90 days <span className="opacity-70">(example)</span>
+        Drop your exchange export and see your real fee + funding bill in ~10 seconds. Free.
       </p>
 
       <div className="flex gap-1.5 mb-4">
@@ -535,30 +550,22 @@ export function FeeAnalyzer({ isPro, onUpgrade }: { isPro: boolean; onUpgrade: (
         })}
       </div>
 
-      {isPro ? (
-        <>
-          <div
-            onClick={openPicker}
-            onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
-            onDragLeave={() => setDragOver(false)}
-            onDrop={(e) => { e.preventDefault(); setDragOver(false); const f = e.dataTransfer.files?.[0]; if (f) void handleFile(f) }}
-            className={`cursor-pointer rounded-lg border-2 border-dashed p-3.5 text-center transition-colors mb-2.5 ${dragOver ? 'border-emerald-500 bg-emerald-500/5' : 'border-zinc-800 hover:border-zinc-700'}`}
-          >
-            <div className="text-xs font-bold text-zinc-200">
-              <Upload size={14} className="inline align-[-2px] text-emerald-400 mr-1" /> Drop your fills CSV, or click
-            </div>
-          </div>
-          <button onClick={openPicker} className="w-full bg-emerald-500 text-black font-bold text-sm rounded-full py-2.5 hover:bg-emerald-400 transition-colors">
-            See your real cost
-          </button>
-          {error && <div className="text-[11px] text-amber-400 bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-2 mt-2.5">{error}</div>}
-          {showMapping && headers.length > 0 && <MappingPanel headers={headers} mapping={mapping} setMapping={setMapping} onCalc={calcFromMapping} onCancel={() => setShowMapping(false)} />}
-        </>
-      ) : (
-        <button onClick={onUpgrade} className="w-full bg-emerald-500 text-black font-bold text-sm rounded-full py-2.5 hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2">
-          <Zap size={14} fill="currentColor" /> Unlock Pro to run yours — $29
-        </button>
-      )}
+      <div
+        onClick={openPicker}
+        onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={(e) => { e.preventDefault(); setDragOver(false); const f = e.dataTransfer.files?.[0]; if (f) void handleFile(f) }}
+        className={`cursor-pointer rounded-lg border-2 border-dashed p-3.5 text-center transition-colors mb-2.5 ${dragOver ? 'border-emerald-500 bg-emerald-500/5' : 'border-zinc-800 hover:border-zinc-700'}`}
+      >
+        <div className="text-xs font-bold text-zinc-200">
+          <Upload size={14} className="inline align-[-2px] text-emerald-400 mr-1" /> Drop your fills CSV, or click
+        </div>
+      </div>
+      <button onClick={openPicker} className="w-full bg-emerald-500 text-black font-bold text-sm rounded-full py-2.5 hover:bg-emerald-400 transition-colors">
+        See your real cost
+      </button>
+      {error && <div className="text-[11px] text-amber-400 bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-2 mt-2.5">{error}</div>}
+      {showMapping && headers.length > 0 && <MappingPanel headers={headers} mapping={mapping} setMapping={setMapping} onCalc={calcFromMapping} onCancel={() => setShowMapping(false)} />}
 
       <div className="text-[11px] text-zinc-500 text-center mt-3">
         <ShieldCheck size={12} className="inline align-[-2px] text-emerald-500/80 mr-1" />
