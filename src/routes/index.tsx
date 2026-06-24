@@ -740,7 +740,7 @@ function FeeEdge() {
       {/* Hero tagline */}
       <div className="max-w-7xl mx-auto px-6 pt-12 pb-2 text-center">
         <h2 className="text-3xl md:text-5xl font-black tracking-tight text-white leading-[1.05]">
-          The cheapest exchange for{' '}
+          The cheapest crypto exchange for{' '}
           <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
             how you trade
           </span>
@@ -759,6 +759,17 @@ function FeeEdge() {
             <span className="transition-transform group-hover:translate-x-0.5">→</span>
           </Link>
           <span className="text-[11px] text-zinc-500">Pick any venues · side-by-side · instant</span>
+        </div>
+      </div>
+
+      {/* Your Fees — fee & funding bleed analyzer, FEATURED at top */}
+      <div className="max-w-7xl mx-auto px-6 pt-8">
+        <div className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 to-zinc-900/40 p-5 md:p-6">
+          <div className="mb-3 flex items-center gap-2">
+            <span className="rounded bg-emerald-500 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-black">New</span>
+            <span className="text-[11px] font-bold uppercase tracking-widest text-emerald-400">See your real crypto trading fees</span>
+          </div>
+          <FeeAnalyzer isPro={isPro} onUpgrade={handleUpgrade} />
         </div>
       </div>
 
@@ -1238,21 +1249,6 @@ function FeeEdge() {
             assetMultiplier={assetMultiplier}
             onUpgrade={handleUpgrade}
           />
-
-          {/* ── Separator: Your Fees analyzer (Pro) ── */}
-          <div className="relative pt-4">
-            <div className="absolute inset-0 flex items-center" aria-hidden="true">
-              <div className="w-full border-t border-zinc-800" />
-            </div>
-            <div className="relative flex justify-center">
-              <span className="bg-[#06140e] px-4 text-[11px] font-bold uppercase tracking-widest text-emerald-400">
-                Now check your real fees ↓
-              </span>
-            </div>
-          </div>
-
-          {/* Your Fees — upload your fills, see your fee & funding bleed (Pro) */}
-          <FeeAnalyzer isPro={isPro} onUpgrade={handleUpgrade} />
 
           {/* Asset Selection & Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
