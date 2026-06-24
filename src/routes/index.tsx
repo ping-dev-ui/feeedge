@@ -687,7 +687,7 @@ function FeeEdge() {
       {/* Header */}
       <header className="border-b border-zinc-800 bg-[#0a1a13] px-6 py-4 flex items-center justify-between sticky top-0 z-10 backdrop-blur-md bg-opacity-80">
         <div className="flex items-center gap-3">
-          <img src="/logo-mark.png" width="44" height="44" alt="FeeEdge" className="shrink-0 rounded-lg" />
+          <img src="/logo-mark-t.png" alt="FeeEdge" className="shrink-0 h-12 w-auto" />
           <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white">FeeEdge</h1>
         </div>
         <div className="flex items-center gap-2 sm:gap-4 text-xs">
