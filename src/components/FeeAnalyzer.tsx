@@ -282,7 +282,11 @@ function compute(rows: Record<string, string>[], map: Mapping): AnalyzerResult |
 // ---- formatting ----
 const money = (v: number, ccy: string): string =>
   Number.isNaN(v) ? '—' : `${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${ccy}`
-const pct = (v: number): string => `${v.toLocaleString(undefined, { maximumFractionDigits: 1 })}%`
+const pct = (v: number): string => {
+  const a = Math.abs(v)
+  const d = a !== 0 && a < 1 ? (a < 0.1 ? 3 : 2) : 1
+  return `${v.toLocaleString(undefined, { maximumFractionDigits: d })}%`
+}
 const ratePct = (v: number): string => `${(v * 100).toLocaleString(undefined, { maximumFractionDigits: 4 })}%`
 
 function topOf(obj: Record<string, number>): { k: string; v: number } | null {
