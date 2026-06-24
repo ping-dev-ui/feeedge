@@ -302,6 +302,15 @@ const STEPS: { icon: typeof Upload; label: string }[] = [
   { icon: BarChart3, label: 'See cost' },
 ]
 
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="bg-[#06140e] border border-zinc-800 rounded-lg p-3">
+      <div className="text-[10px] uppercase tracking-wider text-zinc-500">{label}</div>
+      <div className="text-sm font-bold text-white mt-0.5">{value}</div>
+    </div>
+  )
+}
+
 export function FeeAnalyzer({ isPro, onUpgrade }: { isPro: boolean; onUpgrade: () => void }) {
   const [headers, setHeaders] = useState<string[]>([])
   const [rows, setRows] = useState<Record<string, string>[]>([])
@@ -389,22 +398,21 @@ export function FeeAnalyzer({ isPro, onUpgrade }: { isPro: boolean; onUpgrade: (
         </div>
 
         <div className="grid grid-cols-2 gap-2 mb-3">
-          <div className="bg-[#06140e] border border-zinc-800 rounded-lg p-3">
-            <div className="text-[10px] uppercase tracking-wider text-zinc-500">Traded volume</div>
-            <div className="text-sm font-bold text-white mt-0.5">{r.haveVolume && r.volume > 0 ? money(r.volume, r.ccy) : '—'}</div>
-          </div>
-          <div className="bg-[#06140e] border border-zinc-800 rounded-lg p-3">
-            <div className="text-[10px] uppercase tracking-wider text-zinc-500">Fees % of volume</div>
-            <div className="text-sm font-bold text-white mt-0.5">{r.haveVolume && r.volume > 0 ? pct(r.totalFees / r.volume * 100) : '—'}</div>
-          </div>
-          <div className="bg-[#06140e] border border-zinc-800 rounded-lg p-3">
-            <div className="text-[10px] uppercase tracking-wider text-zinc-500">Total fees</div>
-            <div className="text-sm font-bold text-white mt-0.5">{money(r.totalFees, r.ccy)}</div>
-          </div>
-          <div className="bg-[#06140e] border border-zinc-800 rounded-lg p-3">
-            <div className="text-[10px] uppercase tracking-wider text-zinc-500">Funding paid</div>
-            <div className="text-sm font-bold text-white mt-0.5">{r.haveFunding ? money(r.fundingPaid, r.ccy) : '—'}</div>
-          </div>
+          {r.mode === 'ledger' ? (
+            <>
+              <Metric label="Total fees" value={money(r.totalFees, r.ccy)} />
+              <Metric label="Funding" value={r.haveFunding ? money(r.fundingNet, r.ccy) : 'n/a'} />
+              <Metric label="Realized PnL" value={r.havePnl ? money(r.pnlSum, r.ccy) : 'n/a'} />
+              <Metric label="Fees % of PnL" value={r.havePnl && r.pnlSum !== 0 ? pct(r.totalFees / Math.abs(r.pnlSum) * 100) : 'n/a'} />
+            </>
+          ) : (
+            <>
+              <Metric label="Traded volume" value={r.haveVolume && r.volume > 0 ? money(r.volume, r.ccy) : '—'} />
+              <Metric label="Fees % of volume" value={r.haveVolume && r.volume > 0 ? pct(r.totalFees / r.volume * 100) : '—'} />
+              <Metric label="Total fees" value={money(r.totalFees, r.ccy)} />
+              <Metric label="Funding paid" value={r.haveFunding ? money(r.fundingPaid, r.ccy) : '—'} />
+            </>
+          )}
         </div>
 
         {r.mode === 'fills' && !r.haveVolume && (
