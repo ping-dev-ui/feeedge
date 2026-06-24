@@ -765,23 +765,13 @@ function FeeEdge() {
               <span className="text-[11px] font-black text-emerald-400">VS</span>
               <span className="text-sm font-bold text-emerald-400">Hyperliquid</span>
             </div>
-            {isPro ? (
-              <Link
-                to="/versus"
-                onClick={() => phCapture('head_to_head_clicked', { market, monthlyVolume })}
-                className="mt-auto w-full bg-emerald-500 text-black font-bold text-sm rounded-full py-2.5 hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2"
-              >
-                <Swords size={16} strokeWidth={2.5} /> Compare exchanges
-              </Link>
-            ) : (
-              <button
-                onClick={handleUpgrade}
-                disabled={upgrading}
-                className="mt-auto w-full bg-emerald-500 text-black font-bold text-sm rounded-full py-2.5 hover:bg-emerald-400 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
-              >
-                <Zap size={14} fill="currentColor" /> Unlock Pro to compare — $29
-              </button>
-            )}
+            <Link
+              to="/versus"
+              onClick={() => phCapture('head_to_head_clicked', { market, monthlyVolume })}
+              className="mt-auto w-full bg-emerald-500 text-black font-bold text-sm rounded-full py-2.5 hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2"
+            >
+              <Swords size={16} strokeWidth={2.5} /> Compare exchanges
+            </Link>
             <div className="text-[11px] text-zinc-500 text-center mt-3">Side-by-side · instant · {EXCHANGES.length} venues</div>
           </div>
         </div>
