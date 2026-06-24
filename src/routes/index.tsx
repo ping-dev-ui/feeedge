@@ -686,9 +686,9 @@ function FeeEdge() {
     >
       {/* Header */}
       <header className="border-b border-zinc-800 bg-[#0a1a13] px-6 py-4 flex items-center justify-between sticky top-0 z-10 backdrop-blur-md bg-opacity-80">
-        <div className="flex items-center gap-2.5">
-          <img src="/logo-mark.png" width="34" height="34" alt="FeeEdge" className="shrink-0 rounded-lg" />
-          <h1 className="text-xl font-black tracking-tight text-white">FeeEdge</h1>
+        <div className="flex items-center gap-3">
+          <img src="/logo-mark.png" width="44" height="44" alt="FeeEdge" className="shrink-0 rounded-lg" />
+          <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white">FeeEdge</h1>
         </div>
         <div className="flex items-center gap-2 sm:gap-4 text-xs">
           <div
@@ -698,27 +698,19 @@ function FeeEdge() {
             <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
             {feeMeta ? `UPDATED ${timeAgo(feeMeta.lastUpdated)}` : 'FEE DATA'}
           </div>
-          <div className="flex flex-col items-stretch gap-1">
-            <button
-              onClick={handleUpgrade}
-              disabled={upgrading || isPro}
-              className="bg-zinc-100 text-black px-3 py-1.5 rounded font-bold hover:bg-white transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
-            >
-              <Zap size={14} fill="currentColor" />
-              {isPro ? 'PRO ACTIVE' : upgrading ? '…' : (
-                <>
-                  <span className="sm:hidden">Pro</span>
-                  <span className="hidden sm:inline">UPGRADE TO PRO</span>
-                </>
-              )}
-            </button>
-            <button
-              onClick={() => setShowGuide(true)}
-              className="flex items-center justify-center gap-1 text-[11px] font-bold text-emerald-400 hover:text-emerald-300 transition-colors"
-            >
-              <HelpCircle size={13} /> How to use
-            </button>
-          </div>
+          <button
+            onClick={handleUpgrade}
+            disabled={upgrading || isPro}
+            className="bg-zinc-100 text-black px-3 py-1.5 rounded font-bold hover:bg-white transition-colors flex items-center gap-2 disabled:opacity-60"
+          >
+            <Zap size={14} fill="currentColor" />
+            {isPro ? 'PRO ACTIVE' : upgrading ? '…' : (
+              <>
+                <span className="sm:hidden">Pro</span>
+                <span className="hidden sm:inline">UPGRADE TO PRO</span>
+              </>
+            )}
+          </button>
           {isAuthenticated ? (
             <button
               onClick={() => signOut()}
@@ -737,6 +729,16 @@ function FeeEdge() {
           )}
         </div>
       </header>
+
+      {/* How to use — below the header breaker */}
+      <div className="max-w-7xl mx-auto px-6 pt-4 flex justify-end">
+        <button
+          onClick={() => setShowGuide(true)}
+          className="flex items-center gap-1.5 text-base font-bold text-white hover:text-emerald-400 transition-colors"
+        >
+          <HelpCircle size={18} /> How to use
+        </button>
+      </div>
 
       {showSignIn && (
         <SignInModal
