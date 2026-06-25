@@ -73,25 +73,25 @@ export const Route = createRootRouteWithContext<{
       // Open Graph
       { property: 'og:type', content: 'website' },
       { property: 'og:site_name', content: 'FeeEdge' },
-      { property: 'og:title', content: 'The cheapest exchange for how you trade' },
+      { property: 'og:title', content: 'What are fees really costing you?' },
       {
         property: 'og:description',
         content:
-          'Compare real trading fees across 20 exchanges — perps & spot — ranked for your volume and style. $29 once, no subscription.',
+          'Upload your exchange trades and see exactly what you paid in fees + funding — free, and your file never leaves your browser. Plus the cheapest exchange for your style across 20 venues.',
       },
       { property: 'og:url', content: 'https://feeedge.com/' },
-      { property: 'og:image', content: 'https://feeedge.com/og.png?v=2' },
+      { property: 'og:image', content: 'https://feeedge.com/og.png?v=3' },
       { property: 'og:image:width', content: '1200' },
       { property: 'og:image:height', content: '630' },
       // Twitter
       { name: 'twitter:card', content: 'summary_large_image' },
-      { name: 'twitter:title', content: 'The cheapest exchange for how you trade' },
+      { name: 'twitter:title', content: 'What are fees really costing you?' },
       {
         name: 'twitter:description',
         content:
-          'Compare real trading fees across 20 exchanges — perps & spot — ranked for your volume and style.',
+          'Upload your exchange trades — see your real fee + funding bill in seconds. Free, and nothing leaves your browser.',
       },
-      { name: 'twitter:image', content: 'https://feeedge.com/og.png?v=2' },
+      { name: 'twitter:image', content: 'https://feeedge.com/og.png?v=3' },
     ],
     links: [
       { rel: 'stylesheet', href: appCss },
