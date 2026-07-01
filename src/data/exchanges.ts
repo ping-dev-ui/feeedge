@@ -53,7 +53,7 @@ export const EXCHANGES: Exchange[] = [
   },
   {
     name: 'KuCoin', slug: 'kucoin', colorClass: 'text-green-400',
-    futures: { maker: 0.0002, taker: 0.0006 }, spot: { maker: 0.001, taker: 0.0012 },
+    futures: { maker: 0.0002, taker: 0.0006 }, spot: { maker: 0.001, taker: 0.001 },
     token: 'KCS', tokenDiscount: 0.2,
   },
   {
@@ -88,7 +88,7 @@ export const EXCHANGES: Exchange[] = [
   },
   {
     name: 'WhiteBIT', slug: 'whitebit', colorClass: 'text-zinc-200',
-    futures: { maker: 0.0001, taker: 0.00035 }, spot: { maker: 0.001, taker: 0.001 },
+    futures: { maker: 0.0001, taker: 0.00055 }, spot: { maker: 0.001, taker: 0.001 },
     token: 'WBT', tokenDiscount: 0.2,
   },
   {
@@ -101,7 +101,7 @@ export const EXCHANGES: Exchange[] = [
   },
   {
     name: 'Backpack', slug: 'backpack', colorClass: 'text-orange-300',
-    futures: { maker: 0.0002, taker: 0.0005 }, spot: { maker: 0.0002, taker: 0.0005 },
+    futures: { maker: 0.0002, taker: 0.0005 }, spot: { maker: 0.0008, taker: 0.001 },
   },
   {
     name: 'BitMart', slug: 'bitmart', colorClass: 'text-emerald-300',
@@ -148,7 +148,7 @@ export const pct = (v: number) => `${(v * 100).toFixed(3)}%`
 
 // Human-readable "data last verified" label, shown on SEO pages as a freshness
 // signal. Bump alongside VERIFIED_AT in convex/fetcher.ts when fees are re-checked.
-export const DATA_UPDATED = 'June 2026'
+export const DATA_UPDATED = 'July 2026'
 
 // Official domains, used to render each exchange's logo (via favicon service)
 // next to its name. Keyed by slug (which matches the calculator's `key`).

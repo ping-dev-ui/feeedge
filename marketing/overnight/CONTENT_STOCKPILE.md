@@ -46,6 +46,59 @@ feeedge.com 👇
 
 ---
 
+## Edie fee tips #11 to #16 (rotation queue, NO pre-made jpg)
+
+These have no pre-made image. The nightly task BUILDS the card from the locked
+6-look rotation using `C:\FeeEdge\marketing\edie-persona\card-builder.js`. For each
+tip: `head` = the two headline lines, `body` = the body line baked on the card,
+and post `caption` verbatim (dash-free, locked Edie style). The `scene` letter
+maps to `SCENES` in card-builder.js and is pre-assigned so the rotation never
+repeats a scene or layout back to back.
+
+**Tip #11 (scene B - cafe):**
+head: pick your | pair
+body: the same coin trades against usdt, usdc and fiat with different spreads and fees. the quote you pick changes your cost.
+caption: edie's fee tip 🤓 the same coin trades against usdt, usdc and fiat at different spreads and fees. the pair you pick quietly changes what you pay.
+
+feeedge.com 👇
+
+**Tip #12 (scene C - studio):**
+head: mind the | on ramp
+body: card and instant deposits can carry a fat fee before you place a single trade. a slower bank transfer is usually far cheaper.
+caption: edie's fee tip 🤓 card and instant deposits can cost a fat fee before you even trade. a slower bank transfer is usually far cheaper.
+
+feeedge.com 👇
+
+**Tip #13 (scene D - bright window):**
+head: size moves | the price
+body: a big market order eats through the book and fills worse than the screen price. on a thin book that slippage costs more than the fee.
+caption: edie's fee tip 🤓 a big market order eats through the book and fills worse than the screen price. on a thin book that slippage costs more than the fee.
+
+feeedge.com 👇
+
+**Tip #14 (scene E - cozy home):**
+head: stake to | save
+body: some venues cut your fee when you hold or stake their token. trade there often and the discount can pay for the stake.
+caption: edie's fee tip 🤓 some venues cut your fee when you hold or stake their token. trade there often and the discount can pay for the stake.
+
+feeedge.com 👇
+
+**Tip #15 (scene F - rooftop):**
+head: watch the | convert
+body: auto converting dust or swapping assets in the app usually hides a spread. it feels free but it is just another fee in disguise.
+caption: edie's fee tip 🤓 auto converting dust or swapping assets in the app usually hides a spread. it feels free but it is just another fee in disguise.
+
+feeedge.com 👇
+
+**Tip #16 (scene G - bookshelf):**
+head: annualize | your fees
+body: a small fee per trade feels tiny. multiply by a year of volume and it can rival your gains. measure the yearly bill.
+caption: edie's fee tip 🤓 a small fee per trade feels tiny. multiply by a year of volume and it can rival your gains. measure the yearly bill.
+
+feeedge.com 👇
+
+---
+
 ## X threads
 
 ### Thread A: "where your fees leak"

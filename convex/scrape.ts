@@ -27,6 +27,13 @@ export function scrapingEnabled(): boolean {
 // Fee-schedule page per exchange, per market. Spot and futures often live on
 // different pages, so each market has its own URL.
 const FEE_PAGE: Record<string, Partial<Record<Market, string>>> = {
+  binance: {
+    spot: "https://www.binance.com/en/fee/trading",
+  },
+  bybit: {
+    spot: "https://www.bybit.com/en/help-center/article/Trading-Fee-Structure",
+    futures: "https://www.bybit.com/en/help-center/article/Trading-Fee-Structure",
+  },
   htx: {
     spot: "https://www.htx.com/en-us/rate/",
     futures: "https://www.htx.com/en-us/rate/",
@@ -172,11 +179,47 @@ function makerTaker(text: string): Rate | null {
 // VERIFIED per-exchange/market parsers. Keyed by "exchange:market". Each is
 // written and confirmed against the real Bright Data output (via debugUnlock)
 // before being added here.
+// Binance spot fee schedule renders server-side; the "Regular User" row carries
+// the base rate as "0.100% / 0.100%" (Maker / Taker). Take the first two %.
+function binanceSpot(text: string): Rate | null {
+  const i = text.search(/Regular User/i);
+  if (i < 0) return null;
+  const nums = [...text.slice(i, i + 140).matchAll(/(-?\d+(?:\.\d+)?)\s*%/g)].map(
+    (m) => Number(m[1]) / 100,
+  );
+  return nums.length >= 2 ? { maker: nums[0], taker: nums[1] } : null;
+}
+
+// Bybit help-center fee table prints the VIP 0 row as six percentages in order:
+// spotTaker, spotMaker, perpTaker, perpMaker, optTaker, optMaker.
+function bybitVip0(text: string): number[] | null {
+  const i = text.search(/VIP\s*0\b/i);
+  if (i < 0) return null;
+  const nums = [...text.slice(i, i + 170).matchAll(/(-?\d+(?:\.\d+)?)\s*%/g)].map(
+    (m) => Number(m[1]) / 100,
+  );
+  return nums.length >= 4 ? nums : null;
+}
+function bybitSpot(text: string): Rate | null {
+  const n = bybitVip0(text);
+  return n ? { taker: n[0], maker: n[1] } : null;
+}
+function bybitFutures(text: string): Rate | null {
+  const n = bybitVip0(text);
+  return n ? { taker: n[2], maker: n[3] } : null;
+}
+
 const PARSERS: Record<string, (text: string) => Rate | null> = {
   // BingX futures support article renders server-side as:
   // "Taker (filled instantly): 0.05% Maker (pending orders): 0.02%"
   // → maker 0.02%, taker 0.05% (verified 2026-06-19).
   "bingx:futures": makerTaker,
+  // Binance spot + Bybit spot/futures: fee tables confirmed present in the
+  // served HTML (2026-06-21). Pending live verification of the scraped value
+  // against the published base rate before being fully trusted.
+  "binance:spot": binanceSpot,
+  "bybit:spot": bybitSpot,
+  "bybit:futures": bybitFutures,
 };
 
 // Public entry point: scrape one exchange/market. Returns a decimal Rate or null

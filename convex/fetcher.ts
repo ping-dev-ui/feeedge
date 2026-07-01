@@ -9,7 +9,7 @@ type Rate = { maker: number; taker: number };
 // as the "last updated" stamp for any exchange/market still on the curated
 // fallback (i.e. not freshly fetched via API or scraped), so the UI never
 // claims a fresh update that didn't happen. Bump when you re-verify by hand.
-const VERIFIED_AT = Date.parse("2026-06-19T00:00:00Z");
+const VERIFIED_AT = Date.parse("2026-07-01T00:00:00Z");
 
 // Published maker/taker base rates (decimals: 0.0005 = 0.05%), used as the
 // fallback whenever an exchange has no clean public fee API and scraping is off
@@ -30,7 +30,7 @@ const PUBLISHED: Record<"futures" | "spot", Record<string, Rate>> = {
     coinbase: { maker: 0.0, taker: 0.0003 },
     cryptocom: { maker: 0.0002, taker: 0.0004 },
     bitfinex: { maker: 0.0, taker: 0.0 },
-    whitebit: { maker: 0.0001, taker: 0.00035 },
+    whitebit: { maker: 0.0001, taker: 0.00055 },
     phemex: { maker: 0.0001, taker: 0.0006 },
     bitmex: { maker: 0.0002, taker: 0.0005 },
     backpack: { maker: 0.0002, taker: 0.0005 },
@@ -44,7 +44,7 @@ const PUBLISHED: Record<"futures" | "spot", Record<string, Rate>> = {
     okx: { maker: 0.0008, taker: 0.001 },
     gateio: { maker: 0.002, taker: 0.002 },
     bitget: { maker: 0.001, taker: 0.001 },
-    kucoin: { maker: 0.001, taker: 0.0012 },
+    kucoin: { maker: 0.001, taker: 0.001 },
     mexc: { maker: 0.0, taker: 0.0005 },
     kraken: { maker: 0.0025, taker: 0.004 },
     htx: { maker: 0.002, taker: 0.002 },
@@ -55,7 +55,7 @@ const PUBLISHED: Record<"futures" | "spot", Record<string, Rate>> = {
     whitebit: { maker: 0.001, taker: 0.001 },
     phemex: { maker: 0.001, taker: 0.001 },
     bitmex: { maker: 0.0005, taker: 0.0005 },
-    backpack: { maker: 0.0002, taker: 0.0005 },
+    backpack: { maker: 0.0008, taker: 0.001 },
     bitmart: { maker: 0.0015, taker: 0.0025 },
     coinex: { maker: 0.002, taker: 0.002 },
   },
@@ -75,7 +75,7 @@ async function fetchKrakenFutures(): Promise<Rate | null> {
     const tiers = schedules?.[0]?.tiers;
     if (!Array.isArray(tiers) || tiers.length === 0) return null;
     const base = [...tiers].sort(
-      (a, b) => (a.usdValue ?? 0) - (b.usdValue ?? 0),
+      (a, b) => (a.usdVolume ?? 0) - (b.usdVolume ?? 0),
     )[0];
     const maker = Number(base.makerFee);
     const taker = Number(base.takerFee);
@@ -111,9 +111,55 @@ async function fetchKrakenSpot(): Promise<Rate | null> {
   }
 }
 
+// Guard: reject implausible API responses so a junk value can never be
+// published as a real fee. Base maker/taker should sit in a tight range.
+function saneRate(maker: number, taker: number): Rate | null {
+  if (!isFinite(maker) || !isFinite(taker)) return null;
+  if (taker < 0 || taker > 0.02 || maker < -0.01 || maker > 0.02) return null;
+  return { maker, taker };
+}
+
+// Bitget USDT-M perps: public contracts endpoint exposes base maker/taker as
+// decimals (0.0006 = 0.06%). Verified to match the published tier-0 rate.
+async function fetchBitgetFutures(): Promise<Rate | null> {
+  try {
+    const res = await fetch(
+      "https://api.bitget.com/api/v2/mix/market/contracts?productType=usdt-futures&symbol=BTCUSDT",
+    );
+    if (!res.ok) return null;
+    const data: any = await res.json();
+    const row = data?.data?.[0];
+    if (!row) return null;
+    return saneRate(Number(row.makerFeeRate), Number(row.takerFeeRate));
+  } catch (e) {
+    console.error("Bitget futures fee fetch failed:", e);
+    return null;
+  }
+}
+
+// MEXC USDT-M perps: public contract detail exposes base maker/taker as
+// decimals (0.0002 = 0.02%). Verified to match the published tier-0 rate.
+async function fetchMexcFutures(): Promise<Rate | null> {
+  try {
+    const res = await fetch(
+      "https://contract.mexc.com/api/v1/contract/detail?symbol=BTC_USDT",
+    );
+    if (!res.ok) return null;
+    const data: any = await res.json();
+    const d = data?.data;
+    if (!d) return null;
+    return saneRate(Number(d.makerFeeRate), Number(d.takerFeeRate));
+  } catch (e) {
+    console.error("MEXC futures fee fetch failed:", e);
+    return null;
+  }
+}
+
 const LIVE_FETCHERS: Record<string, () => Promise<Rate | null>> = {
   "kraken:futures": fetchKrakenFutures,
   "kraken:spot": fetchKrakenSpot,
+  "bitget:futures": fetchBitgetFutures,
+  "mexc:futures": fetchMexcFutures,
 };
 
 export const fetchAllFees = internalAction({

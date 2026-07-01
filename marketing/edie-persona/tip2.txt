@@ -1,0 +1,34 @@
+EDIE'S FEE TIP #2 — "Hold their token."
+Posted to X (@Fee_Edge) on 2026-06-21.
+
+ON-IMAGE TEXT
+Badge: EDIE'S FEE TIP #2
+Headline: Hold their token.
+Body: Most exchanges cut your trading fees 10–25% if you hold their coin — BNB, OKB, GT, KCS. Same trade, smaller bill.
+Footer: feeedge.com
+
+X CAPTION
+edie's fee tip #2 🤓 there's a fee discount hiding in plain sight on most exchanges — and almost nobody flips it on.
+
+feeedge.com ranks all 20 by what you'd actually pay 👇
+
+ASSETS
+- Image file: downloaded to the user's Downloads folder as "edie-tip2.jpg" (1080x1350, JPEG).
+  (Could not be written straight into this folder this session: the sandbox egress IP is currently
+   403-blocked by both the Higgsfield CloudFront CDN and Twitter's pbs CDN, and the byte-return
+   channel is filtered. Drag edie-tip2.jpg from Downloads into this folder to keep it with the project.)
+- Live on X CDN as media key: HLXDJuOWIAAV3RQ (format jpg).
+- Base portrait: Higgsfield Soul "Edie - FeeEdge" (soul_id e1ae79e2-efb6-4723-aa1c-0138ca2c3f5b),
+  generation job f559e8f3-e46d-4dc1-adee-d76a2b0772af.
+
+FORMAT NOTES (for future tips, to match tip1.png / tip2)
+- Portrait 1080x1350. Edie photo cover-fit, left-to-right dark gradient (#07100c) for the text zone.
+- Badge: emerald (#2ee6a6) outline pill, top-left.
+- Headline: emerald #2ee6a6, weight 800 (~98px).
+- Body: white #f4f7f6 (~37px).
+- Footer: FE mark + "feeedge.com".
+
+TIP LOG
+#1 — "Stop using market orders." (maker vs taker)
+#2 — "Hold their token." (native-token fee discounts: BNB/OKB/GT/KCS −10–25%)
+Ideas for next: funding rates eat perp profits; withdrawal fees; volume tiers; limit-order rebates.
