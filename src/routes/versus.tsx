@@ -193,8 +193,8 @@ function VersusPage() {
             </label>
             <input
               type="number"
-              min={0}
-              step={100000}
+              min={100}
+              step={100}
               value={volume}
               onChange={(ev) => setVolume(Math.max(0, Number(ev.target.value) || 0))}
               className={inputCls}

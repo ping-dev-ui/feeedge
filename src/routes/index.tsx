@@ -216,9 +216,9 @@ const ASSET_LIQUIDITY_MULTIPLIER: Record<string, number> = {
 
 const FREE_VISIBLE_COUNT = 5
 
-// Monthly-volume slider: log-scaled across $100k–$100M so the whole range is
+// Monthly-volume slider: log-scaled across $100–$100M so the whole range is
 // usable. Slider runs 0–1000; values snap to 2 significant figures.
-const VOL_MIN = 100_000
+const VOL_MIN = 100
 const VOL_MAX = 100_000_000
 const volToSlider = (v: number) => {
   const lmin = Math.log10(VOL_MIN)
@@ -562,7 +562,7 @@ function FeeEdge() {
 
   // Series for the cost-vs-volume chart (same exchanges currently visible).
   const chartSeries = useMemo(() => {
-    const xMin = 100000
+    const xMin = 100
     const xMax = 100000000
     const N = 24
     const vols = Array.from({ length: N }, (_, i) =>
@@ -831,7 +831,7 @@ function FeeEdge() {
                   className="w-full accent-emerald-500 h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer"
                 />
                 <div className="flex justify-between mt-1 px-1">
-                  <span className="text-[11px] text-zinc-400">$100k</span>
+                  <span className="text-[11px] text-zinc-400">$100</span>
                   <span className="text-[11px] text-zinc-400">$100M+</span>
                 </div>
               </div>
