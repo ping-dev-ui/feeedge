@@ -232,4 +232,14 @@
   <url><loc>https://feeedge.com/terms</loc><changefreq>weekly</changefreq><priority>0.4</priority></url>
   <url><loc>https://feeedge.com/privacy</loc><changefreq>weekly</changefreq><priority>0.4</priority></url>
   <url><loc>https://feeedge.com/refunds</loc><changefreq>weekly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://feeedge.com/volume/10k</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://feeedge.com/volume/25k</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://feeedge.com/volume/50k</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://feeedge.com/volume/100k</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://feeedge.com/volume/250k</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://feeedge.com/volume/500k</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://feeedge.com/volume/1m</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://feeedge.com/volume/2m</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://feeedge.com/volume/5m</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://feeedge.com/volume/10m</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
 </urlset>

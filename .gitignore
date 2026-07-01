@@ -28,3 +28,24 @@ app.config.timestamp_*.js
 
 # sandbox build leftovers (safe to delete)
 dist.locked*/
+/npx
+feeedge_project.zip
+
+# edie-persona working intermediates (tools, venvs, frames, clips)
+marketing/edie-persona/Wav2Lip/
+marketing/edie-persona/lsvenv/
+marketing/edie-persona/*.py
+marketing/edie-persona/f[0-9]*.png
+marketing/edie-persona/fin[0-9]*.png
+marketing/edie-persona/fn[0-9]*.png
+marketing/edie-persona/g[0-9]*.png
+marketing/edie-persona/n[0-9]*.png
+marketing/edie-persona/v[0-9]*.png
+marketing/edie-persona/sheet*.png
+marketing/edie-persona/ugc2*
+marketing/edie-persona/wan-clip*.mp4
+marketing/edie-persona/wav2lip_out.mp4
+marketing/edie-persona/joined.mp4
+marketing/edie-persona/seedance-native.mp4
+marketing/edie-persona/*.ass
+marketing/edie-persona/*.srt

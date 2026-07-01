@@ -15,6 +15,7 @@ import { FeeAnalyzer } from '~/components/FeeAnalyzer'
 import { CountUp } from '~/components/CountUp'
 import { ExchangeLogo } from '~/components/ExchangeLogo'
 import { ShareButtons } from '~/components/ShareButtons'
+import { EmailCapture } from '~/components/EmailCapture'
 import {
   BarChart3,
   Info,
@@ -941,6 +942,8 @@ function FeeEdge() {
             onRequireSignIn={() => setShowSignIn(true)}
             onUpgrade={handleUpgrade}
           />
+
+          <EmailCapture source="sidebar" track={phCapture} />
         </aside>
 
         {/* Results Panel */}

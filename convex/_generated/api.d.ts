@@ -20,6 +20,7 @@ import type * as market from "../market.js";
 import type * as scenarios from "../scenarios.js";
 import type * as scrape from "../scrape.js";
 import type * as stripe from "../stripe.js";
+import type * as subscribers from "../subscribers.js";
 import type * as users from "../users.js";
 
 import type {
@@ -41,6 +42,7 @@ declare const fullApi: ApiFromModules<{
   scenarios: typeof scenarios;
   scrape: typeof scrape;
   stripe: typeof stripe;
+  subscribers: typeof subscribers;
   users: typeof users;
 }>;
 

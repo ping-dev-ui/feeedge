@@ -99,6 +99,70 @@ feeedge.com 👇
 
 ---
 
+## Edie fee tips #17 to #24 (rotation queue, added 2026-07-01)
+
+Same rules as #11 to #16: nightly task builds the card with card-builder.js,
+scene letters pre-assigned so no scene repeats back to back, captions verbatim
+and dash free.
+
+**Tip #17 (scene B - cafe):**
+head: fees on | notional
+body: fees are charged on your full position size, not your margin. at 10x leverage a small taker fee becomes a real chunk of what you put up.
+caption: edie's fee tip 🤓 fees are charged on your full position size, not your margin. at 10x leverage a tiny taker fee eats a real chunk of the margin you actually put up. size your costs like you size your trades.
+
+feeedge.com 👇
+
+**Tip #18 (scene C - studio):**
+head: count the | round trip
+body: you pay the fee twice, once in and once out. double the headline rate before you judge a venue.
+caption: edie's fee tip 🤓 you pay the fee twice, once to enter and once to exit. a 0.05 percent taker fee is really 0.1 percent per round trip. double the headline before you do the math.
+
+feeedge.com 👇
+
+**Tip #19 (scene D - bright window):**
+head: pick your | network
+body: the same coin can cost dollars to withdraw on one network and cents on another. check before you hit send.
+caption: edie's fee tip 🤓 the same coin can cost dollars to withdraw on one network and cents on another. check the network options before you hit send, not after.
+
+feeedge.com 👇
+
+**Tip #20 (scene E - cozy home):**
+head: stops pay | taker
+body: a triggered stop loss usually fills as a market order at the taker rate. your worst case exit costs extra.
+caption: edie's fee tip 🤓 when your stop loss triggers it usually fills as a market order at the taker rate. your worst case exit costs extra right when the trade already went wrong. factor it into your risk math.
+
+feeedge.com 👇
+
+**Tip #21 (scene F - rooftop):**
+head: same venue | two prices
+body: the simple buy button and the pro trading page charge very different fees on the same exchange. use the pro page.
+caption: edie's fee tip 🤓 many exchanges charge way more on the simple buy button than on their own pro trading page. same venue, same coin, two very different bills. always trade on the pro page.
+
+feeedge.com 👇
+
+**Tip #22 (scene G - bookshelf):**
+head: read your | statement
+body: export a month of trade history and total the fee column. most traders have never seen the real number.
+caption: edie's fee tip 🤓 export one month of trade history and total the fee column. most traders have never actually seen their real number. once you see it you trade differently.
+
+feeedge.com totals it for you 👇
+
+**Tip #23 (scene B - cafe):**
+head: hold in | spot
+body: holding for weeks on a perp means paying funding every 8 hours the whole time. for long holds spot is usually far cheaper.
+caption: edie's fee tip 🤓 holding for weeks on a perp means paying funding roughly every 8 hours the whole time. for long holds spot is usually far cheaper. perps are for trading, not for storage.
+
+feeedge.com 👇
+
+**Tip #24 (scene C - studio):**
+head: the free | trade
+body: the cheapest trade is the one you skip. every extra entry and exit adds fee, spread and slippage to the same idea.
+caption: edie's fee tip 🤓 the cheapest trade is the one you did not need. every extra entry and exit adds fee, spread and slippage to the same idea. trade the plan, not the boredom.
+
+feeedge.com 👇
+
+---
+
 ## X threads
 
 ### Thread A: "where your fees leak"

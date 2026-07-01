@@ -5,9 +5,9 @@ lowest-numbered tip not yet listed here, starting at #4. Tips #1 to #3 were
 posted manually in earlier sessions. Captions for #4 to #10 live in
 C:\FeeEdge\marketing\overnight\CONTENT_STOCKPILE.md (those are pre-made jpgs).
 From #11 on, the task BUILDS the card from the locked 6-look rotation
-(card-builder.js + the "#11 to #16" queue in CONTENT_STOCKPILE.md); each #11+
-row also records the scene letter. When the queue runs past #16 the task stops
-and pings Miguel to add more tips.
+(card-builder.js + the "#11 to #16" and "#17 to #24" queues in
+CONTENT_STOCKPILE.md); each #11+ row also records the scene letter. When the
+queue runs past #24 the task stops and pings Miguel to add more tips.
 
 | date | tip | headline | status |
 | --- | --- | --- | --- |
@@ -22,3 +22,4 @@ and pings Miguel to add more tips.
 | 2026-06-29 | #9 | "Free" is a headline | posted |
 | 2026-06-29 | #10 | The funding window | posted |
 | 2026-06-30 | #11 | pick your pair (scene B) | posted |
+| 2026-07-01 | #12 | mind the on ramp (scene C) | posted |

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { LegalPage } from '~/components/LegalPage'
-import { allPairs, pairSlug, DATA_UPDATED } from '~/data/exchanges'
+import { allPairs, pairSlug, VOLUME_TIERS, DATA_UPDATED } from '~/data/exchanges'
 
 export const Route = createFileRoute('/compare/')({
   head: () => {
@@ -48,6 +48,21 @@ function CompareIndex() {
         <li><a href="/cheapest-exchange-for-spot">Cheapest exchange for spot trading</a></li>
         <li><a href="/guides/maker-vs-taker-fees">Guide: maker vs taker fees explained</a></li>
         <li><a href="/guides/hidden-costs-of-crypto-trading">Guide: the hidden costs of crypto trading</a></li>
+      </ul>
+
+      <h2>By monthly volume</h2>
+      <p>
+        The cheapest exchange changes with how much you trade. Estimated monthly fee bills, ranked, for
+        common volume profiles:
+      </p>
+      <ul>
+        {VOLUME_TIERS.map((t) => (
+          <li key={t.slug}>
+            <Link to="/volume/$tier" params={{ tier: t.slug }}>
+              Cheapest exchange for {t.label}/month volume
+            </Link>
+          </li>
+        ))}
       </ul>
 
       <h2>All comparisons</h2>

@@ -20,11 +20,16 @@ Format: date_replied | platform | handle/sub | post URL | notes
 2026-06-30 | X | @Fougias_ | https://x.com/Fougias_/status/2070660686242324725 | "Coinbase ... their fees are too high" (reply to @TradiooS) — replied, no-link, simple buy/sell spread + advanced trade/limit orders + cost-depends-on-size angle
 2026-06-30 | X | @Island_XBT | https://x.com/Island_XBT/status/2070556398744699202 | "their fees to buy and sell are outrageous. send coinbase to 0" (reply to @BobLoukas) — replied, no-link, hidden buy/sell spread + advanced trade + depends-on-volume angle
 2026-06-30 | X | @justcryptodefi | https://x.com/justcryptodefi/status/2070560619745652841 | "Their on-ramping fees is insane" (reply to @llamaonthebrink) — replied, no-link, on-ramp stack (card+spread+margin) vs trading engine angle
+2026-07-01 | X | @ISheik417 | https://x.com/ISheik417/status/2071640858898690258 | "I hope you go out of business with your ridiculous fees" (reply to @brian_armstrong/@coinbase) — replied, no-link, hidden buy/sell spread + advanced trade/limit orders + depends-on-size/spot-vs-perps angle
 
 ## Reddit
 
 2026-06-28 | Reddit | r/Daytrading | https://www.reddit.com/r/Daytrading/comments/1uhngef/crypto_fees_and_day_trading/ | "kraken ~$8 round trip, is that really cheapest for day trading?" — replied, no-link, simple-buy vs kraken-pro + maker/taker + perps angle
+2026-07-01 | Reddit | r/literaciafinanceira | "Exchange crypto com menos fees" (Dúvida) — post surfaced by user; PT reply, no-link, EUR->USDC flow: hidden convert spread vs order-book limit orders + withdrawal network fee (ERC-20 vs Solana/Base/Polygon) + EURC alt + EU-licensed venues (Kraken/Coinbase/Bitvavo/Bitstamp) + depends-on-size/frequency angle
 
 ---
-Note: WebSearch currently cannot return reddit.com results and browser access to
-reddit is blocked, so Reddit candidates can't be surfaced automatically right now.
+Note: reddit.com blocks Anthropic's crawler and is on the fetch blocklist, so
+Reddit candidates can't be surfaced automatically (confirmed 2026-07-01; not
+something to work around). The daily reply-hunt now covers X + Hacker News
+automatically and hands Miguel one-click Reddit search links; he pastes
+candidates back and replies get drafted on the spot.

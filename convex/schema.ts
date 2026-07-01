@@ -62,6 +62,14 @@ export default defineSchema({
     .index("by_user", ["userId"])
     .index("by_shareId", ["shareId"]),
 
+  // Free-user email capture: monthly "cheapest exchange right now" update.
+  subscribers: defineTable({
+    email: v.string(),
+    source: v.string(),
+    ref: v.optional(v.string()),
+    unsubscribed: v.optional(v.boolean()),
+  }).index("by_email", ["email"]),
+
   // Email alerts: notify when a cheaper exchange appears for a saved profile.
   alerts: defineTable({
     userId: v.id("users"),

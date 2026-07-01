@@ -146,6 +146,55 @@ export function parsePair(pair: string): [Exchange, Exchange] | null {
 
 export const pct = (v: number) => `${(v * 100).toFixed(3)}%`
 
+// ---- Volume-tier SEO pages (/volume/$tier) ------------------------------
+// One page per monthly-volume profile: "cheapest crypto exchange for $X/month".
+// Costs are computed from the entry-tier rates above with a 50/50 maker/taker
+// mix; the live calculator has the full volume-tier logic.
+
+export type VolumeTier = { slug: string; usd: number; label: string }
+
+export const VOLUME_TIERS: Array<VolumeTier> = [
+  { slug: '10k', usd: 10_000, label: '$10k' },
+  { slug: '25k', usd: 25_000, label: '$25k' },
+  { slug: '50k', usd: 50_000, label: '$50k' },
+  { slug: '100k', usd: 100_000, label: '$100k' },
+  { slug: '250k', usd: 250_000, label: '$250k' },
+  { slug: '500k', usd: 500_000, label: '$500k' },
+  { slug: '1m', usd: 1_000_000, label: '$1M' },
+  { slug: '2m', usd: 2_000_000, label: '$2M' },
+  { slug: '5m', usd: 5_000_000, label: '$5M' },
+  { slug: '10m', usd: 10_000_000, label: '$10M' },
+]
+
+export function volumeTierBySlug(slug: string): VolumeTier | undefined {
+  return VOLUME_TIERS.find((t) => t.slug === slug)
+}
+
+// Estimated monthly fee bill at a given volume, 50/50 maker/taker mix,
+// entry-tier rates.
+export function monthlyCost(
+  ex: Exchange,
+  market: 'futures' | 'spot',
+  volumeUsd: number,
+): number {
+  const fees = market === 'futures' ? ex.futures : ex.spot
+  return volumeUsd * (0.5 * fees.maker + 0.5 * fees.taker)
+}
+
+export function rankedByCost(
+  market: 'futures' | 'spot',
+  volumeUsd: number,
+): Array<{ ex: Exchange; cost: number }> {
+  return EXCHANGES.map((ex) => ({ ex, cost: monthlyCost(ex, market, volumeUsd) })).sort(
+    (a, b) => a.cost - b.cost,
+  )
+}
+
+export const usd = (v: number) =>
+  v >= 100
+    ? `$${Math.round(v).toLocaleString('en-US')}`
+    : `$${v.toFixed(2)}`
+
 // Human-readable "data last verified" label, shown on SEO pages as a freshness
 // signal. Bump alongside VERIFIED_AT in convex/fetcher.ts when fees are re-checked.
 export const DATA_UPDATED = 'July 2026'

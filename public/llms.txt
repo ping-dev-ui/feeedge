@@ -26,3 +26,9 @@
 - [Maker vs taker fees explained](https://feeedge.com/guides/maker-vs-taker-fees)
 - [The hidden costs of crypto trading](https://feeedge.com/guides/hidden-costs-of-crypto-trading)
 - [How to reduce crypto trading fees](https://feeedge.com/guides/how-to-reduce-crypto-trading-fees)
+- [Cheapest exchange for Solana](https://feeedge.com/cheapest-exchange-for-solana)
+- [Native-token fee discounts compared](https://feeedge.com/guides/native-token-fee-discounts)
+- [Crypto funding rates explained](https://feeedge.com/guides/crypto-funding-rates-explained)
+
+## By monthly volume
+Cheapest exchange ranked by estimated fee bill at a given monthly volume: [$10k](https://feeedge.com/volume/10k), [$25k](https://feeedge.com/volume/25k), [$50k](https://feeedge.com/volume/50k), [$100k](https://feeedge.com/volume/100k), [$250k](https://feeedge.com/volume/250k), [$500k](https://feeedge.com/volume/500k), [$1M](https://feeedge.com/volume/1m), [$2M](https://feeedge.com/volume/2m), [$5M](https://feeedge.com/volume/5m), [$10M](https://feeedge.com/volume/10m).
