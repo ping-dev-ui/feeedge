@@ -32,7 +32,7 @@ const PUBLISHED: Record<"futures" | "spot", Record<string, Rate>> = {
     bitfinex: { maker: 0.0, taker: 0.0 },
     whitebit: { maker: 0.0001, taker: 0.00055 },
     phemex: { maker: 0.0001, taker: 0.0006 },
-    bitmex: { maker: 0.0002, taker: 0.0005 },
+    bitmex: { maker: 0.0005, taker: 0.0005 },
     backpack: { maker: 0.0002, taker: 0.0005 },
     bitmart: { maker: 0.0002, taker: 0.0006 },
     coinex: { maker: 0.0003, taker: 0.0005 },

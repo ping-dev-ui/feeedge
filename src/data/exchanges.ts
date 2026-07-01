@@ -97,7 +97,7 @@ export const EXCHANGES: Exchange[] = [
   },
   {
     name: 'BitMEX', slug: 'bitmex', colorClass: 'text-red-500',
-    futures: { maker: 0.0002, taker: 0.0005 }, spot: { maker: 0.0005, taker: 0.0005 },
+    futures: { maker: 0.0005, taker: 0.0005 }, spot: { maker: 0.0005, taker: 0.0005 },
   },
   {
     name: 'Backpack', slug: 'backpack', colorClass: 'text-orange-300',
