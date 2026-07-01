@@ -1289,7 +1289,7 @@ function FeeEdge() {
           <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
           <Link to="/refunds" className="hover:text-white transition-colors">Refunds</Link>
         </div>
-        <div className="mt-4 flex justify-center">
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-4">
           <a
             href="https://postyourstartup.co/startup/feeedge-1?ref=badge"
             target="_blank"
@@ -1302,6 +1302,22 @@ function FeeEdge() {
               alt="Featured on PostYourStartup"
               width="212"
               height="55"
+            />
+          </a>
+          <a
+            href="https://launchbuff.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Featured on LaunchBuff"
+            aria-label="Featured on LaunchBuff"
+            className="inline-block"
+          >
+            <img
+              src="https://launchbuff.com/badge-featured-dark.svg"
+              alt="Featured on LaunchBuff"
+              width="256"
+              height="80"
+              className="h-[55px] w-auto"
             />
           </a>
         </div>
