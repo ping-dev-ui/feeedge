@@ -530,12 +530,14 @@ function FeeEdge() {
 
       // Funding only applies to perpetual futures, not spot.
       let monthlyFunding = 0
+      const liveFundingRate = fundingMap[ex.key]
       if (market === 'futures') {
         const avgOI = (monthlyVolume / 2) / 30 / 24 * holdTime
         // Live per-exchange funding magnitude (8h), else a 0.01% estimate.
-        const fundingRatePer8h = Math.abs(fundingMap[ex.key] ?? 0.0001)
+        const fundingRatePer8h = Math.abs(liveFundingRate ?? 0.0001)
         monthlyFunding = (avgOI * fundingRatePer8h) * (30 * 24 / 8)
       }
+      const fundingIsGenericEstimate = market === 'futures' && liveFundingRate == null
 
       const includeFunding = isPro && market === 'futures'
       return {
@@ -545,6 +547,7 @@ function FeeEdge() {
         effMaker,
         effTaker,
         rateSource,
+        fundingIsGenericEstimate,
         lastUpdated: live?.lastUpdated ?? null,
         token: tokenInfo?.token ?? null,
         discount,
@@ -779,7 +782,7 @@ function FeeEdge() {
             <Link
               to="/versus"
               onClick={() => phCapture('head_to_head_clicked', { market, monthlyVolume })}
-              className="mt-auto w-full bg-emerald-500 text-black font-bold text-sm rounded-full py-2.5 hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2"
+              className="mt-auto w-full border border-emerald-500/60 text-emerald-400 font-bold text-sm rounded-full py-2.5 hover:bg-emerald-500/10 hover:border-emerald-400 transition-colors flex items-center justify-center gap-2"
             >
               <Swords size={16} strokeWidth={2.5} /> Compare exchanges
             </Link>
@@ -789,8 +792,8 @@ function FeeEdge() {
       </div>
 
       <main className="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Input Panel */}
-        <aside className="lg:col-span-4 space-y-6">
+        {/* Input Panel (profile only — results follow immediately on mobile) */}
+        <aside className="order-1 lg:order-none lg:col-span-4 space-y-6">
           <section className="bg-zinc-900/50 border border-zinc-800 p-6 rounded-xl space-y-6">
             <h2 className="text-sm font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
               <BarChart3 size={16} />
@@ -875,6 +878,10 @@ function FeeEdge() {
               </div>
             </div>
           </section>
+        </aside>
+
+        {/* Sidebar widgets — below results on mobile, sticky beside them on desktop */}
+        <aside className="order-3 lg:order-none lg:col-span-4 lg:col-start-1 lg:row-start-2 space-y-6 lg:sticky lg:top-4 lg:self-start lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
 
           {/* Savings Callout */}
           <section className="bg-emerald-500/10 border border-emerald-500/20 p-6 rounded-xl overflow-hidden relative">
@@ -947,7 +954,7 @@ function FeeEdge() {
         </aside>
 
         {/* Results Panel */}
-        <div className="lg:col-span-8 space-y-6">
+        <div className="order-2 lg:order-none lg:col-span-8 lg:col-start-5 lg:row-start-1 lg:row-span-2 space-y-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-lg font-bold text-white tracking-tight flex flex-wrap items-center gap-2">
               Exchange Comparison
@@ -1018,7 +1025,7 @@ function FeeEdge() {
               </div>
               <div className="space-y-2 border-t border-zinc-800 pt-3">
                 <p className="text-zinc-300 font-bold uppercase tracking-widest text-[11px]">Data &amp; updates</p>
-                <p>We track all {EXCHANGES.length} exchanges and refresh rates <span className="text-zinc-300">daily</span>. Each row shows an <span className="text-zinc-300">"Updated"</span> date/time so you can see how current it is. Live-API venues (e.g. Kraken) update automatically each day; the rest use published rates we verify periodically, shown by their Updated date. All are entry-tier maker/taker rates, then adjusted for your volume tier.</p>
+                <p>We track all {EXCHANGES.length} exchanges and refresh rates <span className="text-zinc-300">daily</span>. Rows show an <span className="text-zinc-300">"Updated"</span> date when a rate hasn't been refreshed in the past week. Live-API venues (e.g. Kraken) update automatically each day; the rest use published rates we verify periodically, shown by their Updated date. All are entry-tier maker/taker rates, then adjusted for your volume tier.</p>
                 <p><span className="text-emerald-400 font-bold">Compare two head-to-head:</span> use the <span className="text-zinc-300">Compare exchanges</span> box at the top to put any venues side by side (a Pro feature).</p>
               </div>
               <p className="text-zinc-400 italic">Free shows the 5 cheapest venues; Pro unlocks all {EXCHANGES.length} exchanges plus funding estimates, the native-token discount, the funding optimizer, withdrawal-fee comparison, the tier savings ladder, unlimited saved scenarios, price alerts, and PDF/CSV export. All figures are estimates — not financial advice.</p>
@@ -1054,7 +1061,7 @@ function FeeEdge() {
                           T: <span className="text-zinc-300 font-mono">{(ex.effTaker * 100).toFixed(3)}%</span>
                         </span>
                       </div>
-                      {ex.lastUpdated && (
+                      {ex.lastUpdated && Date.now() - ex.lastUpdated > 7 * 24 * 60 * 60 * 1000 && (
                         <div className="mt-1 text-[10px] text-zinc-500">
                           Updated {fmtDateTime(ex.lastUpdated)}
                         </div>
@@ -1101,9 +1108,14 @@ function FeeEdge() {
                         <div className="text-xs text-zinc-400 italic">N/A (spot)</div>
                       </div>
                     ) : isPro ? (
-                      <div className="text-right border-l border-zinc-800 pl-4 md:pl-8">
+                      <div
+                        className="text-right border-l border-zinc-800 pl-4 md:pl-8"
+                        title={ex.fundingIsGenericEstimate ? 'Generic estimate (0.01%/8h) — no live funding feed for this venue yet' : 'From this venue\'s live funding rate'}
+                      >
                         <div className="text-[11px] text-zinc-400 uppercase">Funding Est.</div>
-                        <div className="text-sm font-bold text-zinc-400">${ex.monthlyFunding.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
+                        <div className={`text-sm font-bold ${ex.fundingIsGenericEstimate ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                          {ex.fundingIsGenericEstimate ? '~' : ''}${ex.monthlyFunding.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                        </div>
                       </div>
                     ) : (
                       <div className="text-right border-l border-zinc-800 pl-4 md:pl-8 opacity-40">

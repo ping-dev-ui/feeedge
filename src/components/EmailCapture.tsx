@@ -69,7 +69,7 @@ export function EmailCapture({
             setEmail(e.target.value)
             if (state === 'error') setState('idle')
           }}
-          placeholder="you@example.com"
+          placeholder="your email"
           className="flex-1 min-w-0 rounded bg-zinc-950 border border-zinc-700 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-emerald-600 focus:outline-none"
         />
         <button
