@@ -792,9 +792,10 @@ function FeeEdge() {
       </div>
 
       <main className="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Input Panel (profile only — results follow immediately on mobile) */}
-        <aside className="order-1 lg:order-none lg:col-span-4 space-y-6">
-          <section className="bg-zinc-900/50 border border-zinc-800 p-6 rounded-xl space-y-6">
+        {/* Left column: one sticky unit on desktop; on mobile `contents` promotes
+            the children to grid items so results can slot in right after the profile. */}
+        <aside className="contents lg:block lg:col-span-4 lg:space-y-6 lg:sticky lg:top-4 lg:self-start lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
+          <section className="order-1 lg:order-none bg-zinc-900/50 border border-zinc-800 p-6 rounded-xl space-y-6">
             <h2 className="text-sm font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
               <BarChart3 size={16} />
               Trader Profile
@@ -878,10 +879,9 @@ function FeeEdge() {
               </div>
             </div>
           </section>
-        </aside>
 
-        {/* Sidebar widgets — below results on mobile, sticky beside them on desktop */}
-        <aside className="order-3 lg:order-none lg:col-span-4 lg:col-start-1 lg:row-start-2 space-y-6 lg:sticky lg:top-4 lg:self-start lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
+          {/* Sidebar widgets — below results on mobile */}
+          <div className="order-3 lg:order-none space-y-6">
 
           {/* Savings Callout */}
           <section className="bg-emerald-500/10 border border-emerald-500/20 p-6 rounded-xl overflow-hidden relative">
@@ -951,10 +951,11 @@ function FeeEdge() {
           />
 
           <EmailCapture source="sidebar" track={phCapture} />
+          </div>
         </aside>
 
         {/* Results Panel */}
-        <div className="order-2 lg:order-none lg:col-span-8 lg:col-start-5 lg:row-start-1 lg:row-span-2 space-y-6">
+        <div className="order-2 lg:order-none lg:col-span-8 space-y-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-lg font-bold text-white tracking-tight flex flex-wrap items-center gap-2">
               Exchange Comparison
