@@ -795,6 +795,52 @@ function FeeEdge() {
         {/* Left column: one sticky unit on desktop; on mobile `contents` promotes
             the children to grid items so results can slot in right after the profile. */}
         <aside className="contents lg:block lg:col-span-4 lg:space-y-6 lg:sticky lg:top-[92px] lg:self-start lg:max-h-[calc(100vh-104px)] lg:overflow-y-auto">
+          {/* Savings Callout — top of the sticky column on desktop; after results on mobile */}
+          <section className="order-3 lg:order-none bg-emerald-500/10 border border-emerald-500/20 p-6 rounded-xl overflow-hidden relative">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <ArrowRightLeft size={80} className="rotate-12" />
+            </div>
+            <div className="relative z-10">
+              <h3 className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-1">Switching Savings</h3>
+              <p className="text-2xl font-black text-white leading-tight">
+                Save <CountUp value={Math.round(monthlySavings)} prefix="$" />/mo
+              </p>
+              <p className="text-zinc-400 text-xs mt-1">
+                By switching from {mostExpensive.name} to {cheapest.name}
+              </p>
+              <div className="mt-4 pt-4 border-t border-emerald-500/20 flex justify-between items-center">
+                <div>
+                  <div className="text-[11px] text-zinc-400 uppercase">Annual Savings</div>
+                  <div className="text-lg font-bold text-emerald-400"><CountUp value={Math.round(monthlySavings * 12)} prefix="$" /></div>
+                </div>
+                <TrendingDown className="text-emerald-500" size={24} />
+              </div>
+              <button
+                onClick={handleShareSavings}
+                className="mt-4 w-full flex items-center justify-center gap-2 bg-emerald-500 text-black px-4 py-2 rounded-lg font-bold text-xs hover:bg-emerald-400 transition-colors"
+              >
+                {shareCopied ? (
+                  <>
+                    <Check size={14} /> Link copied!
+                  </>
+                ) : (
+                  <>
+                    <Share2 size={14} /> Copy share link
+                  </>
+                )}
+              </button>
+              <ShareButtons
+                text={
+                  monthlySavings > 0
+                    ? `I could save ~$${Math.round(monthlySavings * 12).toLocaleString()}/yr on crypto trading fees with FeeEdge. Find your cheapest exchange:`
+                    : 'I found my cheapest crypto exchange with FeeEdge. Find yours:'
+                }
+                url={buildShareUrl()}
+                onShare={(name) => phCapture('share_click', { target: name })}
+              />
+            </div>
+          </section>
+
           <section className="order-1 lg:order-none bg-zinc-900/50 border border-zinc-800 p-6 rounded-xl space-y-6">
             <h2 className="text-sm font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
               <BarChart3 size={16} />
@@ -882,52 +928,6 @@ function FeeEdge() {
 
           {/* Sidebar widgets — below results on mobile */}
           <div className="order-3 lg:order-none space-y-6">
-
-          {/* Savings Callout */}
-          <section className="bg-emerald-500/10 border border-emerald-500/20 p-6 rounded-xl overflow-hidden relative">
-            <div className="absolute top-0 right-0 p-4 opacity-10">
-              <ArrowRightLeft size={80} className="rotate-12" />
-            </div>
-            <div className="relative z-10">
-              <h3 className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-1">Switching Savings</h3>
-              <p className="text-2xl font-black text-white leading-tight">
-                Save <CountUp value={Math.round(monthlySavings)} prefix="$" />/mo
-              </p>
-              <p className="text-zinc-400 text-xs mt-1">
-                By switching from {mostExpensive.name} to {cheapest.name}
-              </p>
-              <div className="mt-4 pt-4 border-t border-emerald-500/20 flex justify-between items-center">
-                <div>
-                  <div className="text-[11px] text-zinc-400 uppercase">Annual Savings</div>
-                  <div className="text-lg font-bold text-emerald-400"><CountUp value={Math.round(monthlySavings * 12)} prefix="$" /></div>
-                </div>
-                <TrendingDown className="text-emerald-500" size={24} />
-              </div>
-              <button
-                onClick={handleShareSavings}
-                className="mt-4 w-full flex items-center justify-center gap-2 bg-emerald-500 text-black px-4 py-2 rounded-lg font-bold text-xs hover:bg-emerald-400 transition-colors"
-              >
-                {shareCopied ? (
-                  <>
-                    <Check size={14} /> Link copied!
-                  </>
-                ) : (
-                  <>
-                    <Share2 size={14} /> Copy share link
-                  </>
-                )}
-              </button>
-              <ShareButtons
-                text={
-                  monthlySavings > 0
-                    ? `I could save ~$${Math.round(monthlySavings * 12).toLocaleString()}/yr on crypto trading fees with FeeEdge. Find your cheapest exchange:`
-                    : 'I found my cheapest crypto exchange with FeeEdge. Find yours:'
-                }
-                url={buildShareUrl()}
-                onShare={(name) => phCapture('share_click', { target: name })}
-              />
-            </div>
-          </section>
 
           <ScenariosPanel
             current={{ market, monthlyVolume, makerRatio, holdTime, selectedAssets }}
