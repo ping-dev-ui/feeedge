@@ -794,7 +794,7 @@ function FeeEdge() {
       <main className="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left column: one sticky unit on desktop; on mobile `contents` promotes
             the children to grid items so results can slot in right after the profile. */}
-        <aside className="contents lg:block lg:col-span-4 lg:space-y-6 lg:sticky lg:top-4 lg:self-start lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
+        <aside className="contents lg:block lg:col-span-4 lg:space-y-6 lg:sticky lg:top-[92px] lg:self-start lg:max-h-[calc(100vh-104px)] lg:overflow-y-auto">
           <section className="order-1 lg:order-none bg-zinc-900/50 border border-zinc-800 p-6 rounded-xl space-y-6">
             <h2 className="text-sm font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
               <BarChart3 size={16} />
